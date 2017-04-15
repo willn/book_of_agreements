@@ -1,0 +1,409 @@
+body {
+	margin-bottom: 20pt;
+	background: #eceed1;
+	font-family: tahoma, verdana, arial, helvetica, sans-serif;
+	font-size: 12px;
+	color: #663300;
+	line-height: 14pt;
+}
+
+a:link {
+	color: #771700;
+}
+a:visited {
+	color: #666666;
+}
+a:active {
+	color: #ffff66;
+}
+a:hover {
+	color: #000000;
+	background: #fb9a54;
+	text-decoration: underline
+}
+
+img {
+	border: 0;
+}
+
+h1 img {
+	margin-right: 7px;
+}
+
+img.titlephoto {
+	margin-left: 10px;
+}
+
+.error, p .error {
+	background: #fa9 url('/display/images/tango/32x32/status/dialog-error.png') no-repeat 9px 5px;
+	color: #900;
+	padding: 5px 48px;
+	font-size: 24px;
+	margin: 20px 0;
+	line-height: 30px;
+	-webkit-border-radius: 8px;
+	   -moz-border-radius: 8px;
+	        border-radius: 8px;
+}
+
+.error a:link {
+	color: #cccc66;
+}
+
+#content .error h2 {
+	font-size: 30px;
+}
+
+.actions, .admin_actions {
+	background-color: #eceed1;
+	border: 1px dashed #663300;
+	padding: 3px 10px 3px 10px;
+	margin: 0px 10px 12px 20px;
+	color: #000000;
+	font-weight: bold;
+	white-space: nowrap;
+	-webkit-border-radius: 8px;
+	   -moz-border-radius: 8px;
+	        border-radius: 8px;
+} 
+
+.admin_actions {
+    width: 50%;
+	margin: 10px;
+	background: #ffffff;
+}
+
+.admin_actions a {
+	margin-right: 15px;
+	text-decoration: none;
+}
+
+.actions, .related_minutes {
+    width: 25%;
+	float: right;
+	margin-top: 15px;
+}
+
+.related_minutes {
+	background: #eee;
+	border: 1px solid #ddd;
+	padding: 10px;
+	margin: 5px;
+	clear: right;
+}
+
+.related_minutes .header {
+	font-size: 10pt;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.related_minutes ul {
+	padding-left: 20px;
+	margin: 2px;
+}
+
+#banner {
+	padding: 0px;
+	margin: 0px;
+}
+
+#nav {
+	left: 0;
+	position: absolute;
+	margin-left: 5px;
+	font-size: 11pt;
+	width: 160px;
+	-webkit-border-radius: 8px;
+	   -moz-border-radius: 8px;
+	        border-radius: 8px;
+	line-height: 9pt;
+}
+
+#nav p {
+	-webkit-border-radius: 8px;
+	   -moz-border-radius: 8px;
+	        border-radius: 8px;
+}   
+
+#nav p.menu {
+	background: #ffffff;
+}
+
+#nav br {
+	display: none;
+}
+
+#nav a:link, #nav a:visited, span.link {
+	display: block;
+	text-decoration: none;
+	padding: .25em .5em;
+	padding-left: 2.5em;
+	text-indent: -2em;
+	border: 1px solid #ffffff;
+	-webkit-border-radius: 8px;
+	   -moz-border-radius: 8px;
+	        border-radius: 8px;
+}
+
+#nav span.linkcount {
+	font-size: 8pt;
+}
+
+span.link {
+	color: #000000;
+	background: #eceed1;
+	border: 1px solid #ccaa99;
+}
+
+span.sublink {
+	font-size: 11px;
+}
+
+span.found {
+	font-weight: bold;
+	background: #cccc66;
+	padding: 3px 0px 3px 0px;
+}
+
+span.date {
+	font-weight: bold;
+}
+
+#nav a:hover, #nav a:active {
+	color: #000000;
+	background: #fb9a54;
+}
+
+#content {
+	margin: 1em 20px 1em 180px;
+}
+
+#content p {
+	margin: 0px;
+	padding: 0px 5px 5px 5px;
+}
+
+#content p.highlight {
+	margin-bottom: 15px;
+	padding: 10px;
+	background: #ffffff;
+    border: 1px dashed #663300;
+}
+
+/* for expired and surpassed notices */
+#content .notice, #versions, #versions_reveal {
+	margin-bottom: 15px;
+	padding: 10px;
+	background: #99ff00;
+	color: #000000;
+	font-size: 14px;
+}
+
+#versions, #versions_reveal {
+	background: #dfc;
+	color: #652;
+	font-size: 11px;
+	border-bottom: 1px solid #cb9;
+	margin-bottom: 0;
+}
+
+#versions img, #versions_reveal img {
+	vertical-align: middle;
+}
+
+.no_difference {
+	margin: 30px;
+	background: #87CF23;
+	border: 1px solid #549c10;
+	padding: 30px;
+	color: #333;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+#content h2 {
+	font-size: 14px;
+	margin: 0px;
+	padding: 6px;
+	font-weight: normal;
+}
+
+div.agreement, div.minutes {
+	margin: 0px 0px 15px 0px;
+	background: #ffffff;
+	padding: 0px;
+}
+
+h1.agrm, h1.mins, h1.public {
+	padding: 16px;
+	margin-bottom: 0px;
+	margin-top: 0px;
+	line-height: 26px;
+}
+
+h1.public {
+	color: #e9edce;
+	background-color: #56656E;
+	padding: 12px;
+}
+
+#selectors {
+	margin: 10px;
+}
+
+#agrmselector, #minselector, #bothselector {
+	margin-right: 30px;
+}
+
+/* agreement colors */
+#content h2.agrm, h1.agrm {
+	background: #b9ba40;
+	color: #20241a;
+}
+
+#content h2.mins, h1.mins {
+	background: #cccccc;
+	color: #000000;
+}
+
+div.cmty_title {
+	font-size: 20px;
+}
+
+div.agreement {
+    border: 1px solid #8F7754;
+}
+
+div.minutes {
+    border: 1px solid #999999;
+}
+
+#content h2.mins, h1.mins {
+	background: #cccccc;
+	color: #000000;
+}
+
+.topic_img {
+	position: relative;
+	float: right;
+	margin: -10px 5px 5px 5px;
+}
+
+#print_version_link {
+	position: relative;
+	float: right;
+	margin: 3px 15px 5px 5px;
+}
+#print_version_link a {
+	color: #000000;
+	text-decoration: none;
+}
+#print_version_link a img {
+	margin-right: 4px;
+}
+
+.info {
+	background: #ffffff;
+	margin: 13px 15px 12px 15px;
+}
+
+.info .special {
+	margin-top: 12px;
+	margin-bottom: 12px;
+	font-weight: bold;
+}
+
+.search_result {
+	line-height: 19px;
+}
+
+.search_from {
+	font-weight: bold;
+}
+
+.search_score {
+	font-size: 10px;
+	color: #9e7e5e;
+}
+
+#content p.short {
+	margin: 15px 0px 15px 0px;
+}
+
+#login, #logout {
+	font-size: 20px;
+	font-weight: bold;
+	position: absolute;
+	top: 25px;
+	right: 28px;
+	background-color: #FB9A54;
+	padding: 4px 8px;
+	border: 1px solid #cc7d44;
+	-webkit-border-radius: 10px;
+	   -moz-border-radius: 10px;
+	        border-radius: 10px;
+}
+
+#login a, #logout a {
+	text-decoration: none;
+	color: #000;
+}
+
+.explanation {
+	background: #eeeeee;
+	border-bottom: 1px dashed #666666;
+	padding: 15px;
+	margin: -13px -15px 15px -15px;
+}
+
+.nowrap {
+	white-space: nowrap;
+}
+
+.tango {
+	vertical-align: -7px;
+}
+
+#search_query, #advanced_options {
+	background: #ffffff;
+}
+
+#search_query {
+	margin-bottom: 10px;
+	padding: 6px;
+}
+
+#advanced_options h3 {
+	margin: 0px;
+	margin-top: 10px;
+	padding: 0px;
+	padding-bottom: 3px;
+}
+
+#diff {
+	white-space: pre;
+	background: #fff;
+	padding: 5px;
+	border: 1px solid #999;
+	color: #333;
+	font-family: courier, monospace;
+}
+
+.diff_added, .diff_removed {
+	margin: 0;
+}
+
+.diff_added {
+	color: #000;
+	background: #FB9A54;
+}
+
+.diff_removed {
+	color: #666;
+	background: #ddd;
+}
+
+.print_date {
+	display: none;
+}

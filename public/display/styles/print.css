@@ -1,0 +1,23 @@
+#nav, #search, #login, #logout, #versions_reveal, 
+	#print_version_link, .return_link, .related_minutes {
+	display: none;
+}
+
+/* admin stuff too */
+div.actions, div.admin_actions {
+	display: none;
+}
+
+div.agreement {
+	border: none;
+}
+
+#content {
+	margin-left: 0px;
+}
+
+.print_date {
+	border-top: 1px dashed #999;
+	display: block;
+	color: #666;
+}
