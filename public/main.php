@@ -12,7 +12,7 @@
 	}
 
 	$PUBLIC_USER = false;
-	if (!$authenticated) {
+	if (!$is_authenticated) {
 		$PUBLIC_USER = true;
 	}
 
