@@ -5,10 +5,10 @@
 	$api_loc = 'logic/php_api/';
 	require_once( $api_loc.'database/mysql_connex.php' );
 
-	// if lacking config, create it
+	// if lacking config, punt!
 	if (!file_exists('config.php')) {
-		require_once('logic/config_management.php');
-		create_config_file();
+		echo "Lacking Config\n";
+		exit;
 	}
 
 	$PUBLIC_USER = false;
