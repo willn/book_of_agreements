@@ -15,19 +15,19 @@ EOHTML;
 
 	if ($use_jquery) {
 		echo <<<EOHTML
-		<script type="text/javascript" src="http://code.jquery.com/jquery-1.5.1.min.js"></script>
+		<script src="http://code.jquery.com/jquery-1.5.1.min.js"></script>
 EOHTML;
 	}
 
 	if (!is_null($js_code)) {
 		echo <<<EOHTML
-	<script type="text/javascript">{$js_code}</script>
+	<script>{$js_code}</script>
 EOHTML;
 	}
 
 	if (!is_null($jquery_code)) {
 		echo <<<EOHTML
-	<script type="text/javascript">
+	<script>
 		$(document).ready(function() {
 			{$jquery_code}
 		});
@@ -39,7 +39,7 @@ EOHTML;
 		$file_src = '';
 		foreach($js_files as $f) {
 			echo <<<EOHTML
-	<script type="text/javascript" src="/{$f}"></script>
+	<script src="/{$f}"></script>
 EOHTML;
 		}
 	}
