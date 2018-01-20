@@ -1,5 +1,5 @@
 <?php
-require_once '../logic/utils.php';
+require_once '../public/logic/utils.php';
 
 class UtilsTest extends PHPUnit_Framework_TestCase {
 	/**
