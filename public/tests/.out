@@ -1,0 +1,22 @@
+PHPUnit 5.7.19 by Sebastian Bergmann and contributors.
+
+..F                                                                 3 / 3 (100%)
+
+Time: 159 ms, Memory: 12.00MB
+
+There was 1 failure:
+
+1) UtilsTest::test_clean_html with data set #2 ('How will committee make decis...nutes.', 'How will committee make decis...nutes.')
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+ 'How will committee make decisions?
+ The committee will take a collaborative approach to making decisions in our committee meetings with a priority on consensus among the committee members. A collaborative approach would include such things as surveys to determine how the community feels on a subject and strawman proposals that the community can react to.
+-The Common House Committee follows Great Oak's standard three'­ bid process for financial commitments exceeding $500. The committee may occasionally forgo this process in cases where the purchase is substantially similar to other purchases from the same vendor and it seems advantageous to continue the relationship with that vendor. Such exceptions will be noted in committee meeting minutes.'
++The Common House Committee follows Great Oak's standard threeÂ­ bid process for financial commitments exceeding $500. The committee may occasionally forgo this process in cases where the purchase is substantially similar to other purchases from the same vendor and it seems advantageous to continue the relationship with that vendor. Such exceptions will be noted in committee meeting minutes.'
+
+/home/gocoho/public_html/boa/tests/UtilsTest.php:10
+
+FAILURES!
+Tests: 3, Assertions: 3, Failures: 1.

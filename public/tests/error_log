@@ -1,0 +1,17 @@
+[16-Jan-2018 03:18:09 UTC] PHP Parse error:  syntax error, unexpected '}' in UtilsTest.php on line 19
+[16-Jan-2018 03:18:29 UTC] PHP Parse error:  syntax error, unexpected '}' in UtilsTest.php on line 19
+[16-Jan-2018 03:19:13 UTC] PHP Parse error:  syntax error, unexpected '}' in UtilsTest.php on line 17
+[16-Jan-2018 03:19:16 UTC] PHP Parse error:  syntax error, unexpected '}' in UtilsTest.php on line 17
+[16-Jan-2018 03:19:20 UTC] PHP Parse error:  syntax error, unexpected '}' in UtilsTest.php on line 17
+[16-Jan-2018 03:19:44 UTC] PHP Parse error:  syntax error, unexpected '}' in UtilsTest.php on line 17
+[16-Jan-2018 03:52:59 UTC] /home/gocoho/public_html/boa/tests/UtilsTest.php 11 pieces: array (
+  0 => 'x',
+)
+[16-Jan-2018 03:52:59 UTC] /home/gocoho/public_html/boa/tests/UtilsTest.php 11 pieces: array (
+  0 => '`',
+)
+[16-Jan-2018 03:52:59 UTC] /home/gocoho/public_html/boa/tests/UtilsTest.php 11 pieces: array (
+  0 => 'â',
+  1 => '€',
+  2 => '¦',
+)
