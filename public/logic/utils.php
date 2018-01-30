@@ -103,29 +103,32 @@ function clean_html($str) {
 
 /**
  * Format the html, removing and escaping.
+ *
+ * @param[in] html string the string to format / escape.
+ * @param[in] keep_eol boolean (optional, default FALSE) If true, then keep
+ *     end of line marks, otherwise remove them.
  */
-function format_html( $s, $keep_eol=false )
-{
+function format_html($html, $keep_eol=FALSE) {
 	# convert all newlines to \n
-	$s = preg_replace( "/\\\\r\\\\n|\\\\r|\\\\n/", "\n", $s );
+	$html = preg_replace("/\\\\r\\\\n|\\\\r|\\\\n/", "\n", $html);
 
 	# escape any html characters
-	$s = htmlentities( $s );
+	$html = htmlentities($html);
 
 	# convert escaped characters to actual tabs
-	$s = str_replace('&amp;#160;', "&nbsp;&nbsp;&nbsp;&nbsp;", $s );
-	$s = str_replace('&amp;quot;', '"', $s);
-	$s = str_replace('&amp;amp;', '&amp;', $s);
-	$s = str_replace('&amp;gt;', '&gt;', $s);
-	$s = str_replace('&amp;lt;', '&lt;', $s);
-	$s = str_replace('&amp;#', '&#', $s);
+	$html = str_replace('&amp;#160;', "&nbsp;&nbsp;&nbsp;&nbsp;", $html);
+	$html = str_replace('&amp;quot;', '"', $html);
+	$html = str_replace('&amp;amp;', '&amp;', $html);
+	$html = str_replace('&amp;gt;', '&gt;', $html);
+	$html = str_replace('&amp;lt;', '&lt;', $html);
+	$html = str_replace('&amp;#', '&#', $html);
 
 	# whether to keep newlines, so this wraps
-	if ( !$keep_eol ) {
-		$s = nl2br( $s );
+	if (!$keep_eol) {
+		$html = nl2br($html, FALSE);
 	}
 
-	return stripslashes( $s );
+	return stripslashes($html);
 }
 
 /**
