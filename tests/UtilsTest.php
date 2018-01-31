@@ -36,5 +36,9 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
 		];
 	}
 
+	public function test_get_months() {
+		$months = get_months();
+		$this->assertEquals(count($months), 12);
+	}
 }
 ?>

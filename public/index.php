@@ -1,4 +1,5 @@
 <?php
+ini_set('error_log', '/home/gocoho/public_html/boa/error_log');
 session_start();
 global $mysql_api;
 
