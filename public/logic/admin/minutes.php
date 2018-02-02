@@ -35,6 +35,10 @@
 		$Mins->delete( $confirm_del );
 	}
 	else {
+		global $Cmtys;
+		global $SubCmtys;
+		$Cmty->setId($Mins->cid);
+
 		if ( $num > 0 ) {
 			$update_string = 
 				'<input type="hidden" name="update" value="1">' . "\n";
@@ -47,7 +51,7 @@
 			'<input type="hidden" name="num" value="'.$num.'">' . "\n".
 			$update_string . 
 			$Mins->Date->selectDate( ) .
-			$Cmty->getSelectCommittee( $Mins->cid );
+			$Cmty->getSelectCommittee($Cmtys, $SubCmtys);
 		$Mins->display( 'form' );
 		echo '<p><input type="submit" name="save" ' .
 			'value="save changes &rarr;">' . "</p></form>\n";
