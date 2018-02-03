@@ -1,6 +1,7 @@
 <?php
 	define('AUDIT_CONTACT', '');
 	define('FROM_ADDRESS', '');
+	define('REPLYTO', '');
 	define('SITE_NAME', 'My Site');
 
 	function get_authorized_users() {

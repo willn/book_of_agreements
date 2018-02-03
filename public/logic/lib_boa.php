@@ -782,12 +782,12 @@ EOHTML;
 
 		// send audit-trail email
 		// to, subject, message, addl headers
+		$reply_to = strlen(REPLYTO) ? "\r\nReply-To: " . REPLYTO : '';
 		$ret = mail(
 			AUDIT_CONTACT,
 			"{$_SERVER['SERVER_NAME']} BOA: {$type} {$this->title}",
 			$msg,
-			'From: Book of Agreements <' . FROM_ADDRESS . ">\r\n" .
-				'Reply-To: process@gocoho.org'
+			'From: Book of Agreements <' . FROM_ADDRESS . '>' . $reply_to;
 		);
 
 		if (!$ret) {

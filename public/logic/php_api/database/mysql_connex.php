@@ -1,9 +1,6 @@
 <?php
 	#===============================
 	# Database connection library
-	# written in php to view MySQL databases
-	# $Id: mysql_connex.php,v 1.12 2010-02-14 05:53:32 gocoho Exp $
-	# GNU GPL, copylefted by Willie Northway, php@willienorthway.com
 	#=================================
 
 	if ( !extension_loaded( 'mysql' )) {
