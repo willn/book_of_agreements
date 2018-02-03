@@ -1,0 +1,20 @@
+<?php
+	define('AUDIT_CONTACT', '');
+	define('FROM_ADDRESS', '');
+	define('SITE_NAME', 'My Site');
+
+	function get_authorized_users() {
+		return [
+			'username' => 'hash',
+		];
+	}
+	$Admin_Users = ['username'];
+
+	$HDUP = [
+		'database'=>'database name',
+		'host'=>'localhost',
+		'user'=>'username',
+		'password'=>'password'
+	];
+	$admin_string = 'hash';
+?>
