@@ -6,7 +6,7 @@
 class Committee {
 	var $cid;
 
-	function __construct($id) {
+	function __construct($id=NULL) {
 		if (!is_null($id)) {
 			$this->setId($id);
 		}
