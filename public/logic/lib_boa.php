@@ -787,7 +787,7 @@ EOHTML;
 			AUDIT_CONTACT,
 			"{$_SERVER['SERVER_NAME']} BOA: {$type} {$this->title}",
 			$msg,
-			'From: Book of Agreements <' . FROM_ADDRESS . '>' . $reply_to;
+			'From: Book of Agreements <' . FROM_ADDRESS . '>' . $reply_to
 		);
 
 		if (!$ret) {
