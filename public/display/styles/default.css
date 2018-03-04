@@ -271,14 +271,6 @@ div.cmty_title {
 	font-size: 20px;
 }
 
-div.agreement {
-    border: 1px solid #8F7754;
-}
-
-div.minutes {
-    border: 1px solid #999999;
-}
-
 #content h2.mins, h1.mins {
 	background: #cccccc;
 	color: #000000;
