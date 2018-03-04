@@ -45,6 +45,7 @@ class MysqlApi {
 			return TRUE;
 		}
 
+		// XXX - deprecated, need to replace
 		$this->link = mysql_connect($this->host, $this->user, $this->password);
 		if (is_null($this->link)) {
 			error_log('unable to establish connection with mysql database');
