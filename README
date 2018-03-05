@@ -1,7 +1,5 @@
 INSTALL
 ---------
-Obtain source from google's SVN repository, or download the tar/gzip archive.
-
 Un-pack the archive in your document root:
 
 	tar -xzvf book-of-agreements-0.2.tgz
