@@ -112,8 +112,11 @@ function format_html($html, $keep_eol=FALSE) {
 	# convert all newlines to \n
 	$html = preg_replace("/\\\\r\\\\n|\\\\r|\\\\n/", "\n", $html);
 
+	$normal_characters = "a-zA-Z0-9\s`~!@#$%^&*()_+-={}|:;<>?,.\/\"\'\\\[\]";
+	$html = preg_replace("/[^$normal_characters]/", '', $html);
+
 	# escape any html characters
-	$html = htmlentities($html);
+	$html = htmlentities($html, ENT_SUBSTITUTE);
 
 	# convert escaped characters to actual tabs
 	$html = str_replace('&amp;#160;', "&nbsp;&nbsp;&nbsp;&nbsp;", $html);

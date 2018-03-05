@@ -3,31 +3,29 @@
 require_once('utils.php');
 require_once('mydate.php');
 require_once('committee.php');
-require_once('../constants.php');
 
 
 /**
  * Parent class to both Agreements and Minutes
  */
-class BOADoc {
-	// need to support php 4.x
-	var $mysql;
-	var $cmty;
-	var $id;
+abstract class BOADoc {
+	public $mysql;
+	public $cmty;
+	public $id;
 
-	function BOADoc() {
+	public function BOADoc() {
 		global $mysql_api;
 		$this->mysql = $mysql_api;
 
 		$this->cmty = new Committee();
 	}
 
-	function setId($id) {
+	public function setId($id) {
 		$this->id = $id;
 		$this->cmty->setId($id);
 	}
 
-	function getId() {
+	public function getId() {
 		return $this->id;
 	}
 }
@@ -37,33 +35,33 @@ class BOADoc {
  */
 class Agreement extends BOADoc
 {
-	var $doc_type = 'agreement';
-	var $id = null;
-	var $title = null;
-	var $summary = null;
-	var $full = null;
-	var $background = null;
-	var $comments = null;
-	var $processnotes = null;
-	var $cid = null;
-	var $Date;
-	var $surpassed_by;
-	var $expired;
-	var $search_points = 0;
-	var $found = '';
-	var $world_public = false;
-	var $found_summary = false;
+	public $doc_type = 'agreement';
+	public $id = null;
+	public $title = null;
+	public $summary = null;
+	public $full = null;
+	public $background = null;
+	public $comments = null;
+	public $processnotes = null;
+	public $cid = null;
+	public $Date;
+	public $surpassed_by;
+	public $expired;
+	public $search_points = 0;
+	public $found = '';
+	public $world_public = false;
+	public $found_summary = false;
 
-	var $diff_comments;
-	var $previous_versions;
+	public $diff_comments;
+	public $previous_versions;
 
-	var $diff_context = 5;
+	public $diff_context = 5;
 
 	// agreement id, version
-	var $filename_format = '/tmp/book_of_agreements_%s_%s';
+	public $filename_format = '/tmp/book_of_agreements_%s_%s';
 
 	# agreement
-	function Agreement() {
+	public function Agreement() {
 		parent::BOADoc();
 		$this->Date = new MyDate();
 		$this->processRequest();
@@ -72,7 +70,7 @@ class Agreement extends BOADoc
 	/**
 	 * Process input from the POST.
 	 */
-	function processRequest() {
+	public function processRequest() {
 		if (isset($_REQUEST['num'])) {
 			$this->id = intval($_REQUEST['num']);
 
@@ -88,7 +86,7 @@ class Agreement extends BOADoc
 		}
 	}
 
-	function setContent($t='', $s='', $f='', $b='', $c='', 
+	public function setContent($t='', $s='', $f='', $b='', $c='', 
 			$p='', $c_id='', $D='', $sb=0, $x='', $wp=false ) {
 		$this->title = $t;
 		$this->summary = $s;
@@ -122,7 +120,7 @@ class Agreement extends BOADoc
 	}
 
 	# agreement
-	function loadById( ) {
+	public function loadById( ) {
 		global $PUBLIC_USER;
 
 		if (!is_numeric($this->id)) {
@@ -194,7 +192,7 @@ MODE) ) HAVING relevance > 0 ORDER BY relevance DESC;
 	 * @return array, Empty if valid. Populated with the keys of the required
 	 * elements which aren't valid.
 	 */
-	function validateInput()
+	public function validateInput()
 	{
 		$errs = array();
 
@@ -212,7 +210,7 @@ MODE) ) HAVING relevance > 0 ORDER BY relevance DESC;
 		return $errs;
 	}
 
-	function actionChoices( )
+	public function actionChoices( )
 	{
 		$errs = $this->validateInput();
 		if (!empty($errs)) {
@@ -242,7 +240,7 @@ EOHTML;
 	 *
 	 * @return string, the plain-text document.
 	 */
-	function getTextVersion() {
+	public function getTextVersion() {
 		$date = $this->Date->toString( );
 		$cmty_name = $this->cmty->getName();
 
@@ -288,7 +286,7 @@ EOTXT;
 	 *     - search, display search results
 	 *     - document, display full document for html presentation
 	 */
-	function display($type='document', $errors=array()) {
+	public function display($type='document', $errors=array()) {
 		global $sub_summary_length;
 		$admin_info = $this->adminActions( );
 		$short = '';
@@ -299,6 +297,8 @@ EOTXT;
 		$title = format_html( $this->title );
 		$summary = format_html( $this->summary );
 		$full = format_html( $this->full );
+error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " full:" . strlen($full) . 
+			" thisfull:" . strlen($this->full));
 		$background = format_html( $this->background );
 		$comments = format_html( $this->comments );
 		$processnotes = format_html( $this->processnotes );
@@ -326,6 +326,8 @@ EOHTML;
 			$condition = '<p class="notice">Agreement Expired</p>';
 		}
 
+error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " f:$full");
+		// XXX break this out into separate functions
 		switch( $type ) {
 			case 'form':
 				$title = format_html( $this->title, true );
@@ -456,6 +458,7 @@ EOHTML;
 				break;
 
 			case 'document':
+error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " full:$full");
 				// only show previous version disply with full document display
 				$condition .= $this->displayPreviousVersions();
 
@@ -518,7 +521,7 @@ EOHTML;
 	/**
 	 * Render to HTML a brief listing of recently occured minutes.
 	 */
-	function getRelatedMinutes() {
+	public function getRelatedMinutes() {
 		// punt if not logged in...
 		if (!array_key_exists('logged_in', $_SESSION) ||
 			!$_SESSION['logged_in']) {
@@ -561,7 +564,7 @@ EOHTML;
 	/**
 	 * Load the previous agreement version info from the database.
 	 */
-	function loadPreviousVersions() {
+	public function loadPreviousVersions() {
 		if (is_null($this->id)) {
 			return FALSE;
 		}
@@ -580,7 +583,7 @@ EOSQL;
 	 * @return string html to be displayed. If no previous versions, then
 	 *     return NULL.
 	 */
-	function displayPreviousVersions() {
+	public function displayPreviousVersions() {
 		$this->loadPreviousVersions();
 		if (empty($this->previous_versions)) {
 			return NULL;
@@ -641,7 +644,7 @@ EOHTML;
 	}
 
 	# agreement
-	function adminActions( )
+	public function adminActions( )
 	{
 		$link = '';
 		if ( isset( $_SESSION['admin'] ) && ( $_SESSION['admin'] ))
@@ -669,7 +672,7 @@ EOHTML;
 	 *     existing document. Otherwise, create a new one.
 	 * @return boolean. If true, then the save was successful.
 	 */
-	function save($update=false) {
+	public function save($update=false) {
 		global $HDUP;
 		global $G_DEBUG;
 		$success = 0;
@@ -761,7 +764,7 @@ EOSQL;
 	 * @param[in] content string. If not null, then contains info to display
 	 *     instead of the message body content.
 	 */
-	function sendEmail($type, $content) {
+	public function sendEmail($type, $content) {
 		$content = is_null($content) ? $this->full : $content;
 
 		$diff = ($this->diff_comments == '') ? '' :
@@ -809,7 +812,7 @@ EOHTML;
 	 *
 	 * @return boolean If TRUE, then the update save was successful.
 	 */
-	function updateRevision() {
+	public function updateRevision() {
 		// first, find out if there are previous "old" versions of this
 		// agreement, and grab the latest sub-ID.
 		$sql = <<<EOSQL
@@ -834,7 +837,7 @@ EOSQL;
 	/**
 	 * Delete the current agreement.
 	 */
-	function delete( ) {
+	public function delete( ) {
 		global $Cmtys;
 		global $HDUP;
 		global $G_DEBUG;
@@ -894,7 +897,7 @@ EOHTML;
 	 *     use as a starting point to generate the diff.
 	 * @return string, HTML displaying the diff betweeen the versions.
 	 */
-	function getDiff($version, $use_html=TRUE) {
+	public function getDiff($version, $use_html=TRUE) {
 		$prev_agreement = TRUE;
 		list($older_filename, $prev_agreement) = 
 			$this->loadDocByVersion($version, $prev_agreement);
@@ -979,7 +982,7 @@ EOHTML;
 	 * @return string The temp filename where the text-version of this document
 	 *     has been dumped to.
 	 */
-	function loadDocByVersion($version, $prev_agreement=NULL) {
+	public function loadDocByVersion($version, $prev_agreement=NULL) {
 		$sql = <<<EOSQL
 			SELECT * from agreements_versions where agr_id={$this->id}
 				AND agr_version_num={$version}
@@ -1016,7 +1019,7 @@ EOSQL;
 	 * @param[in] file string the filename to write the data to.
 	 * @param[in] text string the content to write out to the file.
 	 */
-	function writeFile($file, $text) {
+	public function writeFile($file, $text) {
 		if (file_exists('file_put_contents')) {
 			$result = file_put_contents($file, $text);
 			return ($result !== FALSE);
@@ -1034,7 +1037,7 @@ EOSQL;
 	 * @param[in] prev_agreement array of key-value pairs mapping the various
 	 *     table column fields to data in the previous agreement.
 	 */
-	function getDiffSummary($version, $prev_agreement=NULL) {
+	public function getDiffSummary($version, $prev_agreement=NULL) {
 		$prev = '';
 		if ($version > 1) {
 			$prev_ver = $version - 1;
@@ -1055,25 +1058,51 @@ EOHTML;
 			</p>
 EOHTML;
 	}
+
+	private function debug() {
+		$info = [
+			'doc_type ' => $this->doc_type,
+			'id ' => $this->id,
+			'title ' => $this->title,
+			'summary ' => $this->summary,
+			'full ' => $this->full,
+			'background ' => $this->background,
+			'comments ' => $this->comments,
+			'processnotes ' => $this->processnotes,
+			'cid ' => $this->cid,
+			'Date ' => $this->Date,
+			'surpassed_by ' => $this->surpassed_by,
+			'expired ' => $this->expired,
+			'search_points ' => $this->search_points,
+			'found ' => $this->found,
+			'world_public ' => $this->world_public,
+			'found_summary ' => $this->found_summary,
+			'diff_comments ' => $this->diff_comments,
+			'previous_versions ' => $this->previous_versions,
+			'diff_context ' => $this->diff_context,
+			'filename_format ' => $this->filename_format,
+		];
+		error_log(var_export($info, TRUE));
+	}
 }
 
 /**
  * Minutes
  */
 class Minutes extends BOADoc {
-	var $doc_type = 'minutes';
-	var $id = 0;
-	var $notes = null;
-	var $agenda = null;
-	var $content = null;
-	var $cid = 0;
-	var $Date;
-	var $search_points = 0;
-	var $found = '';
-	var $found_agenda = false;
+	public $doc_type = 'minutes';
+	public $id = 0;
+	public $notes = null;
+	public $agenda = null;
+	public $content = null;
+	public $cid = 0;
+	public $Date;
+	public $search_points = 0;
+	public $found = '';
+	public $found_agenda = false;
 
 	# minutes
-	function Minutes( $m='', $n='', $a='', $c='', $c_id='', $D='' )
+	public function Minutes( $m='', $n='', $a='', $c='', $c_id='', $D='' )
 	{
 		parent::BOADoc();
 
@@ -1097,7 +1126,7 @@ class Minutes extends BOADoc {
 	}
 
 	# minutes
-	function loadById( $id='' )
+	public function loadById( $id='' )
 	{
 		global $HDUP;
 		global $G_DEBUG;
@@ -1120,7 +1149,7 @@ class Minutes extends BOADoc {
 	}
 
 	# minutes
-	function display( $type='document' )
+	public function display( $type='document' )
 	{
 		global $sub_summary_length;
 		$admin_info = $this->adminActions( );
@@ -1212,7 +1241,7 @@ EOHTML;
 	}
 
 	# minutes
-	function adminActions( )
+	public function adminActions( )
 	{
 		$link = '';
 		if ( isset( $_SESSION['admin'] ) && ( $_SESSION['admin'] ))
@@ -1235,7 +1264,7 @@ EOHTML;
 	}
 
 	# minutes
-	function save( $update=false )
+	public function save( $update=false )
 	{
 		global $HDUP;
 		global $G_DEBUG;
@@ -1299,7 +1328,7 @@ EOHTML;
 	}
 
 	# minutes
-	function delete( $confirm )
+	public function delete( $confirm )
 	{
 		global $HDUP;
 		global $G_DEBUG;

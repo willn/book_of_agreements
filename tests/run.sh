@@ -4,11 +4,6 @@ for i in `find ../ -name "*.php"`; do
 	lint=`php -l $i | grep 'Errors'`;
 	[[ ! -z $lint ]] && echo "FAIL $i --> php lint issue" && let errs=errs+1
 done
-if [ "$errs" -gt 0 ]
-then
-	exit
-fi
-echo "all files pass lint"
 
 # now run phpunit
 for i in `ls *Test.php`; do
