@@ -48,7 +48,7 @@ class MyDate
 	function getBefore($num_days) {
 		$current_ts = mktime(0, 0, 0, $this->month, $this->day, $this->year);
 		$adjusted_ts = $current_ts - (NUM_SECS_PER_DAY * $num_days);
-		echo "CUR: $current_ts, adj: $adjusted_ts secs:" . NUM_SECS_PER_DAY . "\n";
+		#echo "CUR: $current_ts, adj: $adjusted_ts secs:" . NUM_SECS_PER_DAY . "\n";
 		return date('Y-m-d', $adjusted_ts);
 	}
 
