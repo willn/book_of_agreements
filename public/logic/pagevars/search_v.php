@@ -10,8 +10,6 @@
 	$Found = array( );
 	$Ignored = array( );
 	$dropped = '';
-	$ft_match_agr = 'match( title, summary, full, background, comments, processnotes )';
-	$ft_match_min = 'match( notes, agenda, content )';
 	$SQL_Agr_Clauses = array();
 	$SQL_Min_Clauses = array();
 
@@ -65,9 +63,7 @@
 	$ft_against = '';
 	if ( !empty( $q )) {
 		$q = strtolower(trim($q));
-		if ( !get_magic_quotes_gpc( )) {
-			$q = addslashes( $q );
-		}
+		$q = addslashes( $q );
 		$ft_against = "against( '{$q}' )"; 
 	}
 
@@ -98,12 +94,14 @@
 			$min_sql_clauses = 'and ' . $min_sql_clauses;
 		}
 
+		$ft_match_agr = 'match( title, summary, full, background, comments, processnotes )';
 		$sql_a = <<<EOSQL
 			SELECT id, {$ft_match_agr} {$ft_against} as score from
 				agreements where {$ft_match_agr} {$ft_against}
 				{$agr_sql_clauses} order by score desc
 EOSQL;
 
+		$ft_match_min = 'match( notes, agenda, content )';
 		$sql_m = <<<EOSQL
 			select m_id, {$ft_match_min} {$ft_against} as score from
 				minutes where {$ft_match_min} {$ft_against}
