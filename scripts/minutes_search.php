@@ -5,51 +5,74 @@
  * destination directory and this will insert into the database.
  */
 
-$G_DEBUG = array( 0 );
+$G_DEBUG = [0];
+require_once('../public/config.php');
 
-$find_mtime = '-mtime -1';
-
-# if true - then suck in all minutes, false: just the previous 24 hours
-$alltime = false;
+# if TRUE - then suck in all minutes, FALSE: just the previous 24 hours
+define('IS_ALL_TIME', FALSE);
 
 $Directories = '';
 $curdir = '';
-$yest = time( ) - 86400;
+
+// get this time yesterday
+$yest = time() - 86400;
 $yest_year = date( 'Y', $yest );
 $yest_month = date( 'm', $yest );
 $yest_month_name = date( 'F', $yest );
-$content = '';
-$Months = array( 1=>'january', 2=>'february', 3=>'march', 4=>'april', 5=>'may', 6=>'june', 7=>'july', 8=>'august', 9=>'september', 10=>'october', 11=>'november', 12=>'december' );
-$Short_Months = array( 1=>'jan', 2=>'feb', 3=>'mar', 4=>'apr', 6=>'jun', 7=>'jul', 8=>'aug', 9=>'sep', 10=>'oct', 11=>'nov', 12=>'dec' );
 
-$HDUP = array( 
-	'host'=>'', // enter database hostname
-	'database'=>'', // database name
-	'user'=>'', // database username
-	'password'=>'' // database password
-);
+$content = '';
+$Months = [
+	1=>'january',
+	2=>'february',
+	3=>'march',
+	4=>'april',
+	5=>'may',
+	6=>'june',
+	7=>'july',
+	8=>'august',
+	9=>'september',
+	10=>'october',
+	11=>'november',
+	12=>'december'
+];
+$Short_Months = [
+	1=>'jan',
+	2=>'feb',
+	3=>'mar',
+	4=>'apr',
+	6=>'jun',
+	7=>'jul',
+	8=>'aug',
+	9=>'sep',
+	10=>'oct',
+	11=>'nov',
+	12=>'dec'
+];
 
 # pull in the database library
-$api_loc = 'PATH_TO/logic/php_api/';
-require_once( $api_loc . 'database/mysql_connex.php' );
+$api_loc = '../public/logic/php_api/';
+require_once($api_loc . 'database/mysqli_connex.php');
 
-# get a listing of all the minutes lists
-$mailman = ''; // path to directory of mailman files
-exec( "/usr/bin/find $mailman -name '*minutes_ORGANIZATION.org' -type l", &$Directories );
-
-if ( empty( $Directories )) {
-	if ( $G_DEBUG[0] > 1 ) {
-		echo "Failed to find any mailman directories\n";
-	}
-	exit;
-}
+$path = '/usr/local/cpanel/3rdparty/mailman/archives/private/%s_gocoho.org';
+$Directories = [
+	'buildings-minutes',
+	'ch-minutes',
+	'finance-minutes',
+	'grounds-minutes',
+	'infoco-minutes',
+	'meals-minutes',
+	'membership-minutes',
+	'minutes',
+	'process-minutes',
+	'steering-minutes',
+	'work-minutes',
+	'workshop-minutes',
+];
 
 $sql = 'select cid, listname from committees where listname!="#none"';
 $link = my_connect( $G_DEBUG, $HDUP );
 if ($link === 0) {
-	if ( $G_DEBUG[0] > 1 ) {
-		echo "Unable to connect to remote database\n";
-	}
+	echo "Unable to connect to remote database\n";
 	exit;
 }
 $Cmtys = my_getInfo( $G_DEBUG, $HDUP, $sql, $link, 'listname' );
@@ -59,94 +82,90 @@ if ( $G_DEBUG[0] > 1 ) {
 	print_r( $Cmtys );
 }
 
-foreach( $Directories as $num=>$dir )
-{
-	$dir = str_replace( 'public', 'private', $dir );
-	if ( $G_DEBUG[0] > 1 ) {
-		echo "$dir\n";
-	}
+foreach($Directories as $num=>$dir) {
 	if ( empty( $dir )) {
 		echo "empty directory string\n";
 		exit;
 	}
 
-	$curdir = $dir;
-	if ( !$alltime ) {
-		$curdir = $dir . '/' . $yest_year . '-' . $yest_month_name;
-	}
-	if ( !file_exists( $curdir )) {
-		continue;
-	}
-
-	$Matches = array( );
-	$cmtee = '';
-	preg_match( '/private\/([^-]*)-?minutes_ORGANIZATION.org/', $curdir, $Matches );
-	if ( !empty( $Matches )) {
-		$cmtee = $Matches[1];
-		if ( $cmtee == 'test' ) {
-			continue;
-		}
-
-		if ( !isset( $Cmtys[$cmtee]['cid'] )) {
-			echo "unmatched committee name: $cmtee $curdir\n";
-			continue;
-		}
-		if ( $G_DEBUG[0] >= 1 ) { echo "Current Committee: $cmtee\n"; }
-		$cmtee = $Cmtys[$cmtee]['cid'];
-	}
-
-	$Files = array( );
+	$curdir = '';
+	$find_mtime = '-mtime -1';
 	$find_suffix = '';
-	if ( $alltime ) {
+	if (!IS_ALL_TIME) {
+		$curdir = sprintf($path, $dir) . '/' . $yest_year . '-' . $yest_month_name;
 		$find_mtime = '';
-		$find_suffix = '/*-*';
+		$find_suffix = '/*';
 	}
-	$find_cmd = "/usr/bin/find $curdir$find_suffix -type f -name '0*.html' $find_mtime";
-	if ( $G_DEBUG[0] > 1 ) { echo "Find Committee: $find_cmd\n"; }
-	exec( $find_cmd, &$Files );
 
-	if ( empty( $Files )) {
-		if ( $G_DEBUG[0] ) {
-			echo "no files found in $curdir with\n$find_cmd\nmoving on\n";
-		}
+	/*
+	 * Check to see if this directory exists.
+	 * Example: "...finance-minutes_gocoho.org/2018-August"
+	 * Likely, this is because nobody has sent out minutes for this committee for this month yet.
+	 */
+	if (!file_exists($curdir)) {
 		continue;
 	}
 
-	$FileInfo = array( );
-	foreach( $Files as $file ) {
-		if ( $G_DEBUG[0] > 0 ) {
-			echo "\nF: $file\n";
+	$Matches = [];
+	$cmtee_id = NULL;
+	// XXX don't hardcode ".org" here...
+	$match_string = '/private\/([^-]*)-?minutes_' . DOMAIN . '/';
+	preg_match($match_string, $curdir, $Matches );
+	if (!empty($Matches)) {
+		$cmtee_name = $Matches[1];
+		if ($cmtee_name === 'test') {
+			continue;
 		}
 
+		if (!isset($Cmtys[$cmtee_name]['cid'])) {
+			echo "unmatched committee name: $cmtee_name $curdir\n";
+			continue;
+		}
+		if ( $G_DEBUG[0] >= 1 ) { echo "Current Committee: $cmtee_name\n"; }
+		$cmtee_id = $Cmtys[$cmtee_name]['cid'];
+	}
+
+	// look for html files which live inside this directory
+	$find_cmd = "/usr/bin/find {$curdir}{$find_suffix} -type f -name '0*.html' {$find_mtime}";
+	$find_result = trim(`{$find_cmd}`);
+	$Files = explode(PHP_EOL, $find_result);
+	if ( empty( $Files )) {
+		echo "empty! -> $find_cmd\n";
+		continue;
+	}
+
+	foreach( $Files as $file ) {
 		if ( !file_exists( $file )) {
 			echo "file doesn't exist: $file\n";
-			exit;
+			continue;
 		}
 
-		$FileInfo = file( $file );
-		if ( empty( $FileInfo )) {
+		$lines = file( $file );
+		if ( empty( $lines )) {
 			echo "unable to access content from file: $file\n";
 			exit;
 		}
 
-		$Info = array(
+		$Info = [
 			'm_id'=>NULL,
 			'notes'=>'',
 			'agenda'=>'',
 			'content'=>'',
-			'cid'=>$cmtee,
+			'cid'=>$cmtee_id,
 			'date'=>''
-		);
-		$start = false;
-		$body_start = false;
+		];
+		$start = FALSE;
+		$body_start = FALSE;
 		$content = '';
-
 		$date = '';
-		foreach( $FileInfo as $line ) {
-			$line = trim( $line );
+
+		// process each line of the HTML file
+		// XXX can I refactor this into a separate function? or is there scope?
+		foreach($lines as $line) {
+			$line = trim($line);
 
 			if ( $line == '<!--beginarticle-->' ) {
-				$start = true;
+				$start = TRUE;
 				continue;
 			} 
 
@@ -159,7 +178,6 @@ foreach( $Directories as $num=>$dir )
 				if ( empty( $date ) && 
 						preg_match( '/<H1>([^<]*)<\/H1>/', $line, $Matches )) {
 					$header = $Matches[1];
-					if( $G_DEBUG[0] >= 1 ) { echo "H: $header\n"; }
 
 					# if we're able to match on the numeric date
 					if ( preg_match( '/\D(\d{1,2})( |\.|\/|-)(\d{1,2})( |\.|\/|-)?(\d{2,4})?/', $header, $Matches )) {
@@ -172,19 +190,15 @@ foreach( $Directories as $num=>$dir )
 					# parse the date from an english format
 					else
 					{
-						if ( $G_DEBUG[0] >= 1 ) { echo "parse date\n"; }
 						$header = strtolower( $header );
 
 						# search month names
-						if ( $G_DEBUG[0] >= 1 ) { echo "check for long month names\n"; }
 						$date_arr = search_months($Months, $header);
 						if (empty($date_arr)) {
-							if ( $G_DEBUG[0] >= 1 ) { echo "check for short months names\n"; }
 							$date_arr = search_months($Short_Months, $header);
 						}
 
 						if (!empty($date_arr)) {
-							if ( $G_DEBUG[0] >= 1 ) { echo "found parsed date:\n" . print_r($date_arr, true); }
 							$day = $date_arr['day'];
 							$month = $date_arr['month'];
 							$year = $date_arr['year'];
@@ -213,15 +227,14 @@ foreach( $Directories as $num=>$dir )
 					}
 
 					$date = sprintf("%04d-%02d-%02d", $year, $month, $day);
-					if ( $G_DEBUG[0] > 0 ) { echo "DATE: $date\n"; }
 				}
 				continue;
 			}
 
 			#if we've found the agenda divider...
 			if ( !$body_start && preg_match( '/^-{3,}$/', $line )) {
-				$body_start = true;
-				$Info['agenda'] = mysql_real_escape_string( $content, $link );
+				$body_start = TRUE;
+				$Info['agenda'] = mysqli_real_escape_string($link, $content);
 				$content = '';
 				continue;
 			}
@@ -237,7 +250,7 @@ foreach( $Directories as $num=>$dir )
 
 			$content .= $line . "\n";
 		}
-		$Info['content'] = mysql_real_escape_string( $content, $link );
+		$Info['content'] = mysqli_real_escape_string($link, $content);
 		$Info['date'] = $date;
 
 		# probably a false match, swap content for agenda
@@ -246,22 +259,17 @@ foreach( $Directories as $num=>$dir )
 			$Info['agenda'] = '';
 		}
 
-		$inserted = my_insert( $G_DEBUG, $HDUP, 'minutes', $Info );
-		if ( $G_DEBUG[0] >= 1 ) { echo "inserted: $inserted\n-----\n"; }
+		print_r($Info);
+		#$inserted = my_insert( 0, $HDUP, 'minutes', $Info );
 	}
-	if ( $G_DEBUG[0] > 1 ) { echo "==============\n"; }
 }
 
 function search_months($Months, $header)
 {
-	global $G_DEBUG;
 	$date_arr = array();
 
 	foreach ( $Months as $num=>$m ) {
 		if ( preg_match( "/$m\.? (\d{1,2}),? (\d{2,4})?/i", $header, $Matches )) {
-			if ( $G_DEBUG[0] > 1 ) {
-				echo print_r( $Matches, true );
-			}
 			$date_arr['month'] = $num;
 			$date_arr['day'] = $Matches[1];
 			if ( isset( $Matches[2] )) {
@@ -271,9 +279,6 @@ function search_months($Months, $header)
 			return $date_arr;
 		}
 		else if ( preg_match( "/(\d{1,2}) $m\.? ?(\d{2,4})?/i", $header, $Matches )) {
-			if ( $G_DEBUG[0] > 1 ) {
-				echo print_r( $Matches, true );
-			}
 			$date_arr['month'] = $num;
 			$date_arr['day'] = $Matches[1];
 			if ( isset( $Matches[2] )) {
