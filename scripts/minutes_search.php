@@ -8,8 +8,8 @@
 $G_DEBUG = [0];
 require_once('../public/config.php');
 
-# if TRUE - then suck in all minutes, FALSE: just the previous 24 hours
-define('IS_ALL_TIME', FALSE);
+// the daily routine is to go back 1 day
+define('LOOK_BACK_DAYS', 1);
 
 $Directories = '';
 $curdir = '';
@@ -88,16 +88,20 @@ foreach($Directories as $num=>$dir) {
 		exit;
 	}
 
-	$curdir = '';
-	$find_mtime = '-mtime -1';
+	$curdir = sprintf($path, $dir) . '/';
+	$find_mtime = '-mtime -' . LOOK_BACK_DAYS;
 	$find_suffix = '';
-	if (!IS_ALL_TIME) {
+	if (LOOK_BACK_DAYS === 1) {
 		$curdir = sprintf($path, $dir) . '/' . $yest_year . '-' . $yest_month_name;
-		$find_mtime = '';
 		$find_suffix = '/*';
 	}
 
+#!#
 	/*
+/usr/local/cpanel/3rdparty/mailman/archives/private/workshop-minutes_gocoho.org/2018-September
+
+/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/process-minutes_gocoho.org/2018-September/* -type f -name '0*.html'
+
 	 * Check to see if this directory exists.
 	 * Example: "...finance-minutes_gocoho.org/2018-August"
 	 * Likely, this is because nobody has sent out minutes for this committee for this month yet.
@@ -259,8 +263,7 @@ foreach($Directories as $num=>$dir) {
 			$Info['agenda'] = '';
 		}
 
-		print_r($Info);
-		#$inserted = my_insert( 0, $HDUP, 'minutes', $Info );
+		$inserted = my_insert( 0, $HDUP, 'minutes', $Info );
 	}
 }
 
