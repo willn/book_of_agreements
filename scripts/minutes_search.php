@@ -6,10 +6,8 @@
  */
 
 $G_DEBUG = [0];
-require_once('../public/config.php');
-
-// the daily routine is to go back 1 day
-define('LOOK_BACK_DAYS', 1);
+require_once '../public/config.php';
+require_once 'search_includes.php';
 
 $Directories = '';
 $curdir = '';
@@ -53,7 +51,6 @@ $Short_Months = [
 $api_loc = '../public/logic/php_api/';
 require_once($api_loc . 'database/mysqli_connex.php');
 
-$path = '/usr/local/cpanel/3rdparty/mailman/archives/private/%s_gocoho.org';
 $Directories = [
 	'buildings-minutes',
 	'ch-minutes',
@@ -82,56 +79,14 @@ if ( $G_DEBUG[0] > 1 ) {
 	print_r( $Cmtys );
 }
 
-foreach($Directories as $num=>$dir) {
-	if ( empty( $dir )) {
-		echo "empty directory string\n";
-		exit;
-	}
+// get_find_cmds
+error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " get find cmds");
+$find_cmds = get_find_cmds($Directories, $yest_year, $yest_month_name);
+error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " ran get find cmds");
 
-	$curdir = sprintf($path, $dir) . '/';
-	$find_mtime = '-mtime -' . LOOK_BACK_DAYS;
-	$find_suffix = '';
-	if (LOOK_BACK_DAYS === 1) {
-		$curdir = sprintf($path, $dir) . '/' . $yest_year . '-' . $yest_month_name;
-		$find_suffix = '/*';
-	}
-
-#!#
-	/*
-/usr/local/cpanel/3rdparty/mailman/archives/private/workshop-minutes_gocoho.org/2018-September
-
-/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/process-minutes_gocoho.org/2018-September/* -type f -name '0*.html'
-
-	 * Check to see if this directory exists.
-	 * Example: "...finance-minutes_gocoho.org/2018-August"
-	 * Likely, this is because nobody has sent out minutes for this committee for this month yet.
-	 */
-	if (!file_exists($curdir)) {
-		continue;
-	}
-
-	$Matches = [];
-	$cmtee_id = NULL;
-	// XXX don't hardcode ".org" here...
-	$match_string = '/private\/([^-]*)-?minutes_' . DOMAIN . '/';
-	preg_match($match_string, $curdir, $Matches );
-	if (!empty($Matches)) {
-		$cmtee_name = $Matches[1];
-		if ($cmtee_name === 'test') {
-			continue;
-		}
-
-		if (!isset($Cmtys[$cmtee_name]['cid'])) {
-			echo "unmatched committee name: $cmtee_name $curdir\n";
-			continue;
-		}
-		if ( $G_DEBUG[0] >= 1 ) { echo "Current Committee: $cmtee_name\n"; }
-		$cmtee_id = $Cmtys[$cmtee_name]['cid'];
-	}
-
-	// look for html files which live inside this directory
-	$find_cmd = "/usr/bin/find {$curdir}{$find_suffix} -type f -name '0*.html' {$find_mtime}";
-	$find_result = trim(`{$find_cmd}`);
+	// XXX
+	// $find_result = trim(`{$find_cmd}`);
+	$find_result = '';
 	$Files = explode(PHP_EOL, $find_result);
 	if ( empty( $Files )) {
 		echo "empty! -> $find_cmd\n";
