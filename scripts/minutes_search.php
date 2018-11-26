@@ -19,33 +19,6 @@ $yest_month = date( 'm', $yest );
 $yest_month_name = date( 'F', $yest );
 
 $content = '';
-$Months = [
-	1=>'january',
-	2=>'february',
-	3=>'march',
-	4=>'april',
-	5=>'may',
-	6=>'june',
-	7=>'july',
-	8=>'august',
-	9=>'september',
-	10=>'october',
-	11=>'november',
-	12=>'december'
-];
-$Short_Months = [
-	1=>'jan',
-	2=>'feb',
-	3=>'mar',
-	4=>'apr',
-	6=>'jun',
-	7=>'jul',
-	8=>'aug',
-	9=>'sep',
-	10=>'oct',
-	11=>'nov',
-	12=>'dec'
-];
 
 # pull in the database library
 $api_loc = '../public/logic/php_api/';
@@ -78,6 +51,9 @@ if ( $G_DEBUG[0] > 1 ) {
 	echo "==============\nCommittees\n";
 	print_r( $Cmtys );
 }
+
+$Months = get_months();
+$Short_Months = get_short_months();
 
 // get_find_cmds
 $commands = get_find_cmds($Directories, $yest_year, $yest_month_name);
@@ -135,32 +111,14 @@ foreach($commands as $find_cmd) {
 						preg_match( '/<H1>([^<]*)<\/H1>/', $line, $Matches )) {
 					$header = $Matches[1];
 
-					# if we're able to match on the numeric date
-					if ( preg_match( '/\D(\d{1,2})( |\.|\/|-)(\d{1,2})( |\.|\/|-)?(\d{2,4})?/', $header, $Matches )) {
-						$month = $Matches[1];
-						$day = $Matches[3];
-						if ( isset( $Matches[5] )) {
-							$year = $Matches[5];
-						}
-					} 
-					# parse the date from an english format
-					else
-					{
-						$header = strtolower( $header );
-
-						# search month names
-						$date_arr = search_months($Months, $header);
-						if (empty($date_arr)) {
-							$date_arr = search_months($Short_Months, $header);
-						}
-
-						if (!empty($date_arr)) {
-							$day = $date_arr['day'];
-							$month = $date_arr['month'];
-							$year = $date_arr['year'];
-						}
+					$date_arr = get_date_parts($header);
+					if (!empty($date_arr)) {
+						$day = $date_arr['day'];
+						$month = $date_arr['month'];
+						$year = $date_arr['year'];
 					}
 
+					// XXX move this below stanza into the get_date_parts function
 					# if neither of the above set the year, do it here
 					if ( $year == 0 ) {
 						$year = $yest_year;
@@ -219,32 +177,3 @@ foreach($commands as $find_cmd) {
 	}
 }
 
-function search_months($Months, $header)
-{
-	$date_arr = array();
-
-	foreach ( $Months as $num=>$m ) {
-		if ( preg_match( "/$m\.? (\d{1,2}),? (\d{2,4})?/i", $header, $Matches )) {
-			$date_arr['month'] = $num;
-			$date_arr['day'] = $Matches[1];
-			if ( isset( $Matches[2] )) {
-				$date_arr['year'] = $Matches[2];
-			}
-
-			return $date_arr;
-		}
-		else if ( preg_match( "/(\d{1,2}) $m\.? ?(\d{2,4})?/i", $header, $Matches )) {
-			$date_arr['month'] = $num;
-			$date_arr['day'] = $Matches[1];
-			if ( isset( $Matches[2] )) {
-				$date_arr['year'] = $Matches[2];
-			}
-
-			return $date_arr;
-		}
-	}
-
-	return NULL;
-}
-
-?>

@@ -6,6 +6,22 @@
 // the daily routine is to go back 1 day
 define('LOOK_BACK_DAYS', 1);
 
+function get_short_months() {
+	return [
+		1=>'jan',
+		2=>'feb',
+		3=>'mar',
+		4=>'apr',
+		6=>'jun',
+		7=>'jul',
+		8=>'aug',
+		9=>'sep',
+		10=>'oct',
+		11=>'nov',
+		12=>'dec'
+	];
+}
+
 /**
  * Create the list of 'find' commands to run.
  */
@@ -61,5 +77,98 @@ function get_find_cmds($Directories, $yest_year, $yest_month_name) {
 	}
 
 	return $cmds;
+}
+
+/**
+ * Given a subject string, extract the date parts.
+ * @param[in] header string the subject which may contain date parts.
+ */
+function get_date_parts($header) {
+	$date_arr = [];
+	$current_year = date('Y');
+
+	# if we're able to match on the numeric date
+	if ( preg_match( '/(\d{1,2})( |\.|\/|-)(\d{1,2})( |\.|\/|-)?(\d{2,4})?/',
+		$header, $Matches )) {
+
+		$year = $current_year;
+		if ( isset( $Matches[5] )) {
+			$year = $Matches[5];
+		}
+
+		$date_arr = [
+			'month' => $Matches[1],
+			'day' => $Matches[3],
+			'year' => $year,
+		];
+	}
+	# parse the date from an english format
+	else
+	{
+		$header = strtolower($header);
+		# search month names
+		$date_arr = search_all_months($header);
+	}
+
+	if (!empty($date_arr) && !isset($date_arr['year'])) {
+		$date_arr['year'] = $current_year;
+	}
+
+	// array_walk($date_arr, 'intval');
+	if (is_numeric($date_arr['year']) && $date_arr['year'] < 2000) {
+		$date_arr['year'] += 2000;
+	}
+
+	return $date_arr;
+}
+
+/**
+ * Go through both the short and full month names.
+ * @param[in] header string the subject which may contain date parts.
+ */
+function search_all_months($header) {
+	$Months = get_months();
+	$date_arr = search_months($Months, $header);
+	if (!empty($date_arr)) {
+		return $date_arr;
+	}
+
+	$Short_Months = get_short_months();
+	$date_arr = search_months($Short_Months, $header);
+	return $date_arr;
+}
+
+/**
+ * Search the subject line for the date of the meeting.
+ *
+ * @param[in] Months array of months #!# ? really?
+ * @param[in] header string the subject of the message, which may contain a date.
+ */
+function search_months($Months, $header) {
+	$date_arr = [];
+
+	foreach ($Months as $num=>$m) {
+		// month-name, date, year
+		if (preg_match( "/$m\.? (\d{1,2}),? (\d{2,4})?/i", $header, $Matches)) {
+			$date_arr['month'] = $num;
+			$date_arr['day'] = $Matches[1];
+			if ( isset( $Matches[2] )) {
+				$date_arr['year'] = $Matches[2];
+			}
+			return $date_arr;
+		}
+
+		// date month-name, year
+		if (preg_match( "/(\d{1,2}) $m\.? ?(\d{2,4})?/i", $header, $Matches)) {
+			$date_arr['month'] = $num;
+			$date_arr['day'] = $Matches[1];
+			if ( isset( $Matches[2] )) {
+				$date_arr['year'] = $Matches[2];
+			}
+			return $date_arr;
+		}
+	}
+
+	return [];
 }
 
