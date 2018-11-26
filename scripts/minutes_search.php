@@ -80,13 +80,10 @@ if ( $G_DEBUG[0] > 1 ) {
 }
 
 // get_find_cmds
-error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " get find cmds");
-$find_cmds = get_find_cmds($Directories, $yest_year, $yest_month_name);
-error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " ran get find cmds");
+$commands = get_find_cmds($Directories, $yest_year, $yest_month_name);
 
-	// XXX
-	// $find_result = trim(`{$find_cmd}`);
-	$find_result = '';
+foreach($commands as $find_cmd) {
+	$find_result = trim(`{$find_cmd}`);
 	$Files = explode(PHP_EOL, $find_result);
 	if ( empty( $Files )) {
 		echo "empty! -> $find_cmd\n";
