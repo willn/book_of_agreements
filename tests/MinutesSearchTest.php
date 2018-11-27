@@ -21,10 +21,10 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 	];
 
 	/**
-	 * @dataProvider provide_get_find_cmds
+	 * @dataProvider provide_parse_found_files
 	 */
-	public function test_get_find_cmds($input, $year, $month, $expected) {
-		$result = get_find_cmds($input, $this->Cmtys, $year, $month);
+	public function test_parse_found_files($input, $year, $month, $expected) {
+		$result = parse_found_files($input, $this->Cmtys, $year, $month);
 		$debug = [
 			'input' => $input,
 			'expected' => $expected,
@@ -33,7 +33,7 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($expected, $result, print_r($debug, TRUE));
 	}
 
-	public function provide_get_find_cmds() {
+	public function provide_parse_found_files() {
 		$directories = [
 			'buildings-minutes',
 			'ch-minutes',
@@ -48,15 +48,40 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 			'work-minutes',
 			'workshop-minutes',
 		];
+
 		$cmds = [
-			"/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/buildings-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-			"/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/ch-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-			"/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/grounds-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-			"/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/meals-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-			"/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/membership-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-			"/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-			"/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/process-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-			"/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/work-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
+			[
+				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/buildings-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
+				'cid' => 1,
+			],
+			[
+				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/ch-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
+				'cid' => 3,
+			],
+			[
+				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/grounds-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
+				'cid' => 6,
+			],
+			[
+				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/meals-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
+				'cid' => 7,
+			],
+			[
+				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/membership-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
+				'cid' => 8,
+			],
+			[
+				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
+				'cid' => 14,
+			],
+			[
+				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/process-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
+				'cid' => 9,
+			],
+			[
+				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/work-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
+				'cid' => 12,
+			],
 		];
 
 		return [

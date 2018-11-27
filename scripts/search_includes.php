@@ -3,6 +3,8 @@
  * Collection of functions (backed by unit tests) for the minutes search.
  */
 
+require_once '../public/config.php';
+
 // the daily routine is to go back 1 day
 define('LOOK_BACK_DAYS', 1);
 
@@ -25,8 +27,8 @@ function get_short_months() {
 /**
  * Create the list of 'find' commands to run.
  */
-function get_find_cmds($Directories, $Cmtys, $yest_year, $yest_month_name) {
-	$cmds = [];
+function parse_found_files($Directories, $Cmtys, $yest_year, $yest_month_name) {
+	$entries = [];
 	$find_mtime = '-mtime -' . LOOK_BACK_DAYS;
 	$path = '/usr/local/cpanel/3rdparty/mailman/archives/private/%s_gocoho.org';
 
@@ -71,12 +73,18 @@ function get_find_cmds($Directories, $Cmtys, $yest_year, $yest_month_name) {
 			}
 			$cmtee_id = $Cmtys[$cmtee_name]['cid'];
 		}
+		else {
+			echo __CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " match string:{$match_string}, curdir:{$curdir}\n";
+		}
 
 		// look for html files which live inside this directory
-		$cmds[] = "/usr/bin/find {$curdir}{$find_suffix} -type f -name '0*.html' {$find_mtime}";
+		$entries[] = [
+			'find_cmd' => "/usr/bin/find {$curdir}{$find_suffix} -type f -name '0*.html' {$find_mtime}",
+			'cid' => $cmtee_id,
+		];
 	}
 
-	return $cmds;
+	return $entries;
 }
 
 /**

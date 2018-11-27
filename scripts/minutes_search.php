@@ -5,8 +5,12 @@
  * destination directory and this will insert into the database.
  */
 
-$G_DEBUG = [0];
+$options = getopt("d");
+$is_debug = array_key_exists('d', $options) ? 1 : 0;
+$G_DEBUG = [$is_debug];
+
 require_once '../public/config.php';
+require_once '../public/logic/utils.php';
 require_once 'search_includes.php';
 
 $Directories = '';
@@ -40,33 +44,41 @@ $Directories = [
 ];
 
 $sql = 'select cid, listname from committees where listname!="#none"';
-$link = my_connect( $G_DEBUG, $HDUP );
+$link = my_connect($G_DEBUG, $HDUP);
 if ($link === 0) {
 	echo "Unable to connect to remote database\n";
 	exit;
 }
-$Cmtys = my_getInfo( $G_DEBUG, $HDUP, $sql, $link, 'listname' );
-
-if ( $G_DEBUG[0] > 1 ) {
-	echo "==============\nCommittees\n";
+$Cmtys = my_getInfo($G_DEBUG, $HDUP, $sql, $link, 'listname');
+if ($G_DEBUG[0] > 1) {
 	print_r( $Cmtys );
 }
 
 $Months = get_months();
 $Short_Months = get_short_months();
 
-// get_find_cmds
-$commands = get_find_cmds($Directories, $yest_year, $yest_month_name);
+$entries = parse_found_files($Directories, $Cmtys, $yest_year, $yest_month_name);
 
-foreach($commands as $find_cmd) {
+foreach($entries as $entry) {
+	$find_cmd = $entry['find_cmd'];
+	$cmtee_id = $entry['cid'];
+
 	$find_result = trim(`{$find_cmd}`);
+	if (empty($find_result)) {
+		continue;
+	}
+
 	$Files = explode(PHP_EOL, $find_result);
-	if ( empty( $Files )) {
-		echo "empty! -> $find_cmd\n";
+	if (empty($Files)) {
 		continue;
 	}
 
 	foreach( $Files as $file ) {
+		if ($G_DEBUG[0] > 0) {
+			$short_file = preg_replace('/^.*private/', '', $file);
+			echo "FILE: {$short_file}\n";
+		}
+
 		if ( !file_exists( $file )) {
 			echo "file doesn't exist: $file\n";
 			continue;
@@ -173,7 +185,20 @@ foreach($commands as $find_cmd) {
 			$Info['agenda'] = '';
 		}
 
-		$inserted = my_insert( 0, $HDUP, 'minutes', $Info );
+		switch($G_DEBUG[0]) {
+			case 0:
+				$inserted = my_insert( 0, $HDUP, 'minutes', $Info );
+				echo "INSERTED?\n";
+				var_dump($inserted);
+				break;
+
+			case 1:
+				echo "insert cid:[{$Info['cid']}] length:" . strlen($Info['content']) . "\n";
+				break;
+
+			default:
+				echo "INSERT: " . var_dump($Info);
+		}
 	}
 }
 
