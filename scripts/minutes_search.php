@@ -188,8 +188,6 @@ foreach($entries as $entry) {
 		switch($G_DEBUG[0]) {
 			case 0:
 				$inserted = my_insert( 0, $HDUP, 'minutes', $Info );
-				echo "INSERTED?\n";
-				var_dump($inserted);
 				break;
 
 			case 1:
