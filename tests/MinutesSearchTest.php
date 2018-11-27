@@ -4,11 +4,27 @@ require_once '../scripts/search_includes.php';
 
 
 class MinutesSearchTest extends PHPUnit_Framework_TestCase {
+	private $Cmtys = [
+		'buildings' => ['cid' => 1, 'listname' => buildings],
+		'ch' => ['cid' => 3, 'listname' => ch],
+		'finance' => ['cid' => 5, 'listname' => finance],
+		'grounds' => ['cid' => 6, 'listname' => grounds],
+		'meals' => ['cid' => 7, 'listname' => meals],
+		'membership' => ['cid' => 8, 'listname' => membership],
+		'process' => ['cid' => 9, 'listname' => process],
+		'steering' => ['cid' => 10, 'listname' => steering],
+		'work' => ['cid' => 12, 'listname' => work],
+		'infoco' => ['cid' => 108, 'listname' => infoco],
+		'' => ['cid' => 14, 'listname' => ''],
+		'workshop' => ['cid' => 13, 'listname' => workshop],
+		'lilacc' => ['cid' => 15, 'listname' => lilacc],
+	];
+
 	/**
 	 * @dataProvider provide_get_find_cmds
 	 */
 	public function test_get_find_cmds($input, $year, $month, $expected) {
-		$result = get_find_cmds($input, $year, $month);
+		$result = get_find_cmds($input, $this->Cmtys, $year, $month);
 		$debug = [
 			'input' => $input,
 			'expected' => $expected,

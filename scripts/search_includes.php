@@ -25,7 +25,7 @@ function get_short_months() {
 /**
  * Create the list of 'find' commands to run.
  */
-function get_find_cmds($Directories, $yest_year, $yest_month_name) {
+function get_find_cmds($Directories, $Cmtys, $yest_year, $yest_month_name) {
 	$cmds = [];
 	$find_mtime = '-mtime -' . LOOK_BACK_DAYS;
 	$path = '/usr/local/cpanel/3rdparty/mailman/archives/private/%s_gocoho.org';
