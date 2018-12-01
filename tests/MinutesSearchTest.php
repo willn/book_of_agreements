@@ -88,8 +88,16 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 			],
 		];
 
+		$test_cmds = [
+			[
+				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/test_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
+				'cid' => 14,
+			],
+		];
+
 		return [
-			[$directories, 2018, 'November', $cmds]
+			[$directories, 2018, 'November', $cmds],
+			// [['test'], 2018, 'November', $test_cmds]
 		];
 	}
 
