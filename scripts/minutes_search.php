@@ -58,6 +58,16 @@ $Months = get_months();
 $Short_Months = get_short_months();
 
 $entries = parse_found_files($Directories, $Cmtys, $yest_year, $yest_month_name);
+/*
+// shortcut for catching up on missed minutes
+$entries = [
+	[
+		'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/test_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
+		'cid' => 14,
+	],
+];
+*/
+
 
 foreach($entries as $entry) {
 	$find_cmd = $entry['find_cmd'];
@@ -186,14 +196,19 @@ foreach($entries as $entry) {
 		}
 
 		switch($G_DEBUG[0]) {
+			// not debugging, do the insert
 			case 0:
 				$inserted = my_insert( 0, $HDUP, 'minutes', $Info );
 				break;
 
+			// lightweight debug
 			case 1:
-				echo "insert cid:[{$Info['cid']}] length:" . strlen($Info['content']) . "\n";
+				echo "insert date:{$Info['date']} cid:{$Info['cid']} length:" .
+					strlen($Info['content']) . ' ' . substr($Info['content'], 0, 50) .
+					"\n";
 				break;
 
+			// full debugging
 			default:
 				echo "INSERT: " . var_dump($Info);
 		}
