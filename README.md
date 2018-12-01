@@ -1,0 +1,69 @@
+INSTALL
+---------
+Un-pack the archive in your document root:
+
+	tar -xzvf book-of-agreements-0.2.tgz
+
+Create a mysql database for your project, and create the tables:
+
+	mysql -u username -p databasename < sql/boa.sql
+
+Fill in the mysql connection information found in the config file:
+
+	public/config.php
+
+Fill in an email address in the various single-quote delimited spaces. Add a
+name for your site, which will appear in the basic auth popup, for example
+"Organization Book of Agreements".
+
+Fill in sha1 passwords, you can use the sha1.php quick utility function to
+generate these. Edit the file to list your desired password, then execute the
+file:
+
+	$ cat sha1.php 
+	<?php echo sha1('password') . "\n"; ?>
+
+	$ php sha1.php 
+	5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8
+
+	# edit your public/config.php file to make the array look like this:
+	$Basic_Auth_Users = array( 
+		'user' => '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8',
+	);
+
+Fill in your mysql database connection info.
+
+Using your mysql client, add some entries to your committees table. For
+example:
+
+	insert into committees values(1, 1, 'Buildings', 'buildings');
+	insert into committees values(2, 2, 'Common House', 'ch');
+
+You'll also want to download a copy of the tango icon library, and place the
+32x32 directory in display/images/tango Instructions for downloading this
+library either as an archive or the source can be found here:
+
+	http://tango.freedesktop.org/Tango_Icon_Library
+
+Direct download example:
+	cd public/display/images/
+	wget http://tango.freedesktop.org/releases/tango-icon-theme-0.8.90.tar.gz
+	tar -xzvf tango-icon-theme-0.8.90.tar.gz
+	ln -s tango-icon-theme-0.8.90/ tango
+	rm tango-icon-theme-0.8.90.tar.gz
+
+Now using your web browser, visit your website. There will likely be some
+greeting text, but you'll need to click on the "Member Login" link in the upper
+right corner in order to enter the application. Any username / password
+combination that you defined in the $Basic_Auth_Users array will allow you to
+enter the site.
+
+In order to manage content, you'll need to then login as
+the administrative user at the following URL:
+
+	/?id=admin
+
+and enter the password you used to generate the sha1 string you entered into
+the $admin_string in the config.php page. From there, you should be provided
+with links to add new minutes or agreements. Once you have documents
+created, viewing them will show an "edit" and "delete" button to the page.
