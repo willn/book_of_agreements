@@ -46,6 +46,7 @@ library either as an archive or the source can be found here:
 	http://tango.freedesktop.org/Tango_Icon_Library
 
 Direct download example:
+
 	cd public/display/images/
 	wget http://tango.freedesktop.org/releases/tango-icon-theme-0.8.90.tar.gz
 	tar -xzvf tango-icon-theme-0.8.90.tar.gz
