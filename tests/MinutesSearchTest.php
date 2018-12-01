@@ -59,6 +59,10 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 				'cid' => 3,
 			],
 			[
+				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/finance-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
+				'cid' => 5,
+			],
+			[
 				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/grounds-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
 				'cid' => 6,
 			],
