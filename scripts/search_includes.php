@@ -3,9 +3,9 @@
  * Collection of functions (backed by unit tests) for the minutes search.
  */
 
-require_once '../public/config.php';
+require_once 'config.php';
 
-// the daily routine is to go back 1 day
+// the daily routine is to go back a day
 define('LOOK_BACK_DAYS', 1);
 
 function get_short_months() {

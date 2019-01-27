@@ -5,15 +5,23 @@
  * destination directory and this will insert into the database.
  */
 
+# dirty hack to set the location for the database connection library
+$api_loc = 'logic/php_api/';
+
+set_include_path(get_include_path() . PATH_SEPARATOR .
+	'/home/gocoho/public_html/boa/' . PATH_SEPARATOR .
+	'/home/gocoho/admin/boa_scripts/');
+require_once 'config.php';
+require_once 'logic/utils.php';
+require_once 'search_includes.php';
+
+# pull in the database library
+require_once($api_loc . 'database/mysqli_connex.php');
+
 $options = getopt("d");
 $is_debug = array_key_exists('d', $options) ? 1 : 0;
 $G_DEBUG = [$is_debug];
 
-require_once '../public/config.php';
-require_once '../public/logic/utils.php';
-require_once 'search_includes.php';
-
-$Directories = '';
 $curdir = '';
 
 // get this time yesterday
@@ -23,10 +31,6 @@ $yest_month = date( 'm', $yest );
 $yest_month_name = date( 'F', $yest );
 
 $content = '';
-
-# pull in the database library
-$api_loc = '../public/logic/php_api/';
-require_once($api_loc . 'database/mysqli_connex.php');
 
 $Directories = [
 	'buildings-minutes',
@@ -58,12 +62,12 @@ $Months = get_months();
 $Short_Months = get_short_months();
 
 $entries = parse_found_files($Directories, $Cmtys, $yest_year, $yest_month_name);
-/*
 // shortcut for catching up on missed minutes
+/*
 $entries = [
 	[
-		'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/test_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-		'cid' => 14,
+		'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/test_gocoho.org/2018-December/* -type f -name '0*.html' -mtime -7",
+		'cid' => 5,
 	],
 ];
 */
@@ -198,7 +202,7 @@ foreach($entries as $entry) {
 		switch($G_DEBUG[0]) {
 			// not debugging, do the insert
 			case 0:
-				$inserted = my_insert( 0, $HDUP, 'minutes', $Info );
+				$inserted = my_insert( $G_DEBUG, $HDUP, 'minutes', $Info );
 				break;
 
 			// lightweight debug
