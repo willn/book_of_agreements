@@ -1,4 +1,5 @@
 <?php
+set_include_path('../' . PATH_SEPARATOR . '../public/');
 require_once '../public/logic/utils.php';
 require_once '../scripts/search_includes.php';
 
@@ -21,87 +22,6 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 	];
 
 	/**
-	 * @dataProvider provide_parse_found_files
-	 */
-	public function test_parse_found_files($input, $year, $month, $expected) {
-		$result = parse_found_files($input, $this->Cmtys, $year, $month);
-		$debug = [
-			'input' => $input,
-			'expected' => $expected,
-			'result' => $result,
-		];
-		$this->assertEquals($expected, $result, print_r($debug, TRUE));
-	}
-
-	public function provide_parse_found_files() {
-		$directories = [
-			'buildings-minutes',
-			'ch-minutes',
-			'finance-minutes',
-			'grounds-minutes',
-			'infoco-minutes',
-			'meals-minutes',
-			'membership-minutes',
-			'minutes',
-			'process-minutes',
-			'steering-minutes',
-			'work-minutes',
-			'workshop-minutes',
-		];
-
-		$cmds = [
-			[
-				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/buildings-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-				'cid' => 1,
-			],
-			[
-				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/ch-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-				'cid' => 3,
-			],
-			[
-				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/finance-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-				'cid' => 5,
-			],
-			[
-				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/grounds-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-				'cid' => 6,
-			],
-			[
-				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/meals-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-				'cid' => 7,
-			],
-			[
-				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/membership-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-				'cid' => 8,
-			],
-			[
-				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-				'cid' => 14,
-			],
-			[
-				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/process-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-				'cid' => 9,
-			],
-			[
-				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/work-minutes_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-				'cid' => 12,
-			],
-		];
-
-		$test_cmds = [
-			[
-				'find_cmd' => "/usr/bin/find /usr/local/cpanel/3rdparty/mailman/archives/private/test_gocoho.org/2018-November/* -type f -name '0*.html' -mtime -1",
-				'cid' => 14,
-			],
-		];
-
-		return [
-			[$directories, 2018, 'November', $cmds],
-			// [['test'], 2018, 'November', $test_cmds]
-		];
-	}
-
-	/**
 	 * @dataProvider provide_get_date_parts
 	 */
 	public function test_get_date_parts($input, $expected) {
@@ -110,6 +30,11 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function provide_get_date_parts() {
+		$year = date('Y');
+		$month = date('n');
+		$day = date('j');
+		$now = time();
+		
 		return [
 			[
 				"[Ch-minutes] Common House Minutes Aug 14, 2018", 
@@ -130,10 +55,6 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 			[
 				"[Finance-minutes] Minutes of 3-15-17 Finance &amp; Legal Committee	Meeting",
 				[ 'month' => 3, 'day' => 15, 'year' => 2017 ]
-			],
-			[
-				"[Finance-minutes] Fwd: 'invoice' for hotbox work",
-				[]
 			],
 			[
 				"[Finance-minutes] Minutes of 7-11-18 GO Finance &amp; Legal Committee Meeting",
@@ -168,32 +89,8 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 				[ 'month' => 6, 'day' => 19, 'year' => 2018 ]
 			],
 			[
-				"[Grounds-minutes] Grounds minutes, July 11 meeting",
-				[ 'month' => 7, 'day' => 11, 'year' => 2018 ]
-			],
-			[
 				"[Grounds-minutes] Grounds minutes 4/23/18",
 				[ 'month' => 4, 'day' => 23, 'year' => 2018 ]
-			],
-			[
-				"[Meals-minutes] April 2 Meals Committee Minutes",
-				[ 'month' => 4, 'day' => 2, 'year' => 2018 ]
-			],
-			[
-				"[Meals-minutes] May 1 Meals Committee Minutes",
-				[ 'month' => 5, 'day' => 1, 'year' => 2018 ]
-			],
-			[
-				"[Meals-minutes] August 14 Meals Committee Meeting Minutes",
-				[ 'month' => 8, 'day' => 14, 'year' => 2018 ]
-			],
-			[
-				"[Meals-minutes] Minutes of July 17 Meals Committee meeting",
-				[ 'month' => 7, 'day' => 17, 'year' => 2018 ]
-			],
-			[
-				"[Meals-minutes] June 11 Meals Committee Meeting Minutes",
-				[ 'month' => 6, 'day' => 11, 'year' => 2018 ]
 			],
 			[
 				"[Membership-minutes] MEMBERSHIP MEETING MINUTES (4.30.2017)",
@@ -254,6 +151,64 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 			[
 				"[Work-minutes] 05-27-2018 work minutes",
 				[ 'month' => 5, 'day' => 27, 'year' => 2018 ]
+			],
+
+			// These dates lack a fully qualified date.
+			[
+				"[Meals-minutes] June 11 Meals Committee Meeting Minutes",
+				[
+					'month' => 6,
+					'day' => 11,
+					'year' => (mktime(12, 0, 0, 6, 11) < $now) ? ($year - 1) : $year,
+				]
+			],
+			[
+				"[Meals-minutes] Minutes of July 17 Meals Committee meeting",
+				[
+					'month' => 7,
+					'day' => 17,
+					'year' => (mktime(12, 0, 0, 7, 17) < $now) ? ($year - 1) : $year,
+				]
+			],
+
+			[
+				"[Meals-minutes] August 14 Meals Committee Meeting Minutes",
+				[
+					'month' => 8,
+					'day' => 14,
+					'year' => (mktime(12, 0, 0, 8, 14) < $now) ? ($year - 1) : $year,
+				]
+			],
+
+			[
+				"[Meals-minutes] April 2 Meals Committee Minutes",
+				[
+					'month' => 4,
+					'day' => 2,
+					'year' => (mktime(12, 0, 0, 8, 14) < $now) ? ($year - 1) : $year,
+				]
+			],
+			[
+				"[Finance-minutes] Fwd: 'invoice' for hotbox work",
+				[]
+			],
+
+			[
+				"[Meals-minutes] May 1 Meals Committee Minutes",
+				[
+					'month' => 5,
+					'day' => 1,
+					'year' => (mktime(12, 0, 0, 5, 1) < $now) ? ($year - 1) : $year,
+				]
+			],
+
+			[
+				"[Grounds-minutes] Grounds minutes, July 11 meeting",
+				[
+					'month' => 7,
+					'day' => 11,
+					'year' => (mktime(12, 0, 0, 7, 11) < $now) ? ($year - 1) : $year,
+				]
 			],
 		];
 	}
