@@ -16,11 +16,6 @@
 		$PUBLIC_USER = true;
 	}
 
-	$use_jquery = FALSE;
-	$js_code = NULL;
-	$jquery_code = NULL;
-	$js_files = array();
-
 	require_once( 'logic/lib_boa.php' );
 
 	$template = 'default_t.php';

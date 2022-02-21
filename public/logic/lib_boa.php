@@ -297,8 +297,6 @@ EOTXT;
 		$title = format_html( $this->title );
 		$summary = format_html( $this->summary );
 		$full = format_html( $this->full );
-error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " full:" . strlen($full) . 
-			" thisfull:" . strlen($this->full));
 		$background = format_html( $this->background );
 		$comments = format_html( $this->comments );
 		$processnotes = format_html( $this->processnotes );
@@ -326,7 +324,6 @@ EOHTML;
 			$condition = '<p class="notice">Agreement Expired</p>';
 		}
 
-error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " f:$full");
 		// XXX break this out into separate functions
 		switch( $type ) {
 			case 'form':
@@ -458,7 +455,6 @@ EOHTML;
 				break;
 
 			case 'document':
-error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " full:$full");
 				// only show previous version disply with full document display
 				$condition .= $this->displayPreviousVersions();
 
@@ -604,41 +600,36 @@ EOSQL;
 EOHTML;
 		}
 
-		$display_show_diffs = '';
-		$display_diff_list = ' style="display: none;"';
-		if (isset($_GET['expand_diffs'])) {
-			$display_show_diffs = ' style="display: none;"';
-			$display_diff_list = '';
-		}
-
 		$num_diffs = count($this->previous_versions);
 		return <<<EOHTML
-			<div id="versions_reveal"{$display_show_diffs}>
-				<div>
-					<img src="display/images/tango/32x32/apps/preferences-system-windows.png" width="32" height="32">
-					<a href="#" class="show">[+] show {$num_diffs} previous versions</a>
+			<div id="versions_block">
+				<div id="versions_reveal" class="toggle-content is-visible">
+					<div>
+						<img src="display/images/tango/32x32/apps/preferences-system-windows.png" width="32" height="32">
+						<a href="#" class="show toggle">[+] show {$num_diffs} previous versions</a>
+					</div>
 				</div>
-			</div>
-			<div id="versions"{$display_diff_list}>
-				<div>
-					<img src="display/images/tango/32x32/apps/preferences-system-windows.png" width="32" height="32">
-					<a href="#" class="hide">[-] hide {$num_diffs} previous versions</a>
+				<div id="versions" class="toggle-content">
+					<div>
+						<img src="display/images/tango/32x32/apps/preferences-system-windows.png" width="32" height="32">
+						<a href="#" class="hide toggle">[-] hide {$num_diffs} previous versions</a>
+					</div>
+
+					<p>This list shows the obsolete versions of this
+					agreement, which we keep for historical purposes.
+					<br>The date on the right is the date the old version was
+					superceded by a new agreement.</p>
+
+					<table cellpadding="3">
+						<tr>
+							<th>version</th>
+							<th></th>
+							<th>diff comment</th>
+							<th>obsoleted date</th>
+						</tr>
+						{$out}
+					</table>
 				</div>
-
-				<p>This list shows the obsolete versions of this
-				agreement, which we keep for historical purposes.
-				<br>The date on the right is the date the old version was
-				superceded by a new agreement.</p>
-
-				<table cellpadding="3">
-					<tr>
-						<th>version</th>
-						<th></th>
-						<th>diff comment</th>
-						<th>obsoleted date</th>
-					</tr>
-					{$out}
-				</table>
 			</div>
 EOHTML;
 	}

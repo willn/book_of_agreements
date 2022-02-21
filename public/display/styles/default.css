@@ -399,3 +399,10 @@ div.cmty_title {
 .print_date {
 	display: none;
 }
+
+.toggle-content {
+	display: none;
+}
+.toggle-content.is-visible {
+	display: block;
+}
