@@ -1,5 +1,6 @@
 <?php
 
+require_once('constants.php');
 require_once('utils.php');
 require_once('mydate.php');
 require_once('committee.php');

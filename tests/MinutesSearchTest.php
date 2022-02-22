@@ -5,28 +5,17 @@ require_once '../scripts/search_includes.php';
 
 
 class MinutesSearchTest extends PHPUnit_Framework_TestCase {
-	private $Cmtys = [
-		'buildings' => ['cid' => 1, 'listname' => buildings],
-		'ch' => ['cid' => 3, 'listname' => ch],
-		'finance' => ['cid' => 5, 'listname' => finance],
-		'grounds' => ['cid' => 6, 'listname' => grounds],
-		'meals' => ['cid' => 7, 'listname' => meals],
-		'membership' => ['cid' => 8, 'listname' => membership],
-		'process' => ['cid' => 9, 'listname' => process],
-		'steering' => ['cid' => 10, 'listname' => steering],
-		'work' => ['cid' => 12, 'listname' => work],
-		'infoco' => ['cid' => 108, 'listname' => infoco],
-		'' => ['cid' => 14, 'listname' => ''],
-		'workshop' => ['cid' => 13, 'listname' => workshop],
-		'lilacc' => ['cid' => 15, 'listname' => lilacc],
-	];
-
 	/**
 	 * @dataProvider provide_get_date_parts
 	 */
 	public function test_get_date_parts($input, $expected) {
 		$result = get_date_parts($input);
-		$this->assertEquals($expected, $result);
+		$debug = [
+			'input' => $input,
+			'expected' => $expected,
+			'result' => $result,
+		];
+		$this->assertEquals($expected, $result, var_export($debug, TRUE));
 	}
 
 	public function provide_get_date_parts() {
@@ -187,10 +176,6 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 					'day' => 2,
 					'year' => (mktime(12, 0, 0, 8, 14) < $now) ? ($year - 1) : $year,
 				]
-			],
-			[
-				"[Finance-minutes] Fwd: 'invoice' for hotbox work",
-				[]
 			],
 
 			[
