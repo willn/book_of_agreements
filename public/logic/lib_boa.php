@@ -46,7 +46,6 @@ class Agreement extends BOADoc
 	public $processnotes = null;
 	public $cid = null;
 	public $Date;
-	public $surpassed_by;
 	public $expired;
 	public $search_points = 0;
 	public $found = '';
@@ -88,7 +87,7 @@ class Agreement extends BOADoc
 	}
 
 	public function setContent($t='', $s='', $f='', $b='', $c='', 
-			$p='', $c_id='', $D='', $sb=0, $x='', $wp=false ) {
+			$p='', $c_id='', $D='', $x='', $wp=false ) {
 		$this->title = $t;
 		$this->summary = $s;
 
@@ -101,7 +100,6 @@ class Agreement extends BOADoc
 		$this->comments = $c;
 		$this->processnotes = $p;
 		$this->cid = $c_id;
-		$this->surpassed_by = $sb;
 		$this->expired = $x;
 		$this->world_public = $wp;
 
@@ -181,7 +179,6 @@ MODE) ) HAVING relevance > 0 ORDER BY relevance DESC;
 			$data['processnotes'],
 			$data['cid'],
 			$entryDate,
-			$data['surpassed_by'],
 			$data['expired'],
 			$data['world_public']
 		);
@@ -219,19 +216,12 @@ MODE) ) HAVING relevance > 0 ORDER BY relevance DESC;
 		}
 
 		$exp = ( $this->expired == 1 ) ? ' checked="checked"' : '';
-		$spass = ( $this->surpassed_by > 0 ) ?
-			' value="' . $this->surpassed_by . '"' : '';
 
 		# special options go here
 		echo <<<EOHTML
 			<p>
 				This agreement has expired: 
 				<input type="checkbox" name="expired" {$exp}>
-			</p>
-			<p>
-				This agreement has been surpassed by: 
-				<input type="text" name="surpassed_by" maxlength="4" {$spass} size="4">
-				(agreement ID number)
 			</p>
 EOHTML;
 	}
@@ -291,7 +281,6 @@ EOTXT;
 		global $sub_summary_length;
 		$admin_info = $this->adminActions( );
 		$short = '';
-		$surpassed_by = intval( $this->surpassed_by );
 		$expired = intval( $this->expired );
 
 		$pub = ( $this->world_public ) ? ' checked="checked"' : '';
@@ -303,25 +292,7 @@ EOTXT;
 		$processnotes = format_html( $this->processnotes );
 
 		$condition = '';
-		if ( $surpassed_by != 0 ) {
-			$Replacement = new Agreement( $surpassed_by );
-			$validation_errs = $Replacement->validateInput();
-			if (empty($validation_errs)) {
-				$rep_title = format_html( $Replacement->title );
-				$date_string = $Replacement->Date->toString();
-				$condition = <<<EOHTML
-				<p class="notice">Surpassed By: 
-					<a href="?id=agreement&amp;num={$surpassed_by}">{$rep_title}</a>
-					{$date_string}
-				</p>
-EOHTML;
-			}
-			else {
-				$condition = '<p class="notice">This agreement was marked ' .
-					'surpassed, but the overriding agreement is missing.</p>';
-			}
-		}
-		elseif ( $this->expired ) {
+		if ( $this->expired ) {
 			$condition = '<p class="notice">Agreement Expired</p>';
 		}
 
@@ -696,7 +667,6 @@ EOHTML;
 				'processnotes="' . clean_html( $this->processnotes ) . '"',
 				'cid="' . intval( $this->cid ) . '"',
 				'date="' . $this->Date->toString( ) . '"',
-				'surpassed_by="' . intval( $this->surpassed_by ) . '"',
 				'expired="' . intval( $this->expired ) . '"',
 				'world_public=' . (( $this->world_public ) ? 1 : 0 )
 			);
@@ -717,8 +687,8 @@ EOSQL;
 		else {
 			$type = 'new';
 			// this is a new document
-			$Info = array(
-				NULL,
+			$Info = [
+				NULL, // id
 				clean_html( $this->title ),
 				clean_html( $this->summary ),
 				clean_html( $this->full ),
@@ -727,10 +697,9 @@ EOSQL;
 				clean_html( $this->processnotes ),
 				intval( $this->cid ),
 				$this->Date->toString( ),
-				intval( $this->surpassed_by ),
 				intval( $this->expired ),
 				(( $this->world_public ) ? 1 : 0 )
-			);
+			];
 			$success = my_insert( $G_DEBUG, $HDUP, 'agreements', $Info );
 
 			# grab the newly inserted document's ID number
@@ -745,6 +714,12 @@ EOSQL;
 			echo "Save didn't work\n";
 			return FALSE;
 		}
+
+		// display success message
+		echo <<<EOHTML
+		<p>Saved!</p>
+		<p><a href="?id=agreement&num={$this->id}">{$this->title}</a></p>
+EOHTML;
 
 		$this->sendEmail($type, $content);
 		return TRUE;
@@ -990,7 +965,7 @@ EOSQL;
 		else {
 			$this->setContent($a['title'], $a['summary'], $a['full'],
 				$a['background'], $a['comments'], $a['processnotes'],
-				$a['cid'], $a['date'], $a['surpassed_by'], $a['expired'],
+				$a['cid'], $a['date'], $a['expired'],
 				$a['world_public']);
 
 			if (!is_null($prev_agreement)) {
@@ -1063,7 +1038,6 @@ EOHTML;
 			'processnotes ' => $this->processnotes,
 			'cid ' => $this->cid,
 			'Date ' => $this->Date,
-			'surpassed_by ' => $this->surpassed_by,
 			'expired ' => $this->expired,
 			'search_points ' => $this->search_points,
 			'found ' => $this->found,

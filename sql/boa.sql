@@ -10,7 +10,6 @@ CREATE TABLE `agreements` (
   `processnotes` text,
   `cid` smallint(6) default NULL,
   `date` date default NULL,
-  `surpassed_by` bigint(1) NOT NULL default '0',
   `expired` bigint(1) NOT NULL default '0',
   `world_public` tinyint(4) default '0',
   PRIMARY KEY  (`id`),

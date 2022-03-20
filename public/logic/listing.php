@@ -126,7 +126,7 @@ EOHTML;
 
 		$sql = 'select agreements.id, agreements.date, ' .
 			'agreements.title, agreements.summary, agreements.cid, ' .
-			'agreements.surpassed_by, agreements.expired, ' .
+			'agreements.expired, ' .
 			"substr( agreements.full, 1, $sub_summary_length) as partial, " .
 			'committees.cmty from agreements, committees ' .
 			"where agreements.cid=committees.cid and " . 

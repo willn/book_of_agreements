@@ -55,31 +55,25 @@ EOHTML;
 	$conditions = '';
 	$order = '';
 	$pub_constrain = '';
-	$show_exp_surp_msg = '';
+	$show_exp_msg = '';
 
 	if ( $show == 'expired' ) {
-		$conditions = 'and agreements.expired=1 and agreements.surpassed_by=0 ';
-		$show_exp_surp_msg = '<p><a href="?id=agreement">Show active agreements</a></p>';
+		$conditions = 'and agreements.expired=1 ';
+		$show_exp_msg = '<p><a href="?id=agreement">Show active agreements</a></p>';
 		$show_link = '&amp;show=expired';
 	}
-	elseif ( $show == 'surpassed' ) {
-		$conditions = 'and agreements.surpassed_by != 0 ';
-		$show_exp_surp_msg = '<p><a href="?id=agreement">Show active agreements</a></p>';
-		$show_link = '&amp;show=surpassed';
-	}
 	else {
-		$conditions = 'and agreements.expired=0 and agreements.surpassed_by=0 ';
-		$show_exp_surp_msg = <<<EOHTML
+		$conditions = 'and agreements.expired=0 ';
+		$show_exp_msg = <<<EOHTML
 			<p>
 				Show <a href="?id=agreement&amp;show=expired">expired</a>
-				or <a href="?id=agreement&amp;show=surpassed">surpassed</a>
 				agreements</a>
 			</p>
 EOHTML;
 	}
 
 	if ( !$PUBLIC_USER ) {
-		echo $show_exp_surp_msg;
+		echo $show_exp_msg;
 	}
 
 	$order = ( $sort == 'committee' ) ?

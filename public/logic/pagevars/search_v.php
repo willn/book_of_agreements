@@ -17,13 +17,12 @@
 	$show_docs = (isset($_GET['show_docs']) && in_array($_GET['show_docs'], $docs_allowed)) ?
 		$_GET['show_docs'] : NULL;
 
-	if (isset($_GET['include_expired_surpassed']) &&
-		('on' == $_GET['include_expired_surpassed'])) {
-		$include_expired_surpassed = TRUE;
+	if (isset($_GET['include_expired']) && ('on' == $_GET['include_expired'])) {
+		$include_expired = TRUE;
 	}
 	else {
-		$SQL_Agr_Clauses[] = 'expired=0 and surpassed_by=0';
-		$include_expired_surpassed = FALSE;
+		$SQL_Agr_Clauses[] = 'expired=0 ';
+		$include_expired = FALSE;
 	}
 
 	if (!empty($_GET['q'])) {

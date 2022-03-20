@@ -22,7 +22,7 @@
 EOHTML;
 	}
 
-	$exp_surp_checked = ($include_expired_surpassed) ? ' checked="checked"' : '';
+	$exp_checked = ($include_expired) ? ' checked="checked"' : '';
 
 	$search_terms_display = ('' != $search_terms) ? 
 		'query: [<b>' . $search_terms . '</b>]' : '';
@@ -42,8 +42,8 @@ EOHTML;
 					{$end}
 					<p>{$document_types}</p>
 					<p>
-						Include expired and surpassed documents: 
-						<input type="checkbox" name="include_expired_surpassed"{$exp_surp_checked}>
+						Include expired documents: 
+						<input type="checkbox" name="include_expired"{$exp_checked}>
 					</p>
 
 					<p><input type="submit" value="search" style="margin-left: 300px;"></p>

@@ -191,7 +191,7 @@ span.date {
     border: 1px dashed #663300;
 }
 
-/* for expired and surpassed notices */
+/* for expired notices */
 #content .notice, #versions, #versions_reveal {
 	margin-bottom: 15px;
 	padding: 10px;

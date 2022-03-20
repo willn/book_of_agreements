@@ -3,10 +3,6 @@
 	$update = false;
 	$TempDate = '';
 	$expired = 0;
-	$surpassed_by = '';
-	if ( isset( $_POST['surpassed_by'] )) {
-		$surpassed_by = intval($_POST['surpassed_by']);
-	}
 
 	# receiving a post of editing agreement, new or old
 	$Agrms = new Agreement();
@@ -32,7 +28,6 @@
 			mysql_real_escape_string( $_POST['processnotes'] ), 
 			intval( $_POST['cid'] ),
 			$TempDate, 
-			$surpassed_by,
 			$expired,
 			$pub
 		);
