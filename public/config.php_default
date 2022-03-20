@@ -1,21 +1,26 @@
 <?php
-	define('AUDIT_CONTACT', '');
-	define('FROM_ADDRESS', '');
-	define('REPLYTO', '');
-	define('SITE_NAME', 'My Site');
 
-	function get_authorized_users() {
-		return [
-			'username' => 'hash',
-		];
-	}
-	$Admin_Users = ['username'];
+ini_set('error_log', getcwd() . '/error_log');
+define('BASE_URL', '')
 
-	$HDUP = [
-		'database'=>'database name',
-		'host'=>'localhost',
-		'user'=>'username',
-		'password'=>'password'
+define('AUDIT_CONTACT', '');
+define('FROM_ADDRESS', '');
+define('REPLYTO', '');
+define('SITE_NAME', 'My Site');
+
+function get_authorized_users() {
+	return [
+		'username' => 'hash',
 	];
-	$admin_string = 'hash';
+}
+$Admin_Users = ['username'];
+
+$HDUP = [
+	'database'=>'database name',
+	'host'=>'localhost',
+	'user'=>'username',
+	'password'=>'password'
+];
+$admin_string = 'hash';
+
 ?>
