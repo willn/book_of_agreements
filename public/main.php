@@ -74,7 +74,7 @@
 	}
 	elseif ( $PUBLIC_USER ) {
 		# if this is a public user, then punt instead of 404
-		punt_public_user();
+		error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " punt on public user?");
 	}
 	else {
 		require_once('logic/pagevars/errors_404_v.php');

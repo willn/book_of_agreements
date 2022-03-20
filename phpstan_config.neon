@@ -1,0 +1,14 @@
+# phpstan config file
+# run with this command:
+# $ phpstan.phar analyse -c phpstan_config.neon .
+
+parameters:
+	level: 0
+	paths:
+		- public
+		- scripts
+		- upgrade
+	excludePaths:
+		- tests/
+	bootstrapFiles:
+

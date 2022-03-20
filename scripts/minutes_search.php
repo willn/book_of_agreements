@@ -214,7 +214,7 @@ foreach($entries as $entry) {
 
 			// full debugging
 			default:
-				echo "INSERT: " . var_dump($Info);
+				echo "INSERT: " . var_export($Info);
 		}
 	}
 }
