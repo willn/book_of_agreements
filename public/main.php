@@ -2,9 +2,6 @@
 	global $G_DEBUG;
 	$G_DEBUG = array(0);
 
-	$api_loc = 'logic/php_api/';
-	require_once( $api_loc.'database/mysql_connex.php' );
-
 	// if lacking config, punt!
 	if (!file_exists('config.php')) {
 		echo "Lacking Config\n";
@@ -74,7 +71,7 @@
 	}
 	elseif ( $PUBLIC_USER ) {
 		# if this is a public user, then punt instead of 404
-		error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " punt on public user?");
+		punt_public_user();
 	}
 	else {
 		require_once('logic/pagevars/errors_404_v.php');

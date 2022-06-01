@@ -1,18 +1,9 @@
 <?php
+ini_set('display_errors', '0');
+header("Content-Security-Policy: script-src 'self'");
+header("Content-Security-Policy: script-src-elem 'self'");
+ini_set('error_log', getcwd() . '/error_log');
 session_start();
-global $mysql_api;
-
-/*
- * If the file exists, then use it to pull in the users list. Otherwise,
- * ignore it so it can be created.
- */
-if (file_exists('config.php')) {
-	require_once('config.php');
-
-	require_once 'logic/mysql_api.php';
-	$mysql_api = new MysqlApi($HDUP['host'], $HDUP['database'],
-		$HDUP['user'], $HDUP['password']);
-}
 
 $is_authenticated = FALSE;
 
@@ -62,9 +53,8 @@ function attempt_login() {
  * Display the login form.
  */
 function display_login_form() {
-	$base_url = BASE_URL;
 	echo <<<EOHTML
-<form method="POST" action="{$base_url}/?login=1">
+<form method="POST" action="/boa/?login=1">
 	<label>
 		<span>Username:</span>
 		<input type="text" name="boa_username" value="">

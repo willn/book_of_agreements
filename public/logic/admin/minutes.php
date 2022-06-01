@@ -3,16 +3,19 @@
 	$update = false;
 	$TempDate = '';
 
+	$mysql_api = get_mysql_api();
+
 	# receiving a post of editing minutes, new or old
 	if ( isset( $_POST['admin_post'] )) {
 		$TempDate = new MyDate( intval( $_POST['year'] ), 
 			intval( $_POST['month'] ), intval( $_POST['day'] ));
 
+		$mysql_link = $mysql_api->getLink();
 		$Mins = new Minutes( 
 			intval( $_POST['num'] ),
-			mysql_real_escape_string( $_POST['notes'] ), 
-			mysql_real_escape_string( $_POST['agenda'] ),
-			mysql_real_escape_string( $_POST['content'] ),
+			mysqli_real_escape_string($mysql_link, $_POST['notes']), 
+			mysqli_real_escape_string($mysql_link, $_POST['agenda']),
+			mysqli_real_escape_string($mysql_link, $_POST['content']),
 			intval( $_POST['cid'] ),
 			$TempDate
 		);

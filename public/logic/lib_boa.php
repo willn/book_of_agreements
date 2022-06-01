@@ -14,9 +14,8 @@ abstract class BOADoc {
 	public $cmty;
 	public $id;
 
-	public function BOADoc() {
-		global $mysql_api;
-		$this->mysql = $mysql_api;
+	public function __construct() {
+		$this->mysql_api = get_mysql_api();
 
 		$this->cmty = new Committee();
 	}
@@ -61,8 +60,8 @@ class Agreement extends BOADoc
 	public $filename_format = '/tmp/book_of_agreements_%s_%s';
 
 	# agreement
-	public function Agreement() {
-		parent::BOADoc();
+	public function __construct() {
+		parent::__construct();
 		$this->Date = new MyDate();
 		$this->processRequest();
 	}
@@ -81,8 +80,8 @@ class Agreement extends BOADoc
 		}
 
 		if (isset($_REQUEST['diff_comments'])) {
-			$this->diff_comments = mysql_real_escape_string(
-				$_REQUEST['diff_comments']);
+			$this->diff_comments = mysqli_real_escape_string(
+				$this->mysql_api->getLink(), $_REQUEST['diff_comments']);
 		}
 	}
 
@@ -150,12 +149,12 @@ FROM [table_name] WHERE ( MATCH(title,text) AGAINST ('+term +term2' IN BOOLEAN
 MODE) ) HAVING relevance > 0 ORDER BY relevance DESC;
 */
 
-		$data = my_getInfo( $G_DEBUG, $HDUP, $sql.$pub_constraint );
+		$data = $this->mysql_api->get($sql . $pub_constraint);
 		if ( empty( $data )) {
 			if ( $PUBLIC_USER ) {
 				if (attempt_login()) {
 					# run the query again, without the constraint
-					$data = my_getInfo( $G_DEBUG, $HDUP, $sql );
+					$data = $this->mysql_api->get($sql);
 				}
 				else {
 					return FALSE;
@@ -505,7 +504,7 @@ SELECT m_id, date, notes
 	ORDER BY date asc;
 EOSQL;
 
-		$data = $this->mysql->get($sql);
+		$data = $this->mysql_api->get($sql);
 		$out = '';
 		foreach($data as $m) {
 			$out .= <<<EOHTML
@@ -543,7 +542,7 @@ EOHTML;
 				WHERE agr_id={$this->id}
 				ORDER BY agr_version_num desc;
 EOSQL;
-		$this->previous_versions = $this->mysql->get($sql);
+		$this->previous_versions = $this->mysql_api->get($sql);
 	}
 
 	/**
@@ -680,7 +679,7 @@ EOHTML;
 					WHERE agr_id={$this->id}
 					ORDER BY agr_version_num desc LIMIT 1;
 EOSQL;
-			$info = $this->mysql->get($sql, 'agr_version_num');
+			$info = $this->mysql_api->get($sql, 'agr_version_num');
 			$first = array_pop($info);
 			$content = $this->getDiff($first['agr_version_num'], FALSE);
 		}
@@ -688,24 +687,29 @@ EOSQL;
 			$type = 'new';
 			// this is a new document
 			$Info = [
-				NULL, // id
-				clean_html( $this->title ),
-				clean_html( $this->summary ),
-				clean_html( $this->full ),
-				clean_html( $this->background ),
-				clean_html( $this->comments ),
-				clean_html( $this->processnotes ),
-				intval( $this->cid ),
-				$this->Date->toString( ),
-				intval( $this->expired ),
-				(( $this->world_public ) ? 1 : 0 )
+				'NULL', // id
+				"'" . clean_html($this->title) . "'",
+				"'" . clean_html($this->summary) . "'",
+				"'" . clean_html($this->full) . "'",
+				"'" . clean_html($this->background) . "'",
+				"'" . clean_html($this->comments) . "'",
+				"'" . clean_html($this->processnotes) . "'",
+				"'" . intval( $this->cid ) . "'",
+				"'" . $this->Date->toString( ) . "'",
+				"'" . intval( $this->expired ) . "'",
+				"'" . (( $this->world_public ) ? 1 : 0 ) . "'"
 			];
-			$success = my_insert( $G_DEBUG, $HDUP, 'agreements', $Info );
+			$values = join(', ', $Info);
+			$sql = <<<EOSQL
+INSERT INTO agreements VALUES({$values});
+EOSQL;
+error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " SQL:$sql");
+			$success = $this->mysql_api->query($sql);
 
 			# grab the newly inserted document's ID number
 			if ( !is_int( $this->id )) {
 				$sql = 'select max( id ) as max from agreements';
-				$Max = my_getInfo( $G_DEBUG, $HDUP, $sql );
+				$Max = $this->mysql_api->get($sql);
 				$this->id = $Max[0]['max'];
 			}
 		}
@@ -788,7 +792,7 @@ EOHTML;
 				WHERE agr_id={$this->id}
 					ORDER BY agr_version_num DESC limit 1;
 EOSQL;
-		$prev_sub_id_info = $this->mysql->get($sql, 'agr_version_num');
+		$prev_sub_id_info = $this->mysql_api->get($sql, 'agr_version_num');
 		$cur_sub_id = empty($prev_sub_id_info) ? 1 :
 			array_shift(array_keys($prev_sub_id_info)) + 1;
 
@@ -798,7 +802,7 @@ EOSQL;
 					agreements.* from agreements
 				WHERE id={$this->id};
 EOSQL;
-		return (!is_null($this->mysql->query($sql)));
+		return (!is_null($this->mysql_api->query($sql)));
 	}
 
 	/**
@@ -954,7 +958,7 @@ EOHTML;
 			SELECT * from agreements_versions where agr_id={$this->id}
 				AND agr_version_num={$version}
 EOSQL;
-		$data = $this->mysql->get($sql);
+		$data = $this->mysql_api->get($sql);
 		$a = array_pop($data);
 
 		// if this isn't a previous version, but the current one, then simply load
@@ -1068,9 +1072,9 @@ class Minutes extends BOADoc {
 	public $found_agenda = false;
 
 	# minutes
-	public function Minutes( $m='', $n='', $a='', $c='', $c_id='', $D='' )
+	public function __construct( $m='', $n='', $a='', $c='', $c_id='', $D='' )
 	{
-		parent::BOADoc();
+		parent::__construct();
 
 		$this->id = $m;
 		$this->notes = clean_html($n);
@@ -1103,14 +1107,14 @@ class Minutes extends BOADoc {
 
 		$sql = 'select committees.cmty, minutes.* from minutes, '.
 			"committees where m_id=$min_id  and committees.cid=minutes.cid";
-		$Min = my_getInfo( $G_DEBUG, $HDUP, $sql );
+		$Min = $this->mysql_api->get($sql);
 
 		if ( empty( $Min )) {
 			return;
 		}
 		$entryDate->setDate( $Min[0]['date'] );
 
-		$this->Minutes( $Min[0]['m_id'], $Min[0]['notes'], 
+		$this->__construct( $Min[0]['m_id'], $Min[0]['notes'], 
 			$Min[0]['agenda'], $Min[0]['content'], $Min[0]['cid'], $entryDate );
 	}
 
@@ -1263,26 +1267,38 @@ EOHTML;
 		}
 		# otherwise, treat this as a new entry
 		else {
-			$Info = array( $this->id,
-				$this->notes,
-				$this->agenda,
-				$this->content,
-				intval( $this->cid ), 
-				$this->Date->toString( )
-			);
-			$success = my_insert( $G_DEBUG, $HDUP, 'minutes', $Info );
+			$Info = [
+				'NULL',
+				"'{$this->notes}'",
+				"'{$this->agenda}'",
+				"'{$this->content}'",
+				"'" . intval($this->cid) ."'", 
+				"'" . $this->Date->toString() . "'"
+			];
+			$values = join(', ', $Info);
+			$sql = <<<EOSQL
+INSERT INTO minutes VALUES({$values});
+EOSQL;
+			$success = $this->mysql_api->query($sql);
 		}
 
 		if ( !$success ) {
 			echo "Save didn't work\n";
 			return FALSE;
 		}
+		echo "Success - saved!\n";
 
 		if ( !is_int( $this->id )) {
 			$sql = 'select max( m_id ) as max from minutes';
-			$Max = my_getInfo( $G_DEBUG, $HDUP, $sql );
+			$Max = $this->mysql_api->get($sql);
 			$this->id = $Max[0]['max'];
 		}
+
+		// display success message
+		echo <<<EOHTML
+		<p>Saved!</p>
+		<p><a href="?id=minutes&num={$this->id}">{$this->notes}</a></p>
+EOHTML;
 
 		echo <<<EOHTML
 			<script type="text/javascript">

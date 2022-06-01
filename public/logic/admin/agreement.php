@@ -4,6 +4,8 @@
 	$TempDate = '';
 	$expired = 0;
 
+	$mysql_api = get_mysql_api();
+
 	# receiving a post of editing agreement, new or old
 	$Agrms = new Agreement();
 	if ( isset( $_POST['admin_post'] )) {
@@ -19,13 +21,14 @@
 			$pub = true;
 		}
 
+		$mysql_link = $mysql_api->getLink();
 		$Agrms->setContent(
-			mysql_real_escape_string( $_POST['title'] ), 
-			mysql_real_escape_string( $_POST['summary'] ), 
-			mysql_real_escape_string( $_POST['full'] ), 
-			mysql_real_escape_string( $_POST['background'] ), 
-			mysql_real_escape_string( $_POST['comments'] ), 
-			mysql_real_escape_string( $_POST['processnotes'] ), 
+			mysqli_real_escape_string($mysql_link, $_POST['title']), 
+			mysqli_real_escape_string($mysql_link, $_POST['summary']), 
+			mysqli_real_escape_string($mysql_link, $_POST['full']), 
+			mysqli_real_escape_string($mysql_link, $_POST['background']), 
+			mysqli_real_escape_string($mysql_link, $_POST['comments']), 
+			mysqli_real_escape_string($mysql_link, $_POST['processnotes']), 
 			intval( $_POST['cid'] ),
 			$TempDate, 
 			$expired,

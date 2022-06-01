@@ -19,7 +19,8 @@
 	}
 	else { $sql .= 'order by minutes.cid asc, minutes.date desc'; }
 
-	$All = my_getInfo( $G_DEBUG, $HDUP, $sql );
+	$mysql_api = get_mysql_api();
+	$All = $mysql_api->get($sql );
 
 	if ( !sizeof( $All ))
 	{ echo '<p class="highlight">No minutes found.</p>' . "\n"; }

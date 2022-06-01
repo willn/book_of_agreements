@@ -3,26 +3,20 @@
  * Database connection and interaction library
  */
 class MysqlApi {
-	var $host;
-	var $database;
-	var $user;
-	var $password;
+	private $host;
+	private $database;
+	private $user;
+	private $password;
 
-	var $link;
+	private $link;
 
 	/**
 	 * Construct a new connection object.
 	 *
 	 * @param[in] host string The hostname of the database server.
 	 */
-	function MysqlApi($host='localhost', $database, $user='nobody',
+	function __construct($host='localhost', $database, $user='nobody',
 		$password) {
-
-		if ( !extension_loaded( 'mysql' )) {
-			if ( !dl( 'mysql.so' )) {
-				exit( 'Cannot load mysql extension.' );
-			}
-		}
 
 		$this->host = $host;
 		$this->database = $database;
@@ -32,6 +26,10 @@ class MysqlApi {
 
 	function setLink($link) {
 		$this->link = $link;
+	}
+
+	function getLink() {
+		return $this->link;
 	}
 
 	/**
@@ -45,15 +43,14 @@ class MysqlApi {
 			return TRUE;
 		}
 
-		// XXX - deprecated, need to replace
-		$this->link = mysql_connect($this->host, $this->user, $this->password);
+		$this->link = mysqli_connect($this->host, $this->user, $this->password);
 		if (is_null($this->link)) {
 			error_log('unable to establish connection with mysql database');
 			return FALSE;
 		}
 
 		if (!is_null($this->database) && 
-			!mysql_select_db($this->database, $this->link)) { 
+			!mysqli_select_db($this->link, $this->database)) { 
 			error_log('unable to select mysql database');
 			return FALSE;
 		}
@@ -72,9 +69,9 @@ class MysqlApi {
 			return FALSE;
 		}
 
-		$result = mysql_query($query, $this->link);
+		$result = mysqli_query($this->link, $query);
 		if (!$result) {
-			$err = mysql_error();
+			$err = mysqli_error($this->link);
 			error_log("Could not get a result from the query, err: {$err}");
 			return FALSE;
 		}
@@ -98,7 +95,7 @@ class MysqlApi {
 			return FALSE;
 		}
 
-		while($info = mysql_fetch_array($result, MYSQL_ASSOC)) {
+		while($info = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
 			if ($do_stripslashes) {
 				$info = array_map('stripslashes', $info);
 			}

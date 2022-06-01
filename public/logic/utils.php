@@ -1,6 +1,22 @@
 <?php
 
 /**
+ * Get the MySQL API object
+ */
+function get_mysql_api() {
+	$mysql_api = NULL;
+
+	if (file_exists('config.php')) {
+		require_once('config.php');
+		require_once 'logic/mysql_api.php';
+		$mysql_api = new MysqlApi($HDUP['host'], $HDUP['database'],
+			$HDUP['user'], $HDUP['password']);
+	}
+
+	return $mysql_api;
+}
+
+/**
  * Clean up user-supplied input, replacing certain characters for others within
  * the first 128 ascii characters.
  *
@@ -83,6 +99,7 @@ function clean_html($str) {
 		'ù'=>'u',
 		'ú'=>'u',
 		'û'=>'u',
+		'ý'=>'y',
 		'ý'=>'y',
 		'þ'=>'b',
 		'ÿ'=>'y',

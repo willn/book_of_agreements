@@ -70,7 +70,8 @@ EOHTML;
 
 		$sql = "select minutes.*, committees.cmty from minutes, committees 
 			where minutes.cid=committees.cid $clause order by date desc";
-		$Info = my_getInfo( $G_DEBUG, $HDUP, $sql );
+		$mysql_api = get_mysql_api();
+		$Info = $mysql_api->get($sql );
 
 		if ( !count( $Info ))
 		{ echo '<p class="highlight">No minutes found</p>'."\n"; }
@@ -132,7 +133,8 @@ EOHTML;
 			"where agreements.cid=committees.cid and " . 
 			"agreements.expired = 0 $clause order by agreements.date desc";
 		if ( $max > 0 ) { $sql .= " limit $max"; }
-		$Info = my_getInfo( $G_DEBUG, $HDUP, $sql );
+		global $mysql_api;
+		$Info = $mysql_api->get($sql );
 
 		if ( !count( $Info ))
 		{ echo '<p class="highlight">No agreements found</p>'."\n"; }

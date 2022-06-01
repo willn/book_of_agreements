@@ -2,7 +2,7 @@
 
 $MainNav['home'] = 'Home';
 
-global $mysql_api;
+$mysql_api = get_mysql_api();
 
 $sql = 'select cid, cmty from committees where parent=cid or parent=0 order by parent';
 $CInfo = $mysql_api->get($sql, 'cid');

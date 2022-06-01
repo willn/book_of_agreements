@@ -123,7 +123,8 @@ EOSQL;
 
 	// search for agreements
 	if ('minutes' != $show_docs) {
-		$Info = my_getInfo( $G_DEBUG, $HDUP, $sql_a, '', 'id' );
+		$mysql_api = get_mysql_api();
+		$Info = $mysql_api->get($sql_a, 'id');
 		$ak = array_keys($Info);
 		foreach( array_keys($Info) as $id) {
 			$agr = new Agreement();
@@ -135,7 +136,8 @@ EOSQL;
 
 	if (('agreements' != $show_docs) && !is_null($show_docs)) {
 		// search for minutes
-		$Info = my_getInfo( $G_DEBUG, $HDUP, $sql_m, '', 'm_id' );
+		global $mysql_api;
+		$Info = $mysql_api->get($sql_m, 'm_id');
 		foreach( array_keys($Info) as $id) {
 			$Found[] = new Minutes( $id );
 		}

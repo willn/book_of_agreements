@@ -23,7 +23,7 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 		$month = date('n');
 		$day = date('j');
 		$now = time();
-		
+
 		return [
 			[
 				"[Ch-minutes] Common House Minutes Aug 14, 2018", 
@@ -183,7 +183,7 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 				[
 					'month' => 5,
 					'day' => 1,
-					'year' => (mktime(12, 0, 0, 5, 1) < $now) ? ($year - 1) : $year,
+					'year' => (mktime(12, 0, 0, 5, 1) > $now) ? ($year - 1) : $year,
 				]
 			],
 

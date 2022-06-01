@@ -1,7 +1,7 @@
 <?php
 
 /**
- * #!#
+ * A committee object
  */
 class Committee {
 	var $cid;

@@ -92,7 +92,8 @@ EOHTML;
 		{$conditions}
 		{$order}
 EOSQL;
-	$All = my_getInfo( $G_DEBUG, $HDUP, $sql );
+	$mysql_api = get_mysql_api();
+	$All = $mysql_api->get($sql );
 
 	if ( !sizeof( $All )) {
 		echo '<p class="highlight">No passed agreements found.</p>' . "\n";
