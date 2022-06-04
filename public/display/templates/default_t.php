@@ -13,8 +13,7 @@ width="400" height="72">
 		<input type="hidden" name="id" value="search">
 		<input type="search" id="search_input" maxlength="70" size="30" name="q" value="{$terms}">
 		<input type="submit" value="search">
-		&nbsp; <a href="?id=search">advanced search</a> &nbsp;
-		<a href="http://www.gocoho.org/wiki/index.php/BookofAgreements">request a feature or change</a>
+		&nbsp; <a href="?id=search">advanced search</a>
 	</form>
 	<div id="logout">
 		<img class="tango" src="display/images/tango/32x32/apps/internet-web-browser.png" alt="web browser icon">

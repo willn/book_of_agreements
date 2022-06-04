@@ -1,8 +1,11 @@
 <?php
 
 ini_set('error_log', getcwd() . '/error_log');
-define('BASE_URL', '')
+date_default_timezone_set('America/Detroit');
 
+define('BASE_URL', '');
+
+define('DOMAIN', '');
 define('AUDIT_CONTACT', '');
 define('FROM_ADDRESS', '');
 define('REPLYTO', '');

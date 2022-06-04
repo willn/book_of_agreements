@@ -10,7 +10,7 @@ require_once('committee.php');
  * Parent class to both Agreements and Minutes
  */
 abstract class BOADoc {
-	public $mysql;
+	public $mysql_api;
 	public $cmty;
 	public $id;
 
@@ -656,7 +656,9 @@ EOHTML;
 		$type = '';
 		$content = NULL;
 		if (( $update ) && ( is_numeric( $this->id ))) {
+			$this->updateRevision();
 			$type = 'updated';
+
 			$Info = array(
 				'title="' . clean_html( $this->title ) . '"',
 				'summary="' . clean_html( $this->summary ) . '"',
@@ -669,10 +671,9 @@ EOHTML;
 				'expired="' . intval( $this->expired ) . '"',
 				'world_public=' . (( $this->world_public ) ? 1 : 0 )
 			);
-			$this->updateRevision();
-			$condition = "where id=$this->id";
-			$success = my_update( $G_DEBUG, $HDUP, 'agreements', 
-				$Info, $condition );
+			$new_vals = implode(' , ', $Info);
+			$sql = "UPDATE agreements SET {$new_vals} WHERE id={$this->id}";
+			$success = $this->mysql_api->query($sql);
 
 			$sql = <<<EOSQL
 				SELECT agr_version_num from agreements_versions
@@ -703,7 +704,6 @@ EOSQL;
 			$sql = <<<EOSQL
 INSERT INTO agreements VALUES({$values});
 EOSQL;
-error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " SQL:$sql");
 			$success = $this->mysql_api->query($sql);
 
 			# grab the newly inserted document's ID number
@@ -840,16 +840,16 @@ EOHTML;
 			return FALSE;
 		}
 
-		$HDUP['table'] = 'agreements';
-		$success = my_delete( $G_DEBUG, $HDUP, 'id', $this->id );
+		$sql = "DELETE FROM agreements WHERE id={$this->id}";
+		$success = $this->mysql_api->query($sql);
 		if ( !$success ) {
 			echo '<div class="error">Error: Item was not deleted</div>' . "\n";
 			return FALSE;
 		}
 
 		// also delete any related previous versions
-		$HDUP['table'] = 'agreements_versions';
-		$success = my_delete( $G_DEBUG, $HDUP, 'agr_id', $this->id );
+		$sql = "DELETE FROM agreements_versions WHERE agr_id={$this->id}";
+		$success = $this->mysql_api->query($sql);
 		if ( !$success ) {
 			echo <<<EOHTML
 				<div class="error">Error: Prior versions were not deleted</div>
@@ -1261,9 +1261,9 @@ EOHTML;
 				'date="' . $this->Date->toString( ) . '"'
 			);
 
-			$condition = "where m_id=$this->id";
-			$success = my_update( $G_DEBUG, $HDUP, 'minutes', 
-				$Info, $condition );
+			$new_vals = implode(' , ', $Info);
+			$sql = "UPDATE minutes SET {$new_vals} WHERE m_id={$this->id}";
+			$success = $this->mysql_api->query($sql);
 		}
 		# otherwise, treat this as a new entry
 		else {
@@ -1333,8 +1333,8 @@ EOHTML;
 		}
 		else
 		{
-			$HDUP['table'] = 'minutes';
-			$success = my_delete( $G_DEBUG, $HDUP, 'm_id', $this->id );
+			$sql = "DELETE FROM minutes WHERE m_id={$this->id}";
+			$success = $this->mysql_api->query($sql);
 			if ( $success ) { echo "<p>Item deleted\n"; }
 			else
 			{ echo '<div class="error">Error: Item was not deleted</div>' . "\n"; }

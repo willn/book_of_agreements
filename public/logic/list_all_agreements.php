@@ -1,4 +1,6 @@
 <?php
+	require_once('logic/utils.php');
+
 	$pub = '';
 	$access_img = 'apps/system-users.png';
 	$h1_class = 'agrm';

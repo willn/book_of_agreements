@@ -2,8 +2,9 @@
 ini_set('display_errors', '0');
 header("Content-Security-Policy: script-src 'self'");
 header("Content-Security-Policy: script-src-elem 'self'");
-ini_set('error_log', getcwd() . '/error_log');
 session_start();
+
+require_once 'logic/mysql_api.php';
 
 $is_authenticated = FALSE;
 

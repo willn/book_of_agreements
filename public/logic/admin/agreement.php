@@ -1,4 +1,6 @@
 <?php
+	require_once('logic/utils.php');
+
 	$update_string = '';
 	$update = false;
 	$TempDate = '';

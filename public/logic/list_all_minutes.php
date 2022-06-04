@@ -19,6 +19,7 @@
 	}
 	else { $sql .= 'order by minutes.cid asc, minutes.date desc'; }
 
+	require_once('logic/utils.php');
 	$mysql_api = get_mysql_api();
 	$All = $mysql_api->get($sql );
 

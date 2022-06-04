@@ -1,19 +1,12 @@
 <?php
 
 /**
- * Get the MySQL API object
+ * Get the MySQL API
  */
 function get_mysql_api() {
-	$mysql_api = NULL;
-
-	if (file_exists('config.php')) {
-		require_once('config.php');
-		require_once 'logic/mysql_api.php';
-		$mysql_api = new MysqlApi($HDUP['host'], $HDUP['database'],
-			$HDUP['user'], $HDUP['password']);
-	}
-
-	return $mysql_api;
+	global $HDUP;
+	return new MysqlApi($HDUP['host'], $HDUP['database'],
+		$HDUP['user'], $HDUP['password']);
 }
 
 /**
@@ -99,7 +92,6 @@ function clean_html($str) {
 		'ù'=>'u',
 		'ú'=>'u',
 		'û'=>'u',
-		'ý'=>'y',
 		'ý'=>'y',
 		'þ'=>'b',
 		'ÿ'=>'y',

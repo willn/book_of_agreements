@@ -3,6 +3,13 @@
 	$G_DEBUG = array(0);
 
 	// if lacking config, punt!
+
+	/**
+	* If this file does not exist, then you'll need to make your own.
+	* cp config.php_default config.php
+	* Then modify this to store your database connectivity info, and any other
+	* customizations for your app.
+	*/
 	if (!file_exists('config.php')) {
 		echo "Lacking Config\n";
 		exit;
@@ -71,7 +78,7 @@
 	}
 	elseif ( $PUBLIC_USER ) {
 		# if this is a public user, then punt instead of 404
-		punt_public_user();
+		# punt_public_user();
 	}
 	else {
 		require_once('logic/pagevars/errors_404_v.php');

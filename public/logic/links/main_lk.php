@@ -2,6 +2,7 @@
 
 $MainNav['home'] = 'Home';
 
+require_once('logic/utils.php');
 $mysql_api = get_mysql_api();
 
 $sql = 'select cid, cmty from committees where parent=cid or parent=0 order by parent';

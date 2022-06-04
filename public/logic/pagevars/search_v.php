@@ -1,6 +1,7 @@
 <?php
 	$body = 'logic/search.php';
 
+	require_once('logic/utils.php');
 	require_once('logic/lib_boa.php');
 
 	$Cmty = new Committee( );
