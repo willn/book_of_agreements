@@ -15,20 +15,22 @@ class MysqlApi {
 	 *
 	 * @param[in] host string The hostname of the database server.
 	 */
-	function __construct($host='localhost', $database, $user='nobody',
+	public function __construct($host='localhost', $database, $user='nobody',
 		$password) {
 
 		$this->host = $host;
 		$this->database = $database;
 		$this->user = $user;
 		$this->password = $password;
+
+		$this->connect();
 	}
 
-	function setLink($link) {
+	public function setLink($link) {
 		$this->link = $link;
 	}
 
-	function getLink() {
+	public function getLink() {
 		return $this->link;
 	}
 
@@ -38,7 +40,7 @@ class MysqlApi {
 	 * @return boolean. If TRUE, then the connection either previously existed,
 	 *     or was established properly.
 	 */
-	function connect() {
+	public function connect() {
 		if (!is_null($this->link) && ($this->link !== FALSE)) {
 			return TRUE;
 		}
@@ -64,7 +66,7 @@ class MysqlApi {
 	 * @param[in] query string A SQL command to be executed.
 	 * @return mysql database connection resource.
 	 */
-	function query($query) {
+	public function query($query) {
 		if (is_null($this->link) && (!$this->connect())) {
 			return FALSE;
 		}
@@ -87,7 +89,7 @@ class MysqlApi {
 	 * @param[in] do_stripslashes boolean (default TRUE). If TRUE, then apply
 	 *     stripslashes to the returned output.
 	 */
-	function get($query, $primary_key=NULL, $do_stripslashes=TRUE) {
+	public function get($query, $primary_key=NULL, $do_stripslashes=TRUE) {
 		$found = array();
 
 		$result = $this->query($query);

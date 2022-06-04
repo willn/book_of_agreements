@@ -2,19 +2,6 @@
 	global $G_DEBUG;
 	$G_DEBUG = array(0);
 
-	// if lacking config, punt!
-
-	/**
-	* If this file does not exist, then you'll need to make your own.
-	* cp config.php_default config.php
-	* Then modify this to store your database connectivity info, and any other
-	* customizations for your app.
-	*/
-	if (!file_exists('config.php')) {
-		echo "Lacking Config\n";
-		exit;
-	}
-
 	$PUBLIC_USER = false;
 	if (!$is_authenticated) {
 		$PUBLIC_USER = true;

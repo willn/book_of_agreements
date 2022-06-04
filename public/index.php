@@ -2,6 +2,15 @@
 ini_set('display_errors', '0');
 header("Content-Security-Policy: script-src 'self'");
 header("Content-Security-Policy: script-src-elem 'self'");
+
+/**
+* If this file does not exist, then you'll need to make your own.
+* cp config.php_default config.php
+* Then modify this to store your database connectivity info, and any other
+* customizations for your app.
+*/
+require_once('config.php');
+
 session_start();
 
 require_once 'logic/mysql_api.php';
