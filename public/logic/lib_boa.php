@@ -548,12 +548,16 @@ EOSQL;
 	/**
 	 * If this agreement has previous versions, then display them.
 	 * @return string html to be displayed. If no previous versions, then
-	 *     return NULL.
+	 *     return empty string.
 	 */
 	public function displayPreviousVersions() {
+		if (!is_authenticated()) {
+			return '';
+		}
+
 		$this->loadPreviousVersions();
 		if (empty($this->previous_versions)) {
-			return NULL;
+			return '';
 		}
 
 		$out = '';

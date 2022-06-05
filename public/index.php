@@ -1,4 +1,5 @@
 <?php
+ini_set('error_log', getcwd() . '/error_log');
 ini_set('display_errors', '0');
 header("Content-Security-Policy: script-src 'self'");
 header("Content-Security-Policy: script-src-elem 'self'");
@@ -14,25 +15,32 @@ require_once('config.php');
 session_start();
 
 require_once 'logic/mysql_api.php';
-
-$is_authenticated = FALSE;
-
-// is the user logged in already?
-if ( isset( $_SESSION['logged_in'] ) && $_SESSION['logged_in'] == 1 ) {
-	$is_authenticated = TRUE;
-
-	// logout...?
-	if ( isset( $_GET['login'] ) && $_GET['login'] == 0 ) {
-		$is_authenticated = FALSE;
-		unset($_SERVER['PHP_AUTH_USER']); 
-		$_SESSION['logged_in'] = 0;
-	}
-}
-elseif ( isset( $_GET['login'] ) && $_GET['login'] == 1 ) {
-	$is_authenticated = attempt_login();	
-}
-
+$is_authenticated = is_authenticated();
 require_once( 'main.php' );
+
+/**
+ * Is this user currently authenticated?
+ */
+function is_authenticated() {
+	$is_authenticated = FALSE;
+
+	// is the user logged in already?
+	if ( isset( $_SESSION['logged_in'] ) && $_SESSION['logged_in'] == 1 ) {
+		$is_authenticated = TRUE;
+
+		// logout...?
+		if ( isset( $_GET['login'] ) && $_GET['login'] == 0 ) {
+			$is_authenticated = FALSE;
+			unset($_SERVER['PHP_AUTH_USER']); 
+			$_SESSION['logged_in'] = 0;
+		}
+	}
+	elseif ( isset( $_GET['login'] ) && $_GET['login'] == 1 ) {
+		$is_authenticated = attempt_login();	
+	}
+
+	return $is_authenticated;
+}
 
 /**
  * Attempt to login the user. Otherwise display the login form.

@@ -3,7 +3,7 @@
 	$G_DEBUG = array(0);
 
 	$PUBLIC_USER = false;
-	if (!$is_authenticated) {
+	if (!is_authenticated()) {
 		$PUBLIC_USER = true;
 	}
 
@@ -23,7 +23,6 @@
 	$sub_summary_length = 150;
 
 	#-------[ over-write defaults with page-specific variables ]---------
-	$title = 'Great Oak Book of Agreements';
 	#grab page id value
 	$id = 'home';
 	if ( isset( $_GET['id'] )) {
@@ -55,7 +54,7 @@
 	#-- get links array info
 	require_once( "logic/links/main_lk.php" );
 
-	if ( $PUBLIC_USER && $id != 'agreement' && $id != 'login' ) {
+	if ($PUBLIC_USER && ($id != 'login')) {
 		$id = 'agreement';
 	}
 
