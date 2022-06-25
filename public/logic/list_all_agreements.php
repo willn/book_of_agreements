@@ -33,7 +33,7 @@
 		to share with the public. We hope this may help other
 		communities, or educate prospective
 		members. Also, this web application software is <a
-		href="http://code.google.com/p/book-of-agreements/">available
+		href="https://github.com/willn/book_of_agreements">available
 		for download</a> under an open source license.
 		</p>
 		</div>
