@@ -55,10 +55,6 @@ EOHTML;
 
 	$show_link = '';
 	$conditions = '';
-	$order = '';
-	$pub_constrain = '';
-	$show_exp_msg = '';
-
 	if ( $show == 'expired' ) {
 		$conditions = 'and agreements.expired=1 ';
 		$show_exp_msg = '<p><a href="?id=agreement">Show active agreements</a></p>';
@@ -74,6 +70,7 @@ EOHTML;
 EOHTML;
 	}
 
+	$show_exp_msg = '';
 	if ( !$PUBLIC_USER ) {
 		echo $show_exp_msg;
 	}
@@ -82,13 +79,15 @@ EOHTML;
 		'order by committees.parent asc, agreements.cid asc' :
 		'order by agreements.date desc, agreements.id desc';
 
+	$pub_constrain = '';
 	if ( $PUBLIC_USER ) {
 		$pub_constrain = 'and agreements.world_public=1';
 	}
 
 	$sql = <<<EOSQL
 		select agreements.id, agreements.cid, agreements.title,
-			agreements.date, committees.cmty, committees.parent 
+			agreements.date, committees.cmty, committees.parent,
+			agreements.summary
 		from agreements, committees where committees.cid=agreements.cid
 		{$pub_constrain}
 		{$conditions}
@@ -106,9 +105,10 @@ EOSQL;
 				<table cellpadding="7" cellspacing="0" border="0"
 				summary="table containing list of public agreements">
 				<tr>
-					<td><a href="?id=agreement&amp;sort=committee{$show_link}">Committee</a></td>
-					<td><a href="?id=agreement&amp;sort=date{$show_link}">Date</a></td>
-					<td><a href="?id=agreement&amp;sort=agreement{$show_link}">Agreement ID</a></td>
+					<th><a href="?id=agreement&amp;sort=committee{$show_link}">Committee</a></th>
+					<th><a href="?id=agreement&amp;sort=date{$show_link}">Date</a></th>
+					<th><a href="?id=agreement&amp;sort=agreement{$show_link}">sort by Agreement ID</a></th>
+					<th>Summary</th>
 				</tr>
 EOHTML;
 				
@@ -117,6 +117,7 @@ EOHTML;
 				$Cmty->setId($Item['cid']);
 				$name = $Cmty->getName();
 				$title = stripslashes( $Item['title'] );
+				$summary = stripslashes( $Item['summary'] );
 				$bgcolor = ($even_row) ? ' bgcolor="#eeeeee"' : '';
 
 				echo <<<EOHTML
@@ -124,6 +125,7 @@ EOHTML;
 						<td valign="top">{$name}</td>
 						<td valign="top" class="nowrap">{$Item['date']}</td>
 						<td valign="top"><a href="?id=agreement&amp;num={$Item['id']}">{$title}</a></td>
+						<td valign="top">{$summary}</td>
 					</tr>
 EOHTML;
 				$even_row = !$even_row;

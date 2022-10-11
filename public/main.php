@@ -1,7 +1,4 @@
 <?php
-	global $G_DEBUG;
-	$G_DEBUG = array(0);
-
 	$PUBLIC_USER = false;
 	if (!is_authenticated()) {
 		$PUBLIC_USER = true;

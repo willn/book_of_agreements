@@ -127,7 +127,6 @@ class Agreement extends BOADoc
 		}
 
 		global $HDUP;
-		global $G_DEBUG;
 		$entryDate = new MyDate( );
 
 		$pub_constraint = '';
@@ -640,7 +639,6 @@ EOHTML;
 	 */
 	public function save($update=false) {
 		global $HDUP;
-		global $G_DEBUG;
 		$success = 0;
 		if ( $this->id == 0 ) {
 			$this->id = '';
@@ -815,7 +813,6 @@ EOSQL;
 	public function delete( ) {
 		global $Cmtys;
 		global $HDUP;
-		global $G_DEBUG;
 
 		if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
 			$this->setId($_GET['delete']);
@@ -1103,7 +1100,6 @@ class Minutes extends BOADoc {
 	public function loadById( $id='' )
 	{
 		global $HDUP;
-		global $G_DEBUG;
 		$entryDate = new MyDate( );
 
 		$min_id = $id;
@@ -1241,7 +1237,6 @@ EOHTML;
 	public function save( $update=false )
 	{
 		global $HDUP;
-		global $G_DEBUG;
 		$success = 0;
 		if ( $this->id == 0 ) {
 			$this->id = '';
@@ -1317,7 +1312,6 @@ EOHTML;
 	public function delete( $confirm )
 	{
 		global $HDUP;
-		global $G_DEBUG;
 
 		if ( !$confirm )
 		{

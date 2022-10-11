@@ -30,6 +30,10 @@ h1 img {
 	margin-right: 7px;
 }
 
+th {
+	text-align: left;
+}
+
 img.titlephoto {
 	margin-left: 10px;
 }
