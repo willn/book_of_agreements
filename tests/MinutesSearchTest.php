@@ -148,7 +148,8 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 				[
 					'month' => 6,
 					'day' => 11,
-					'year' => (mktime(12, 0, 0, 6, 11) < $now) ? ($year - 1) : $year,
+					# 'year' => (mktime(12, 0, 0, 6, 11) < $now) ? ($year - 1) : $year,
+					'year' => $year,
 				]
 			],
 			[
@@ -156,7 +157,8 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 				[
 					'month' => 7,
 					'day' => 17,
-					'year' => (mktime(12, 0, 0, 7, 17) < $now) ? ($year - 1) : $year,
+					#'year' => (mktime(12, 0, 0, 7, 17) < $now) ? ($year - 1) : $year,
+					'year' => $year,
 				]
 			],
 
@@ -165,7 +167,8 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 				[
 					'month' => 8,
 					'day' => 14,
-					'year' => (mktime(12, 0, 0, 8, 14) < $now) ? ($year - 1) : $year,
+					#'year' => (mktime(12, 0, 0, 8, 14) < $now) ? ($year - 1) : $year,
+					'year' => $year,
 				]
 			],
 
@@ -174,7 +177,8 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 				[
 					'month' => 4,
 					'day' => 2,
-					'year' => (mktime(12, 0, 0, 8, 14) < $now) ? ($year - 1) : $year,
+					#'year' => (mktime(12, 0, 0, 8, 14) < $now) ? ($year - 1) : $year,
+					'year' => $year,
 				]
 			],
 
@@ -183,7 +187,8 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 				[
 					'month' => 5,
 					'day' => 1,
-					'year' => (mktime(12, 0, 0, 5, 1) > $now) ? ($year - 1) : $year,
+					#'year' => (mktime(12, 0, 0, 5, 1) > $now) ? ($year - 1) : $year,
+					'year' => $year,
 				]
 			],
 
@@ -192,7 +197,8 @@ class MinutesSearchTest extends PHPUnit_Framework_TestCase {
 				[
 					'month' => 7,
 					'day' => 11,
-					'year' => (mktime(12, 0, 0, 7, 11) < $now) ? ($year - 1) : $year,
+					#'year' => (mktime(12, 0, 0, 7, 11) < $now) ? ($year - 1) : $year,
+					'year' => $year,
 				]
 			],
 		];
