@@ -1,4 +1,4 @@
 <?php
-	$title .= "Logout";
+	$title = "Logout";
 	$body = "logic/logout.php";
 ?>

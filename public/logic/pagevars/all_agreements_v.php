@@ -12,5 +12,6 @@
 		}
 	}
 
+	$title = 'All Agreements';
 	$Cmty = new Committee( );
 ?>

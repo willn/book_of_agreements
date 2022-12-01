@@ -21,5 +21,7 @@
 			$only = ( $_GET['only'] == 'agreements' ) ? 'agreements' : '';
 			$only = ( $_GET['only'] == 'minutes' ) ? 'minutes' : $only;
 		}
+
+		$title = 'Listing by Committee';
 	}
 ?>

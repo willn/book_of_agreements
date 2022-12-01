@@ -4,5 +4,6 @@
 	elseif (( $_GET['sort'] == 'date' ) || ( $_GET['sort'] == 'committee' ))
 	{ $sort = $_GET['sort']; }
 
+	$title = 'All Minutes';
 	$Cmty = new Committee( );
 ?>

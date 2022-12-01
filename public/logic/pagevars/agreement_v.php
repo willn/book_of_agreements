@@ -9,13 +9,13 @@
 			}
 		}
 		require_once( 'logic/pagevars/all_agreements_v.php' );
+		$title = 'All Agreements';
 	}
 	else
 	{
 		$Date = new MyDate( ); 
 		$Agrms = new Agreement();
-		$title .= ": {$Agrms->title} [Agreement]";
-
+		$title = "Agreement: {$Agrms->title} [Agreement]";
 		$body = 'logic/agreement.php';
 	}
 ?>

@@ -1,4 +1,6 @@
 <?php
+	$title = 'Admin';
+
 	$Types = array( 'minutes', 'agreement' );
 	$num = 0;
 	$update = false;

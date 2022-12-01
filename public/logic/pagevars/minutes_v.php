@@ -7,7 +7,7 @@
 		$Date = new MyDate( ); 
 		$Mins = new Minutes($num);
 		$Cmty = new Committee($Mins->cid);
-		$title .= ': ' . $Cmty->getName() . ' ' . 
+		$title = 'Minutes: ' . $Cmty->getName() . ' ' . 
 			$Mins->Date->toString( ) . ' [Minutes]';
 
 		$body = 'logic/minutes.php';

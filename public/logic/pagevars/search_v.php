@@ -1,5 +1,6 @@
 <?php
 	$body = 'logic/search.php';
+	$title = 'Search';
 
 	require_once('logic/utils.php');
 	require_once('logic/lib_boa.php');
