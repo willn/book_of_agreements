@@ -17,6 +17,7 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
 			['x', 'x'],
 			['`', "'"],
 			[$long_dash, '-'],
+			[ 'the community to\nconsider.\n\n\n2', 'the community to\nconsider.\n\n\n2' ],
 		];
 	}
 
@@ -42,6 +43,13 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
 			['<b>bold</b>', FALSE, '&lt;b&gt;bold&lt;/b&gt;'],
 			["new\nline", FALSE, "new<br>\nline"],
 			[$example_file, FALSE, $example_file_expected],
+			['the community to\nconsider.\n\n\n2', TRUE, "the community to\nconsider.\n\n\n2" ],
+			['the community to\nconsider.\n\n\n2', FALSE, "the community to<br>\nconsider.<br>\n<br>\n<br>\n2" ],
+			[
+				'* Past-due bills policy\r\n* Seed money repayment plan\r\n* Head Cook receipts deadline',
+				TRUE,
+				"* Past-due bills policy\n* Seed money repayment plan\n* Head Cook receipts deadline",
+			],
 		];
 	}
 

@@ -148,7 +148,7 @@ FROM [table_name] WHERE ( MATCH(title,text) AGAINST ('+term +term2' IN BOOLEAN
 MODE) ) HAVING relevance > 0 ORDER BY relevance DESC;
 */
 
-		$data = $this->mysql_api->get($sql . $pub_constraint);
+		$data = $this->mysql_api->get($sql . $pub_constraint, NULL, FALSE);
 		if ( empty( $data )) {
 			if ( $PUBLIC_USER ) {
 				if (attempt_login()) {
@@ -1107,7 +1107,7 @@ class Minutes extends BOADoc {
 
 		$sql = 'select committees.cmty, minutes.* from minutes, '.
 			"committees where m_id=$min_id  and committees.cid=minutes.cid";
-		$Min = $this->mysql_api->get($sql);
+		$Min = $this->mysql_api->get($sql, NULL, FALSE);
 
 		if ( empty( $Min )) {
 			return;
@@ -1127,7 +1127,7 @@ class Minutes extends BOADoc {
 
 		$notes = format_html( $this->notes );
 		$agenda = format_html( $this->agenda );
-		$content = format_html( $this->content );
+		$content = format_html( $this->content, FALSE);
 
 		switch( $type )
 		{
@@ -1201,7 +1201,7 @@ EOHTML;
 				if ( !empty( $agenda ))
 				{ echo "<h3>Agenda:</h3>\n$agenda\n"; }
 				if ( !empty( $content ))
-				{ echo "<h3>Minutes:</h3>\n$content\n"; }
+				{ echo "<h3>Minutes:</h3>\n{$content}\n"; }
 
 				echo "</div>\n</div>\n\n";
 				break;
