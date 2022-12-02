@@ -58,6 +58,7 @@ function attempt_login() {
 	// check the password
 	if ($auth_users[$_POST['boa_username']] == sha1( $_POST['boa_password'] )) {
 		$_SESSION['logged_in'] = 1;
+		$_SESSION['boa_username'] = $_POST['boa_username'];
 		$PUBLIC_USER = FALSE;
 		return TRUE;
 	}
