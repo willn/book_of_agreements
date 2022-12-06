@@ -51,7 +51,7 @@
 	#-- get links array info
 	require_once( "logic/links/main_lk.php" );
 
-	if ($PUBLIC_USER && ($id != 'login')) {
+	if ($PUBLIC_USER && (($id != 'login') && ($id != 'logout'))) {
 		$id = 'agreement';
 	}
 

@@ -1,5 +1,4 @@
 <?php
-ini_set('error_log', getcwd() . '/error_log');
 ini_set('display_errors', '0');
 header("Content-Security-Policy: script-src 'self'");
 header("Content-Security-Policy: script-src-elem 'self'");
