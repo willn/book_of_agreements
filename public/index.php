@@ -45,7 +45,6 @@ function is_authenticated() {
  * Attempt to login the user. Otherwise display the login form.
  */
 function attempt_login() {
-
 	$auth_users = get_authorized_users();
 	global $PUBLIC_USER;
 
@@ -55,7 +54,7 @@ function attempt_login() {
 	}
 
 	// check the password
-	if ($auth_users[$_POST['boa_username']] == sha1( $_POST['boa_password'] )) {
+	if ($auth_users[$_POST['boa_username']] == hash('sha256', $_POST['boa_password'])) {
 		$_SESSION['logged_in'] = 1;
 		$_SESSION['boa_username'] = $_POST['boa_username'];
 		$PUBLIC_USER = FALSE;

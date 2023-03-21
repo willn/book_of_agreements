@@ -5,7 +5,7 @@
 	elseif ( !isset( $_SESSION ) || 
 		$_SESSION['boa-admin-passwd'] !== $admin_string ) { 
 		if ( isset( $_POST['pw'] )) {
-			$_SESSION['boa-admin-passwd'] = sha1( $_POST['pw'] );
+			$_SESSION['boa-admin-passwd'] = hash('sha256', $_POST['pw']);
 		}
 
 		if ( $_SESSION['boa-admin-passwd'] != $admin_string ) { 

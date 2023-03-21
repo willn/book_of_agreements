@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# push all "public" files in the product to production
+
 cd public/
 FILES=`git ls-tree -r master --name-only`
 
