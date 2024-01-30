@@ -2,12 +2,8 @@
 
 # push all "public" files in the product to production
 
-cd public/
-FILES=`git ls-tree -r master --name-only`
+rsync -e 'ssh -p 1022' -avz --exclude '*.swp' public/ gocoho@gocoho.org:/home/gocoho/public_html/boa/
 
-for FILE in $FILES; do
-	rsync -e 'ssh -p 1022' -avz $FILE gocoho@gocoho.org:/home/gocoho/public_html/boa/$FILE
-done
-
-cd ..
+#reset permissions
+ssh -i ~/.ssh/id_dsa -p 1022 gocoho@gocoho.org 'cd ~/public_html/boa/ && ~/bin/fix_web_perms.sh';
 
