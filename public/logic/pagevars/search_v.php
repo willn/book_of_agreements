@@ -7,8 +7,6 @@
 
 	$Cmty = new Committee( );
 	$Info = array( );
-	$sql_a = '';
-	$sql_m = '';
 	$Found = array( );
 	$Ignored = array( );
 	$dropped = '';
@@ -84,35 +82,17 @@
 		$min_sql_clauses = implode(' and ', $SQL_Min_Clauses);
 	}
 
-	if ('' != $ft_against) {
-		if ('' != $agr_sql_clauses) {
-			// prepend "and"
-			$agr_sql_clauses = 'and ' . $agr_sql_clauses;
-		}
-
-		if ('' != $min_sql_clauses) {
-			// prepend "and"
-			$min_sql_clauses = 'and ' . $min_sql_clauses;
-		}
-
-		$ft_match_agr = 'match( title, summary, full, background, comments, processnotes )';
-		$sql_a = <<<EOSQL
-			SELECT id, {$ft_match_agr} {$ft_against} as score from
-				agreements where {$ft_match_agr} {$ft_against}
-				{$agr_sql_clauses} order by score desc
-EOSQL;
-
-		$ft_match_min = 'match( notes, agenda, content )';
-		$sql_m = <<<EOSQL
-			select m_id, {$ft_match_min} {$ft_against} as score from
-				minutes where {$ft_match_min} {$ft_against}
-				{$min_sql_clauses} order by score desc
-EOSQL;
+	if ($agr_sql_clauses != '') {
+		// prepend "and"
+		$agr_sql_clauses = 'and ' . $agr_sql_clauses;
 	}
-	else {
-		$sql_a = "select id from agreements where {$agr_sql_clauses} order by date asc";
-		$sql_m = "select m_id from minutes where {$min_sql_clauses} order by date asc";
+
+	if ($min_sql_clauses != '') {
+		// prepend "and"
+		$min_sql_clauses = 'and ' . $min_sql_clauses;
 	}
+
+	$mysql_api = get_mysql_api();
 
 	/* #!# XXX stuff to get better:
 		- refine search results, meaning don't look for union of words,
@@ -122,26 +102,43 @@ EOSQL;
 		  done)
 	*/
 
+	$ft_match_agr = 'match( title, summary, full, background, comments, processnotes )';
+	$sql_a = <<<EOSQL
+		SELECT id, {$ft_match_agr} {$ft_against} AS score,
+				committees.cmty,
+				agreements.*
+			FROM agreements, committees
+			WHERE ({$ft_match_agr} {$ft_against} {$agr_sql_clauses}) AND
+				committees.cid=agreements.cid
+			ORDER BY score DESC
+EOSQL;
 
 	// search for agreements
-	if ('minutes' != $show_docs) {
-		$mysql_api = get_mysql_api();
+	if ($show_docs != 'minutes') {
 		$Info = $mysql_api->get($sql_a, 'id');
-		$ak = array_keys($Info);
-		foreach( array_keys($Info) as $id) {
+		foreach($Info as $row) {
 			$agr = new Agreement();
-			$agr->setId($id);
-			$agr->loadById();
+			$agr->setId($row['id']);
+			$agr->setContent($row['title'], $row['summary'], $row['full'], $row['background'],
+				$row['comments'], $row['processnotes'], $row['cid'], $row['date'],
+				$row['expired'], $row['world_public']);
 			$Found[] = $agr;
 		}
 	}
 
-	if (('agreements' != $show_docs) && !is_null($show_docs)) {
+	$ft_match_min = 'match( notes, agenda, content )';
+	$sql_m = <<<EOSQL
+		select *, {$ft_match_min} {$ft_against} as score from
+			minutes where {$ft_match_min} {$ft_against}
+			{$min_sql_clauses} order by score desc
+EOSQL;
+
+	if (($show_docs != 'agreements') && !is_null($show_docs)) {
 		// search for minutes
-		global $mysql_api;
 		$Info = $mysql_api->get($sql_m, 'm_id');
-		foreach( array_keys($Info) as $id) {
-			$Found[] = new Minutes( $id );
+		foreach($Info as $row) {
+			$Found[] = new Minutes($row['id'], $row['notes'], $row['agenda'],
+				$row['content'], $row['cid'], $row['date']);
 		}
 	}
 

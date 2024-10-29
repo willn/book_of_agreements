@@ -37,16 +37,17 @@ class MysqlApi {
 	/**
 	 * Establish a connection to a mysql database
 	 *
-	 * @return boolean. If TRUE, then the connection either previously existed,
-	 *     or was established properly.
+	 * @return boolean. If not FALSE, then the connection either
+	 *     previously existed, or was established properly.
 	 */
 	public function connect() {
-		if (!is_null($this->link) && ($this->link !== FALSE)) {
+		if ($this->link && ($this->link !== FALSE)) {
 			return TRUE;
 		}
 
+		mysqli_report(MYSQLI_REPORT_ERROR);
 		$this->link = mysqli_connect($this->host, $this->user, $this->password);
-		if (is_null($this->link)) {
+		if (!$this->link) {
 			error_log('unable to establish connection with mysql database');
 			return FALSE;
 		}
@@ -63,15 +64,15 @@ class MysqlApi {
 	/**
 	 * Query the database.
 	 *
-	 * @param[in] query string A SQL command to be executed.
+	 * @param[in] sql string A SQL command to be executed.
 	 * @return mysql database connection resource.
 	 */
-	public function query($query) {
-		if (is_null($this->link) && (!$this->connect())) {
+	public function query($sql) {
+		if (!($this->link) && (!$this->connect())) {
 			return FALSE;
 		}
 
-		$result = mysqli_query($this->link, $query);
+		$result = mysqli_query($this->link, $sql);
 		if (!$result) {
 			$err = mysqli_error($this->link);
 			error_log("Could not get a result from the query, err: {$err}");
@@ -83,16 +84,16 @@ class MysqlApi {
 	/**
 	 * Retrieve data from the database, return an associative array
 	 *
-	 * @param[in] query string A SQL command to be executed.
+	 * @param[in] sql string A SQL command to be executed.
 	 * @param[in] primary_key string (optional, defaults to NULL). If supplied,
 	 *     then the results should be indexed by the value found in this column.
 	 * @param[in] do_stripslashes boolean (default TRUE). If TRUE, then apply
 	 *     stripslashes to the returned output.
 	 */
-	public function get($query, $primary_key=NULL, $do_stripslashes=TRUE) {
+	public function get($sql, $primary_key=NULL, $do_stripslashes=TRUE) {
 		$found = array();
 
-		$result = $this->query($query);
+		$result = $this->query($sql);
 		if (is_null($result) || ($result === FALSE)) {
 			return FALSE;
 		}

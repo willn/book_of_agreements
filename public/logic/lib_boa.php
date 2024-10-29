@@ -15,8 +15,6 @@ abstract class BOADoc {
 	public $id;
 
 	public function __construct() {
-		$this->mysql_api = get_mysql_api();
-
 		$this->cmty = new Committee();
 	}
 
@@ -27,6 +25,14 @@ abstract class BOADoc {
 
 	public function getId() {
 		return $this->id;
+	}
+
+	public function init_mysql_api() {
+		if (!is_null($this->mysql_api)) {
+			return;
+		}
+
+		$this->mysql_api = get_mysql_api();
 	}
 }
 
@@ -67,7 +73,7 @@ class Agreement extends BOADoc
 	}
 
 	/**
-	 * Process input from the POST.
+	 * Process agreement input from the POST.
 	 */
 	public function processRequest() {
 		if (isset($_REQUEST['num'])) {
@@ -80,44 +86,52 @@ class Agreement extends BOADoc
 		}
 
 		if (isset($_REQUEST['diff_comments'])) {
+			$this->init_mysql_api();
 			$this->diff_comments = mysqli_real_escape_string(
 				$this->mysql_api->getLink(), $_REQUEST['diff_comments']);
 		}
 	}
 
-	public function setContent($t='', $s='', $f='', $b='', $c='', 
-			$p='', $c_id='', $D='', $x='', $wp=false ) {
-		$this->title = $t;
-		$this->summary = $s;
+	/**
+	 * Set the content of this agreement entry directly.
+	 */
+	public function setContent($title='', $summary='', $full='',
+		$background='', $comments='', $processnotes='',
+		$committee_id='', $date_obj='', $expired='', $is_public=false ) {
 
-		$f = str_replace('\r\n', "\n", $f);
-		$f = str_replace('\n', "\n", $f);
-		$f = str_replace('\r', "\n", $f);
-		$this->full = $f;
+		$this->title = $title;
+		$this->summary = $summary;
 
-		$this->background = $b;
-		$this->comments = $c;
-		$this->processnotes = $p;
-		$this->cid = $c_id;
-		$this->expired = $x;
-		$this->world_public = $wp;
+		$full = str_replace('\r\n', "\n", $full);
+		$full = str_replace('\n', "\n", $full);
+		$full = str_replace('\r', "\n", $full);
+		$this->full = $full;
 
-		if ( !is_object( $D )) {
+		$this->background = $background;
+		$this->comments = $comments;
+		$this->processnotes = $processnotes;
+		$this->cid = $committee_id;
+		$this->expired = $expired;
+		$this->world_public = $is_public;
+
+		if ( !is_object( $date_obj )) {
 			$this->Date = new MyDate( );
-			if (is_string($D)) {
-				$this->Date->setDate($D);
+			if (is_string($date_obj)) {
+				$this->Date->setDate($date_obj);
 			}
 		}
 		else {
-			$this->Date = $D;
+			$this->Date = $date_obj;
 		}
 
-		if ($c_id != '') {
-			$this->cmty->setId($c_id);
+		if ($committee_id != '') {
+			$this->cmty->setId($committee_id);
 		}
 	}
 
-	# agreement
+	/**
+	 * Load an Agreement entry from the database by ID.
+	 */
 	public function loadById( ) {
 		global $PUBLIC_USER;
 
@@ -148,6 +162,7 @@ FROM [table_name] WHERE ( MATCH(title,text) AGAINST ('+term +term2' IN BOOLEAN
 MODE) ) HAVING relevance > 0 ORDER BY relevance DESC;
 */
 
+		$this->init_mysql_api();
 		$data = $this->mysql_api->get($sql . $pub_constraint, NULL, FALSE);
 		if ( empty( $data )) {
 			if ( $PUBLIC_USER ) {
@@ -160,12 +175,13 @@ MODE) ) HAVING relevance > 0 ORDER BY relevance DESC;
 				}
 			}
 		}
-		$data = array_pop($data);
 
 		# if still empty... then punt
 		if ( empty( $data )) {
 			return FALSE;
 		}
+
+		$data = array_pop($data);
 
 		$entryDate->setDate( $data['date'] );
 		$this->setContent(
@@ -503,6 +519,7 @@ SELECT m_id, date, notes
 	ORDER BY date asc;
 EOSQL;
 
+		$this->init_mysql_api();
 		$data = $this->mysql_api->get($sql);
 		$out = '';
 		foreach($data as $m) {
@@ -541,6 +558,7 @@ EOHTML;
 				WHERE agr_id={$this->id}
 				ORDER BY agr_version_num desc;
 EOSQL;
+		$this->init_mysql_api();
 		$this->previous_versions = $this->mysql_api->get($sql);
 	}
 
@@ -655,6 +673,7 @@ EOHTML;
 			return FALSE;
 		}
 
+		$this->init_mysql_api();
 		$type = '';
 		$content = NULL;
 		if (( $update ) && ( is_numeric( $this->id ))) {
@@ -794,6 +813,8 @@ EOHTML;
 				WHERE agr_id={$this->id}
 					ORDER BY agr_version_num DESC limit 1;
 EOSQL;
+
+		$this->init_mysql_api();
 		$prev_sub_id_info = $this->mysql_api->get($sql, 'agr_version_num');
 		$cur_sub_id = empty($prev_sub_id_info) ? 1 :
 			array_shift(array_keys($prev_sub_id_info)) + 1;
@@ -842,6 +863,7 @@ EOHTML;
 		}
 
 		$sql = "DELETE FROM agreements WHERE id={$this->id}";
+		$this->init_mysql_api();
 		$success = $this->mysql_api->query($sql);
 		if ( !$success ) {
 			echo '<div class="error">Error: Item was not deleted</div>' . "\n";
@@ -959,6 +981,7 @@ EOHTML;
 			SELECT * from agreements_versions where agr_id={$this->id}
 				AND agr_version_num={$version}
 EOSQL;
+		$this->init_mysql_api();
 		$data = $this->mysql_api->get($sql);
 		$a = array_pop($data);
 
@@ -1073,30 +1096,27 @@ class Minutes extends BOADoc {
 	public $found_agenda = false;
 
 	# minutes
-	public function __construct( $m='', $n='', $a='', $c='', $c_id='', $D='' )
-	{
+	public function __construct($m_id='', $notes='', $agenda='',
+		$content='', $cid='', $date='' ) {
+
 		parent::__construct();
 
-		$this->id = $m;
-		$this->notes = clean_html($n);
-		$this->agenda = clean_html($a);
-		$this->content = clean_html($c);
+		$this->id = $m_id;
+		$this->notes = clean_html($notes);
+		$this->agenda = clean_html($agenda);
+		$this->content = clean_html($content);
+		$this->cid = $cid;
+		$this->cmty->setId($cid);
 
-		$this->cid = $c_id;
-		$this->cmty->setId($c_id);
-
-		if ( empty( $D )) { $this->Date = new MyDate( ); }
-		else { $this->Date = $D; }
-
-		# if potentially valid id num
-		if ( intval( $this->id ) > 0 ) {
-			# check to see if the required entries are valid
-			if ( empty( $this->agenda ) && empty( $this->content ))
-			{ $this->loadById( $this->id ); }
+		$this->Date = new MyDate( );
+		if (!empty($date)) {
+			$this->Date->setDate($date);
 		}
 	}
 
-	# minutes
+	/**
+	 * Load a Minutes instance by ID.
+	 */
 	public function loadById( $id='' )
 	{
 		global $HDUP;
@@ -1107,6 +1127,7 @@ class Minutes extends BOADoc {
 
 		$sql = 'select committees.cmty, minutes.* from minutes, '.
 			"committees where m_id=$min_id  and committees.cid=minutes.cid";
+		$this->init_mysql_api();
 		$Min = $this->mysql_api->get($sql, NULL, FALSE);
 
 		if ( empty( $Min )) {
@@ -1118,11 +1139,13 @@ class Minutes extends BOADoc {
 			$Min[0]['agenda'], $Min[0]['content'], $Min[0]['cid'], $entryDate );
 	}
 
-	# minutes
+	/**
+	 * Display a Minutes instance.
+	 */
 	public function display( $type='document' )
 	{
 		global $sub_summary_length;
-		$admin_info = $this->adminActions( );
+		$admin_info = $this->displayAdminActions( );
 		$short = '';
 
 		$notes = format_html( $this->notes );
@@ -1210,32 +1233,35 @@ EOHTML;
 		return 1;
 	}
 
-	# minutes
-	public function adminActions( )
+	/**
+	 * Display the links for and admin user per each minutes document.
+	 */
+	public function displayAdminActions( )
 	{
 		$link = '';
-		if ( isset( $_SESSION['admin'] ) && ( $_SESSION['admin'] ))
-		{
-			$link = <<<EOHTML
-				<div class="actions">
-					<a href="?id=admin&amp;doctype=minutes&amp;num={$this->id}">
-						<img class="tango" src="display/images/tango/32x32/apps/accessories-text-editor.png" alt="edit">
-						edit
-					</a>
-					&nbsp;&nbsp;
-					<a href="?id=admin&amp;doctype=minutes&amp;delete={$this->id}">
-						<img class="tango" src="display/images/tango/32x32/actions/edit-delete.png" alt="delete">
-						delete
-						</a>
-				</div>
-EOHTML;
+		if (!isset( $_SESSION['admin'] ) || (!$_SESSION['admin'] )) {
+			return '';
 		}
-		return $link;
+
+		return <<<EOHTML
+			<div class="actions">
+				<a href="?id=admin&amp;doctype=minutes&amp;num={$this->id}">
+					<img class="tango" src="display/images/tango/32x32/apps/accessories-text-editor.png" alt="edit">
+					edit
+				</a>
+				&nbsp;&nbsp;
+				<a href="?id=admin&amp;doctype=minutes&amp;delete={$this->id}">
+					<img class="tango" src="display/images/tango/32x32/actions/edit-delete.png" alt="delete">
+					delete
+					</a>
+			</div>
+EOHTML;
 	}
 
-	# minutes
-	public function save( $update=false )
-	{
+	/**
+	 * Save a minutes entry.
+	 */
+	public function save( $update=false ) {
 		global $HDUP;
 		$success = 0;
 		if ( $this->id == 0 ) {
@@ -1251,6 +1277,7 @@ EOHTML;
 			return FALSE;
 		}
 
+		$this->init_mysql_api();
 		# if an update then keep the id
 		if (( $update ) && ( is_int( $this->id ))) {
 			$Info = array( 'notes="' . $this->notes . '"',
@@ -1308,7 +1335,9 @@ EOHTML;
 		return TRUE;
 	}
 
-	# minutes
+	/**
+	 * Delete a minutes entry.
+	 */
 	public function delete( $confirm )
 	{
 		global $HDUP;
@@ -1332,6 +1361,7 @@ EOHTML;
 		else
 		{
 			$sql = "DELETE FROM minutes WHERE m_id={$this->id}";
+			$this->init_mysql_api();
 			$success = $this->mysql_api->query($sql);
 			if ( $success ) { echo "<p>Item deleted\n"; }
 			else
