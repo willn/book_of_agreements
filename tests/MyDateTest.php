@@ -1,13 +1,15 @@
 <?php
+use PHPUnit\Framework\TestCase;
+
 require_once '../public/constants.php';
 require_once '../public/logic/mydate.php';
 
-class MyDateTest extends PHPUnit_Framework_TestCase {
+class MyDateTest extends TestCase {
 	const DEFAULTDATE = '1977-05-25';
 
 	private $date;
 
-	public function setUp() {
+	public function setUp() : void {
 		$this->date = new MyDate(1977, 5, 25, 'star wars');
 	}
 

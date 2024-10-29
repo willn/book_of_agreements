@@ -1,10 +1,11 @@
 <?php
+use PHPUnit\Framework\TestCase;
+
 set_include_path('../' . PATH_SEPARATOR . '../public/');
 require_once '../public/logic/utils.php';
 require_once '../scripts/search_includes.php';
 
-
-class MinutesSearchTest extends PHPUnit_Framework_TestCase {
+class MinutesSearchTest extends TestCase {
 	/**
 	 * @dataProvider provide_get_date_parts
 	 */

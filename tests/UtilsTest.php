@@ -1,7 +1,9 @@
 <?php
+use PHPUnit\Framework\TestCase;
+
 require_once '../public/logic/utils.php';
 
-class UtilsTest extends PHPUnit_Framework_TestCase {
+class UtilsTest extends TestCase {
 	/**
 	 * @dataProvider get_clean_html
 	 */
