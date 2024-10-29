@@ -476,7 +476,7 @@ EOHTML;
 				echo <<<EOHTML
 					<div class="agreement">
 						<div id="print_version_link">
-							<a href="#" onclick="window.print();">
+							<a href="#" id="print_document">
 								<img class="tango" alt="print"
 									src="display/images/tango/32x32/devices/printer.png">print</a>
 						</div>

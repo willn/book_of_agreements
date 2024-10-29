@@ -24,3 +24,13 @@ document.addEventListener("DOMContentLoaded", function() {
 	var listener = versionsBlock.addEventListener('click', toggleHideShow, false);
 });
 
+document.addEventListener("click", function() {
+	console.log('hey');
+	if (!event.target.matches('#print_document')) {
+		return;
+	}
+	event.preventDefault();
+	
+	console.log('hey');
+	window.print();
+});
