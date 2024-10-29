@@ -72,9 +72,11 @@ EOHTML;
 			}
 		}
 
+		$msg = 'Could not find requested committee';
 		echo <<<EOHTML
-			<div class="error">Error! Could not find requested committee</div>
+			<div class="error">Error! {$msg}</div>
 EOHTML;
+		error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " {$msg} {$id} ");
 		exit;
 	}
 }
