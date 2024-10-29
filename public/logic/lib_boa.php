@@ -1112,6 +1112,10 @@ class Minutes extends BOADoc {
 		if (!empty($date)) {
 			$this->Date->setDate($date);
 		}
+
+		if (!empty($m_id) && empty($content) && empty($cid) && empty($date)) {
+			$this->loadById($m_id);
+		}
 	}
 
 	/**
