@@ -1,9 +1,12 @@
 <?php
+use PHPUnit\Framework\TestCase;
+
+set_include_path('../' . PATH_SEPARATOR . '../public/');
 require_once '../public/constants.php';
 require_once '../public/logic/committee.php';
 require_once 'testing_utils.php';
 
-class MyCommitteeTest extends PHPUnit_Framework_TestCase {
+class CommitteeTest extends TestCase {
 	private $committee;
 
 	private $ex_top = [
@@ -17,7 +20,7 @@ class MyCommitteeTest extends PHPUnit_Framework_TestCase {
 		4 => [101 => "Color"],
 	];
 
-	public function setUp() {
+	public function setUp() : void {
 		$this->committee = new Committee(4);
 	}
 

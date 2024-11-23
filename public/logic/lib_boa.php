@@ -1095,7 +1095,16 @@ class Minutes extends BOADoc {
 	public $found = '';
 	public $found_agenda = false;
 
-	# minutes
+	/**
+	 * Create a new Minutes document
+	 *
+	 * m_id - minutes ID
+	 * notes - notes section
+	 * agenda - agenda section
+	 * content - main content of the document
+	 * cid - committee ID
+	 * date - a MyDate object
+	 */
 	public function __construct($m_id='', $notes='', $agenda='',
 		$content='', $cid='', $date='' ) {
 
@@ -1110,7 +1119,7 @@ class Minutes extends BOADoc {
 
 		$this->Date = new MyDate( );
 		if (!empty($date)) {
-			$this->Date->setDate($date);
+			$this->Date = $date;
 		}
 
 		if (!empty($m_id) && empty($content) && empty($cid) && empty($date)) {

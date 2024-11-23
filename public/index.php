@@ -70,8 +70,22 @@ function attempt_login() {
  * Display the login form.
  */
 function display_login_form() {
+	$form_dest = '/boa/?login=1';
+
+	$vars = get_query_string_vars();
+	$passalong = '';
+	if ($vars['page_id'] && $vars['num']) {
+		$passalong = <<<EOHTML
+<p>{$vars['page_id']}: {$vars['num']}</p>
+<input type="hidden" name="id" value="{$vars['page_id']}">
+<input type="hidden" name="num" value="{$vars['num']}">
+EOHTML;
+
+		$form_dest = "/boa/?id={$vars['page_id']}&num={$vars['num']}";
+	}
+
 	echo <<<EOHTML
-<form method="POST" action="/boa/?login=1">
+<form method="POST" action="{$form_dest}">
 	<label>
 		<span>Username:</span>
 		<input type="text" name="boa_username" value="">
@@ -85,8 +99,32 @@ function display_login_form() {
 	<label>
 		<button type="submit" name="login_attempt">Log in</button>
 	</label>
+
+	<div>{$passalong}</div>
 </form>
 EOHTML;
+
 	exit;
+}
+
+/**
+ * Look for certain query string parameters and return them.
+ */
+function get_query_string_vars() {
+	$tmp_id = $_GET['id'];
+	switch($tmp_id) {
+		case 'agreement':
+		case 'minutes':
+			$out = ['page_id' => $tmp_id];
+
+			$tmp_num = intval($_GET['num']);
+			if ($tmp_num != 0) {
+				$out['num'] = $tmp_num;
+			}
+
+			return $out;
+	}
+
+	return [];
 }
 ?>

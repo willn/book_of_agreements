@@ -52,7 +52,7 @@
 	require_once( "logic/links/main_lk.php" );
 
 	if ($PUBLIC_USER && (($id != 'login') && ($id != 'logout'))) {
-		$id = 'agreement';
+		$id = empty($_GET['id']) ? 'agreement' : $_GET['id'];
 	}
 
 	$pvar = 'logic/pagevars/'.$id.'_v.php';
