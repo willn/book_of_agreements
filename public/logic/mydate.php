@@ -52,6 +52,9 @@ class MyDate
 		return date('Y-m-d', $adjusted_ts);
 	}
 
+	/**
+	 * Render the HTML needed for choosing a date in the advanced search.
+	 */
 	function selectDate( ) {
 		$disp_label = !is_null($this->label) ? 
 			ucfirst($this->label) . ' ' : '';
@@ -80,9 +83,9 @@ class MyDate
 
 		return <<<EOHTML
 		<p>{$disp_label}Date:
-		<select name="{$this->label}day" size="1">{$days}</select>
-		<select name="{$this->label}month" size="1">{$months}</select>
 		<select name="{$this->label}year" size="1">{$years}</select>
+		<select name="{$this->label}month" size="1">{$months}</select>
+		<select name="{$this->label}day" size="1">{$days}</select>
 		</p>
 EOHTML;
 	}
