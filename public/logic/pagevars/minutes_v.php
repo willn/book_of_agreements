@@ -12,7 +12,6 @@ EOHTML;
 	}
 	else {
 		$num = intval( $_GET['num'] );
-		$Date = new MyDate( ); 
 		$Mins = new Minutes($num);
 		$Cmty = new Committee($Mins->cid);
 		$title = 'Minutes: ' . $Cmty->getName() . ' ' . 

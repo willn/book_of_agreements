@@ -1149,7 +1149,7 @@ class Minutes extends BOADoc {
 		$entryDate->setDate( $Min[0]['date'] );
 
 		$this->__construct( $Min[0]['m_id'], $Min[0]['notes'], 
-			$Min[0]['agenda'], $Min[0]['content'], $Min[0]['cid'], $entryDate );
+			$Min[0]['agenda'], $Min[0]['content'], $Min[0]['cid'], $Min[0]['date']);
 	}
 
 	/**
@@ -1204,6 +1204,7 @@ class Minutes extends BOADoc {
 						$short .= "<br/>AGENDA: $agenda\n";
 					}
 				}
+				// fall through to next step
 
 			case 'summary':
 				if ( empty( $short )) { $short = $agenda . $notes; }

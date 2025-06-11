@@ -137,7 +137,7 @@ EOSQL;
 		// search for minutes
 		$Info = $mysql_api->get($sql_m, 'm_id');
 		foreach($Info as $row) {
-			$Found[] = new Minutes($row['id'], $row['notes'], $row['agenda'],
+			$Found[] = new Minutes($row['m_id'], $row['notes'], $row['agenda'],
 				$row['content'], $row['cid'], $row['date']);
 		}
 	}
