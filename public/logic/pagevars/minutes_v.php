@@ -1,7 +1,8 @@
 <?php
-	if ($_SESSION['boa_username'] === 'guest') {
+	if (!($_SESSION['boa_username'] === 'greatoak') ||
+		($_SESSION['boa_username'] === 'admin')) { 
 		echo <<<EOHTML
-<h2>Guest User Not Authorized</h2>
+<h2>User Not Authorized</h2>
 <p>Please return to the <a href="http://gocoho.org/boa/">main page</a>.</p>
 EOHTML;
 		exit;
