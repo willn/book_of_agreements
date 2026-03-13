@@ -40,19 +40,6 @@
 EOHTML;
 	}
 
-	echo <<<EOHTML
-<div class="agreement">
-<h1 class="{$h1_class}">
-	<img class="tango" src="display/images/tango/32x32/{$access_img}"
-		alt="agreements access icon">
-	All {$pub}Agreements
-</h1>
-
-<div class="info">
-{$note}
-EOHTML;
-
-
 	$show_link = '';
 	$conditions = '';
 	if ( $show == 'expired' ) {
@@ -95,6 +82,17 @@ EOHTML;
 EOSQL;
 	$mysql_api = get_mysql_api();
 	$All = $mysql_api->get($sql );
+	$count = count($All);
+
+	echo <<<EOHTML
+<div class="agreement">
+<h1 class="{$h1_class}">
+	All {$pub}Agreements ($count results)
+</h1>
+
+<div class="info">
+{$note}
+EOHTML;
 
 	if ( !sizeof( $All )) {
 		echo '<p class="highlight">No passed agreements found.</p>' . "\n";
@@ -102,33 +100,30 @@ EOSQL;
 	else {
 		if ( sizeof( $All )) {
 			echo <<<EOHTML
-				<table cellpadding="7" cellspacing="0" border="0"
-				summary="table containing list of public agreements">
+				<table class="listing" cellpadding="7" cellspacing="0" border="0"
+				summary="table containing list of agreements">
 				<tr>
 					<th><a href="?id=agreement&amp;sort=committee{$show_link}">Committee</a></th>
 					<th><a href="?id=agreement&amp;sort=date{$show_link}">Date</a></th>
-					<th><a href="?id=agreement&amp;sort=agreement{$show_link}">sort by Agreement ID</a></th>
+					<th>Title</th>
 					<th>Summary</th>
 				</tr>
 EOHTML;
 				
-			$even_row = false;
 			foreach( $All as $num=>$Item ) {
 				$Cmty->setId($Item['cid']);
 				$name = $Cmty->getName();
 				$title = stripslashes( $Item['title'] );
 				$summary = stripslashes( $Item['summary'] );
-				$bgcolor = ($even_row) ? ' bgcolor="#eeeeee"' : '';
 
 				echo <<<EOHTML
-					<tr{$bgcolor}>
+					<tr>
 						<td valign="top">{$name}</td>
-						<td valign="top" class="nowrap">{$Item['date']}</td>
+						<td valign="top" class="date">{$Item['date']}</td>
 						<td valign="top"><a href="?id=agreement&amp;num={$Item['id']}">{$title}</a></td>
 						<td valign="top">{$summary}</td>
 					</tr>
 EOHTML;
-				$even_row = !$even_row;
 				
 			}
 			echo '</table>';

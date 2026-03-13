@@ -7,27 +7,17 @@ body {
 	line-height: 14pt;
 }
 
-a:link {
-	color: #771700;
-}
-a:visited {
-	color: #666666;
-}
-a:active {
-	color: #ffff66;
-}
+a:link { color: #771700; }
+a:visited { color: #666; }
+a:active { color: #ffff66; }
 a:hover {
-	color: #000000;
+	color: #000;
 	background: #fb9a54;
 	text-decoration: underline
 }
 
 img {
 	border: 0;
-}
-
-h1 img {
-	margin-right: 7px;
 }
 
 th {
@@ -39,15 +29,13 @@ img.titlephoto {
 }
 
 .error, p .error {
-	background: #fa9 url('/display/images/tango/32x32/status/dialog-error.png') no-repeat 9px 5px;
+	background: #fb9a54 url('/display/images/tango/32x32/status/dialog-error.png') no-repeat 9px 5px;
 	color: #900;
 	padding: 5px 48px;
 	font-size: 24px;
 	margin: 20px 0;
 	line-height: 30px;
-	-webkit-border-radius: 8px;
-	   -moz-border-radius: 8px;
-	        border-radius: 8px;
+	border-radius: 8px;
 }
 
 .error a:link {
@@ -61,20 +49,18 @@ img.titlephoto {
 .actions, .admin_actions {
 	background-color: #eceed1;
 	border: 1px dashed #663300;
-	padding: 3px 10px 3px 10px;
+	padding: 3px 10px;
 	margin: 0px 10px 12px 20px;
-	color: #000000;
+	color: #000;
 	font-weight: bold;
 	white-space: nowrap;
-	-webkit-border-radius: 8px;
-	   -moz-border-radius: 8px;
-	        border-radius: 8px;
+	border-radius: 8px;
 } 
 
 .admin_actions {
     width: 50%;
 	margin: 10px;
-	background: #ffffff;
+	background: #fff;
 }
 
 .admin_actions a {
@@ -90,7 +76,6 @@ img.titlephoto {
 
 .related_minutes {
 	background: #eee;
-	border: 1px solid #ddd;
 	padding: 10px;
 	margin: 5px;
 	clear: right;
@@ -118,20 +103,16 @@ img.titlephoto {
 	margin-left: 5px;
 	font-size: 11pt;
 	width: 160px;
-	-webkit-border-radius: 8px;
-	   -moz-border-radius: 8px;
-	        border-radius: 8px;
+	border-radius: 8px;
 	line-height: 9pt;
 }
 
 #nav p {
-	-webkit-border-radius: 8px;
-	   -moz-border-radius: 8px;
-	        border-radius: 8px;
+	border-radius: 8px;
 }   
 
 #nav p.menu {
-	background: #ffffff;
+	background: #fff;
 }
 
 #nav br {
@@ -144,10 +125,8 @@ img.titlephoto {
 	padding: .25em .5em;
 	padding-left: 2.5em;
 	text-indent: -2em;
-	border: 1px solid #ffffff;
-	-webkit-border-radius: 8px;
-	   -moz-border-radius: 8px;
-	        border-radius: 8px;
+	border: 1px solid #fff;
+	border-radius: 8px;
 }
 
 #nav span.linkcount {
@@ -155,7 +134,7 @@ img.titlephoto {
 }
 
 span.link {
-	color: #000000;
+	color: #000;
 	background: #eceed1;
 	border: 1px solid #ccaa99;
 }
@@ -167,7 +146,7 @@ span.sublink {
 span.found {
 	font-weight: bold;
 	background: #cccc66;
-	padding: 3px 0px 3px 0px;
+	padding: 3px 0px;
 }
 
 span.date {
@@ -175,7 +154,7 @@ span.date {
 }
 
 #nav a:hover, #nav a:active {
-	color: #000000;
+	color: #000;
 	background: #fb9a54;
 }
 
@@ -191,22 +170,21 @@ span.date {
 #content p.highlight {
 	margin-bottom: 15px;
 	padding: 10px;
-	background: #ffffff;
-    border: 1px dashed #663300;
+	background: #fff;
 }
 
 /* for expired notices */
 #content .notice, #versions, #versions_reveal {
 	margin-bottom: 15px;
 	padding: 10px;
-	background: #99ff00;
-	color: #000000;
+	background: #eee;
+	color: #000;
 	font-size: 14px;
 }
 
 #versions, #versions_reveal {
-	background: #dfc;
-	color: #652;
+	background: #eee;
+	color: #663300;
 	font-size: 11px;
 	border-bottom: 1px solid #cb9;
 	margin-bottom: 0;
@@ -218,7 +196,7 @@ span.date {
 
 .no_difference {
 	margin: 30px;
-	background: #87CF23;
+	background: #b9ba40;
 	border: 1px solid #549c10;
 	padding: 30px;
 	color: #333;
@@ -235,12 +213,16 @@ span.date {
 
 div.agreement, div.minutes {
 	margin: 0px 0px 15px 0px;
-	background: #ffffff;
-	padding: 0px;
+	background: #fff;
+	padding: 12px;
+}
+
+div.agreement_entry, div.minutes_entry {
+	margin: 0px 0px 15px 0px;
+	background: #fff;
 }
 
 h1.agrm, h1.mins, h1.public {
-	padding: 16px;
 	margin-bottom: 0px;
 	margin-top: 0px;
 	line-height: 26px;
@@ -262,22 +244,21 @@ h1.public {
 
 /* agreement colors */
 #content h2.agrm, h1.agrm {
-	background: #b9ba40;
+	background: #fff;
 	color: #20241a;
 }
 
-#content h2.mins, h1.mins {
-	background: #cccccc;
-	color: #000000;
+#content h2.mins {
+	background: #ddd;
+	color: #000;
+}
+
+#content h2.agrm a, #content h2.mins a {
+	font-weight: bold;
 }
 
 div.cmty_title {
 	font-size: 20px;
-}
-
-#content h2.mins, h1.mins {
-	background: #cccccc;
-	color: #000000;
 }
 
 .topic_img {
@@ -292,7 +273,7 @@ div.cmty_title {
 	margin: 3px 15px 5px 5px;
 }
 #print_version_link a {
-	color: #000000;
+	color: #000;
 	text-decoration: none;
 }
 #print_version_link a img {
@@ -300,8 +281,8 @@ div.cmty_title {
 }
 
 .info {
-	background: #ffffff;
-	margin: 13px 15px 12px 15px;
+	background: #fff;
+	padding: 6px;
 }
 
 .info .special {
@@ -324,7 +305,7 @@ div.cmty_title {
 }
 
 #content p.short {
-	margin: 15px 0px 15px 0px;
+	margin: 15px 0px;
 }
 
 #login, #logout {
@@ -336,9 +317,7 @@ div.cmty_title {
 	background-color: #FB9A54;
 	padding: 4px 8px;
 	border: 1px solid #cc7d44;
-	-webkit-border-radius: 10px;
-	   -moz-border-radius: 10px;
-	        border-radius: 10px;
+	border-radius: 10px;
 }
 
 #login a, #logout a {
@@ -347,8 +326,8 @@ div.cmty_title {
 }
 
 .explanation {
-	background: #eeeeee;
-	border-bottom: 1px dashed #666666;
+	background: #eee;
+	border-bottom: 1px dashed #666;
 	padding: 15px;
 	margin: -13px -15px 15px -15px;
 }
@@ -361,8 +340,12 @@ div.cmty_title {
 	vertical-align: -7px;
 }
 
+#search input, #advanced_options input {
+	padding: 4px;
+}
+
 #search_query, #advanced_options {
-	background: #ffffff;
+	background: #fff;
 }
 
 #search_query {
@@ -381,7 +364,6 @@ div.cmty_title {
 	white-space: pre;
 	background: #fff;
 	padding: 5px;
-	border: 1px solid #999;
 	color: #333;
 	font-family: courier, monospace;
 }
@@ -392,12 +374,12 @@ div.cmty_title {
 
 .diff_added {
 	color: #000;
-	background: #FB9A54;
+	background: #f7d3b6;
 }
 
 .diff_removed {
-	color: #666;
-	background: #ddd;
+	color: #333;
+	background: #eee;
 }
 
 .print_date {
@@ -409,4 +391,14 @@ div.cmty_title {
 }
 .toggle-content.is-visible {
 	display: block;
+}
+
+.listing {
+	border-collapse: collapse;
+}
+.listing tr {
+	border-bottom: 1px solid #ccc;
+}
+.listing .date {
+	white-space: nowrap;
 }

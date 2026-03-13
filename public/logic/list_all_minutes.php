@@ -1,8 +1,5 @@
 <div class="minutes">
-<h1 class="mins">
-	<img class="tango" src="display/images/tango/32x32/apps/system-users.png">
-	All Minutes
-</h1>
+<h1 class="mins">All Minutes</h1>
 
 <div class="info">
 <?php
@@ -30,7 +27,7 @@
 		if ( sizeof( $All ))
 		{
 			echo <<<EOHTML
-			<table cellpadding="7" cellspacing="0">
+			<table class="listing" cellpadding="7" cellspacing="0">
 			<tr>
 				<td><a href="?id=minutes&sort=committee">Committee</a></td>
 				<td><a href="?id=minutes&sort=date">Date</a></td>
@@ -38,23 +35,19 @@
 			</tr>
 EOHTML;
 
-			$even_row = false;
 			foreach( $All as $num=>$Item )
 			{
 				$Cmty->setId($Item['cid']);
 				$name = $Cmty->getName();
 				$notes = stripslashes( $Item['notes'] );
-				$bgcolor = ($even_row) ? ' bgcolor="#eeeeee"' : '';
 
 				echo <<<EOHTML
-					<tr{$bgcolor}>
+					<tr>
 						<td>{$name}</td>
-						<td><a href="?id=minutes&num={$Item['m_id']}">
-							{$Item['date']}</a></td>
+						<td class="date"><a href="?id=minutes&num={$Item['m_id']}">{$Item['date']}</a></td>
 						<td>{$notes}</td>
 					</tr>
 EOHTML;
-				$even_row = !$even_row;
 			}
 			echo '</table>';
 		}

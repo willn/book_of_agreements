@@ -1,7 +1,6 @@
 <?php
 	$Items = array( );
 	$Item_Dates = array( );
-	$label = '';
 	$limit = '';
 	if ( isset( $limit_time ))
 	{ $limit = " and date_sub( curdate( ), interval $limit_time ) <= date "; }
@@ -38,21 +37,15 @@
 	}
 
 	echo <<<EOHTML
-		<h1>{$title} {$label}</h1>
+		<h1>{$title}</h1>
 		<div id="selectors">
 			<span id="bothselector">
-				<img class="tango"
-					src="display/images/tango/32x32/status/folder-open.png">
 				{$show_both}
 			</span>
 			<span id="agrmselector">
-				<img class="tango"
-					src="display/images/tango/32x32/mimetypes/application-certificate.png">
 				{$show_agreements}
 			</span>
 			<span id="minselector">
-				<img class="tango"
-					src="display/images/tango/32x32/mimetypes/text-x-generic.png">
 				{$show_minutes}
 			</span>
 		</div>
@@ -98,14 +91,12 @@ EOHTML;
 				$cmty_name = $Cmty->getName();
 
 				$Items[] = <<<EOHTML
-					<div class="minutes">
+					<div class="minutes_entry">
 						<h2 class="mins">
 							<a href="?id=minutes&num={$Minutes['m_id']}">
 							{$Minutes['date']} {$cmty_name}</a> minutes
 						</h2>
 						<div class="item_topic">
-							<img class="topic_img tango"
-								src="display/images/tango/32x32/mimetypes/text-x-generic.png">
 							<div class="info">{$summary}</div>
 						</div>
 					</div>
@@ -154,13 +145,11 @@ EOHTML;
 
 				$agr_title = nl2br( stripslashes( $Agreement['title'] ));
 				$Items[] = <<<EOHTML
-					<div class="agreement">
+					<div class="agreement_entry">
 						<h2 class="agrm">{$Agreement['date']} 
 							<a href="?id=agreement&num={$Agreement['id']}">{$agr_title}</a>{$cmty_name}
 						</h2>
 						<div class="item_topic">
-							<img class="topic_img tango"
-								src="display/images/tango/32x32/mimetypes/application-certificate.png">
 							<div class="info">{$short_version}</div>
 						</div>
 					</div>

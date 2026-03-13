@@ -16,7 +16,6 @@ width="400" height="72">
 		&nbsp; <a href="?id=search">advanced search</a>
 	</form>
 	<div id="logout">
-		<img class="tango" src="display/images/tango/32x32/apps/internet-web-browser.png" alt="web browser icon">
 		<a href="?login=0">Change to Public View</a>
 	</div>
 EOHTML;
@@ -24,7 +23,6 @@ EOHTML;
 else {
 	echo <<<EOHTML
 	<div id="login">
-		<img class="tango" src="display/images/tango/32x32/emblems/emblem-readonly.png" alt="lock icon">
 		<a href="?login=1">Member Login</a>
 	</div>
 EOHTML;
@@ -39,11 +37,8 @@ EOHTML;
 	{
 		echo <<<EOHTML
 		<div class="admin_actions">
-			<img class="tango" src="display/images/tango/32x32/actions/system-log-out.png" alt="logout">
 			<a href="?id=logout">logout</a>
-			<img class="tango" src="display/images/tango/32x32/mimetypes/application-certificate.png" alt="agreement">
 			<a href="?id=admin&amp;doctype=agreement">new agreement</a>
-			<img class="tango" src="display/images/tango/32x32/mimetypes/text-x-generic.png" alt="minutes">
 			<a href="?id=admin&amp;doctype=minutes">new minutes</a>
 		</div>
 EOHTML;

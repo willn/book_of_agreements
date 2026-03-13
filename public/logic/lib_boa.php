@@ -433,7 +433,6 @@ EOHTML;
 						</h2>
 						{$condition}
 						<div class="item_topic">
-							<img class="topic_img tango" src="display/images/tango/32x32/mimetypes/application-certificate.png" alt="agreement">
 							<div class="info">{$short}</div>
 						</div>
 					</div>
@@ -476,9 +475,7 @@ EOHTML;
 				echo <<<EOHTML
 					<div class="agreement">
 						<div id="print_version_link">
-							<a href="#" id="print_document">
-								<img class="tango" alt="print"
-									src="display/images/tango/32x32/devices/printer.png">print</a>
+							<a href="#" id="print_document">print</a>
 						</div>
 
 						<h1 class="agrm">{$title}</h1>
@@ -597,14 +594,12 @@ EOHTML;
 			<div id="versions_block">
 				<div id="versions_reveal" class="toggle-content is-visible">
 					<div>
-						<img src="display/images/tango/32x32/apps/preferences-system-windows.png" width="32" height="32">
-						<a href="#" class="show toggle">[+] show {$num_diffs} previous versions</a>
+						<button class="show toggle">+ show {$num_diffs} previous versions</button>
 					</div>
 				</div>
 				<div id="versions" class="toggle-content">
 					<div>
-						<img src="display/images/tango/32x32/apps/preferences-system-windows.png" width="32" height="32">
-						<a href="#" class="hide toggle">[-] hide {$num_diffs} previous versions</a>
+						<button class="hide toggle">- hide {$num_diffs} previous versions</button>
 					</div>
 
 					<p>This list shows the obsolete versions of this
@@ -635,12 +630,10 @@ EOHTML;
 			$link = <<<EOHTML
 				<div class="actions">
 					<a href="?id=admin&amp;doctype=agreement&amp;num={$this->id}">
-						<img class="tango" src="display/images/tango/32x32/apps/accessories-text-editor.png" alt="edit">
 						edit
 					</a>
 					&nbsp;&nbsp;
 					<a href="?id=admin&amp;doctype=agreement&amp;delete={$this->id}">
-						<img class="tango" src="display/images/tango/32x32/actions/edit-delete.png" alt="delete">
 						delete
 					</a>
 				</div>
@@ -854,7 +847,6 @@ EOSQL;
 				<input type="hidden" name="delete" value="{$this->id}">
 				<div align="right">
 					<a href="?id=admin&amp;doctype=agreement&amp;delete={$this->id}&amp;confirm_del=1">
-						<img class="tango" src="display/images/tango/32x32/actions/edit-delete.png" alt="delete">
 						confirm delete</a>
 				</div>
 				</form>
@@ -913,10 +905,6 @@ EOHTML;
 
 			return <<<EOHTML
 		<div class="no_difference">
-			<img src="display/images/tango/32x32/actions/format-indent-more.png"
-				width="32" height="32"/>
-			<img src="display/images/tango/32x32/actions/format-indent-less.png"
-				width="32" height="32"/>
 			{$msg}
 		</div>
 EOHTML;
@@ -1220,7 +1208,6 @@ class Minutes extends BOADoc {
 								{$cmty_name}</a> minutes
 						</h2>
 						<div class="item_topic">
-							<img class="topic_img tango" src="display/images/tango/32x32/mimetypes/text-x-generic.png" alt="minutes">
 							<div class="info">{$short}</div>
 						</div>
 					</div>
@@ -1260,12 +1247,10 @@ EOHTML;
 		return <<<EOHTML
 			<div class="actions">
 				<a href="?id=admin&amp;doctype=minutes&amp;num={$this->id}">
-					<img class="tango" src="display/images/tango/32x32/apps/accessories-text-editor.png" alt="edit">
 					edit
 				</a>
 				&nbsp;&nbsp;
 				<a href="?id=admin&amp;doctype=minutes&amp;delete={$this->id}">
-					<img class="tango" src="display/images/tango/32x32/actions/edit-delete.png" alt="delete">
 					delete
 					</a>
 			</div>
@@ -1367,7 +1352,6 @@ EOHTML;
 			</div>
 			<div class="actions">
 				<a href="?id=admin&amp;doctype=minutes&amp;delete={$this->id}&confirm_del=1">
-					<img class="tango" src="display/images/tango/32x32/actions/edit-delete.png" alt="delete">
 						confirm delete</a>
 			</div>
 EOHTML;
