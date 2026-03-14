@@ -2,7 +2,7 @@
 use PHPUnit\Framework\TestCase;
 
 require_once '../public/constants.php';
-require_once '../public/logic/mydate.php';
+require_once '../public/logic/class_mydate.php';
 
 class MyDateTest extends TestCase {
 	const DEFAULTDATE = '1977-05-25';
