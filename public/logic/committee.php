@@ -52,9 +52,12 @@ class Committee {
 EOHTML;
 	}
 
+	/**
+	 * Get the name of the current committee
+	 */
 	function getName() {
-		if (is_null($this->cid)) {
-			return;
+		if ($this->cid == 0) {
+			return '';
 		}
 
 		global $Cmtys;
@@ -77,7 +80,6 @@ EOHTML;
 			<div class="error">Error! {$msg}</div>
 EOHTML;
 		error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " {$msg} {$id} ");
-		exit;
 	}
 }
 

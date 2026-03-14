@@ -4,6 +4,7 @@ require_once('constants.php');
 require_once('utils.php');
 require_once('mydate.php');
 require_once('committee.php');
+require_once('config.php');
 
 
 /**
@@ -102,9 +103,7 @@ class Agreement extends BOADoc
 		$this->title = $title;
 		$this->summary = $summary;
 
-		$full = str_replace('\r\n', "\n", $full);
-		$full = str_replace('\n', "\n", $full);
-		$full = str_replace('\r', "\n", $full);
+		$full = str_replace(["\r\n", "\r"], "\n", $full);
 		$this->full = $full;
 
 		$this->background = $background;
@@ -140,7 +139,7 @@ class Agreement extends BOADoc
 			exit;
 		}
 
-		global $HDUP;
+		$HDUP = get_hdup();
 		$entryDate = new MyDate( );
 
 		$pub_constraint = '';
@@ -649,7 +648,7 @@ EOHTML;
 	 * @return boolean. If true, then the save was successful.
 	 */
 	public function save($update=false) {
-		global $HDUP;
+		$HDUP = get_hdup();
 		$success = 0;
 		if ( $this->id == 0 ) {
 			$this->id = '';
@@ -826,7 +825,7 @@ EOSQL;
 	 */
 	public function delete( ) {
 		global $Cmtys;
-		global $HDUP;
+		$HDUP = get_hdup();
 
 		if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
 			$this->setId($_GET['delete']);
@@ -1120,14 +1119,21 @@ class Minutes extends BOADoc {
 	 */
 	public function loadById( $id='' )
 	{
-		global $HDUP;
+		$min_id = $id;
+		if ($id == '') {
+			$min_id = $this->id;
+		}
+
+		// don't try to load an invalid ID
+		if (!is_int($min_id) || ($min_id == 0)) {
+			return;
+		}
+
+		$HDUP = get_hdup();
 		$entryDate = new MyDate( );
 
-		$min_id = $id;
-		if ( $id == '' ) { $min_id = $this->id; }
-
 		$sql = 'select committees.cmty, minutes.* from minutes, '.
-			"committees where m_id=$min_id  and committees.cid=minutes.cid";
+			"committees where m_id={$min_id} and committees.cid=minutes.cid";
 		$this->init_mysql_api();
 		$Min = $this->mysql_api->get($sql, NULL, FALSE);
 
@@ -1261,7 +1267,7 @@ EOHTML;
 	 * Save a minutes entry.
 	 */
 	public function save( $update=false ) {
-		global $HDUP;
+		$HDUP = get_hdup();
 		$success = 0;
 		if ( $this->id == 0 ) {
 			$this->id = '';
@@ -1339,7 +1345,7 @@ EOHTML;
 	 */
 	public function delete( $confirm )
 	{
-		global $HDUP;
+		$HDUP = get_hdup();
 
 		if ( !$confirm )
 		{

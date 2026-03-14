@@ -37,8 +37,8 @@ class UtilsTest extends TestCase {
 	}
 
 	public function provide_format_html() {
-		$example_file = implode(file('example_doc.txt'), "\n");
-		$example_file_expected = implode(file('example_doc_cleaned.txt'), '');
+		$example_file = implode("\n", file('example_doc.txt'));
+		$example_file_expected = implode('', file('example_doc_cleaned.txt'));
 
 		return [
 			['x', FALSE, 'x'],

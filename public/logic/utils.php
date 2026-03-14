@@ -1,10 +1,12 @@
 <?php
 
+require_once 'mysql_api.php';
+
 /**
  * Get the MySQL API
  */
 function get_mysql_api() {
-	global $HDUP;
+	$HDUP = get_hdup();
 	return new MysqlApi($HDUP['host'], $HDUP['database'],
 		$HDUP['user'], $HDUP['password']);
 }
