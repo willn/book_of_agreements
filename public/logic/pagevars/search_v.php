@@ -1,4 +1,7 @@
 <?php
+require_once('logic/class_agreement.php');
+require_once('logic/class_minute.php');
+
 	$body = 'logic/search.php';
 	$title = 'Search';
 

@@ -8,7 +8,7 @@ set_include_path(
     . PATH_SEPARATOR . $root . '/public'
     . PATH_SEPARATOR . $root . '/public/logic'
 );
-require_once $root . '/public/logic/lib_boa.php';
+require_once $root . '/public/logic/class_minute.php';
 
 class MinutesTest extends TestCase
 {

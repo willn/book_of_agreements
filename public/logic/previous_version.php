@@ -1,4 +1,6 @@
 <?php
+require_once('logic/class_agreement.php');
+
 $agr_id = intval($_REQUEST['agr_id']);
 $version = intval($_REQUEST['prev_id']);
 
