@@ -25,12 +25,10 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 document.addEventListener("click", function() {
-	console.log('hey');
 	if (!event.target.matches('#print_document')) {
 		return;
 	}
 	event.preventDefault();
 	
-	console.log('hey');
 	window.print();
 });
