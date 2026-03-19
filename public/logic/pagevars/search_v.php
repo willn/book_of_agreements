@@ -34,33 +34,28 @@ require_once('logic/class_minute.php');
 	}
 	$cmty_num = isset($_GET['cmty']) ? intval($_GET['cmty']) : 0;
 
-	#----------- begin dates ---------
+	#----------- begin date handling ---------
 	$start_year = isset($_GET['startyear']) ? intval($_GET['startyear']) : NULL;
 	$start_month = isset($_GET['startmonth']) ? intval($_GET['startmonth']) : NULL;
-	$start_day = isset($_GET['startday']) ? intval($_GET['startday']) : NULL;
 
-	if (!is_null($start_year) && !is_null($start_month) && !is_null($start_day)) {
-		$Start_Date = new MyDate($start_year, $start_month, $start_day, 'start');
-		$SQL_Agr_Clauses[] = 'date>="' . $Start_Date->toString() . '"';
-		$SQL_Min_Clauses[] = 'date>="' . $Start_Date->toString() . '"';
-	}
-	else {
-		$Start_Date = new MyDate(2001, 1, 1, 'start');
+	$Start_Date = new MyDate(2001, 1, 1, 'start');
+	if (!is_null($start_year) && !is_null($start_month)) {
+		$Start_Date = new MyDate($start_year, $start_month, NULL, 'start');
+		$SQL_Agr_Clauses[] = 'date>="' . $Start_Date->getStartOfMonth() . '"';
+		$SQL_Min_Clauses[] = 'date>="' . $Start_Date->getStartOfMonth() . '"';
 	}
 
 	$end_year = isset($_GET['endyear']) ? intval($_GET['endyear']) : NULL;
 	$end_month = isset($_GET['endmonth']) ? intval($_GET['endmonth']) : NULL;
-	$end_day = isset($_GET['endday']) ? intval($_GET['endday']) : NULL;
 
-	if (!is_null($end_year) && !is_null($end_month) && !is_null($end_day)) {
-		$End_Date = new MyDate($end_year, $end_month, $end_day, 'end');
-		$SQL_Agr_Clauses[] = 'date<="' . $End_Date->toString() . '"';
-		$SQL_Min_Clauses[] = 'date<="' . $End_Date->toString() . '"';
+	$End_Date = new MyDate(NULL, NULL, NULL, 'end');
+	if (!is_null($end_year) && !is_null($end_month)) {
+		$End_Date = new MyDate($end_year, $end_month, NULL, 'end');
+		// date BETWEEN '2024-12-31' AND '2026-03-16'
+		$SQL_Agr_Clauses[] = 'date<="' . $End_Date->getEndOfMonth() . '"';
+		$SQL_Min_Clauses[] = 'date<="' . $End_Date->getEndOfMonth() . '"';
 	}
-	else {
-		$End_Date = new MyDate(NULL, NULL, NULL, 'end');
-	}
-	#----------- finish dates ---------
+	#----------- end of date handling ---------
 
 	$ft_against = '';
 	if ( !empty( $q )) {
@@ -107,13 +102,12 @@ require_once('logic/class_minute.php');
 
 	$ft_match_agr = 'match( title, summary, full, background, comments, processnotes )';
 	$sql_a = <<<EOSQL
-		SELECT id, {$ft_match_agr} {$ft_against} AS score,
-				committees.cmty,
-				agreements.*
-			FROM agreements, committees
-			WHERE ({$ft_match_agr} {$ft_against} {$agr_sql_clauses}) AND
-				committees.cid=agreements.cid
-			ORDER BY score DESC
+		SELECT agreements.*, committees.cmty, {$ft_match_agr} {$ft_against} AS score
+		FROM agreements
+		JOIN committees
+			ON committees.cid = agreements.cid
+		WHERE {$ft_match_agr} {$ft_against} {$agr_sql_clauses}
+		ORDER BY score DESC;
 EOSQL;
 
 	// search for agreements

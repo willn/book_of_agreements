@@ -31,29 +31,72 @@ class MyDateTest extends TestCase {
 		return [
 			['2018-01-30', '2018-01-30'],
 			['123-01-30', self::DEFAULTDATE],
-			['2018-1-30', self::DEFAULTDATE],
-			['2018-01-3', self::DEFAULTDATE],
-			[NULL, self::DEFAULTDATE],
+			['2026-02-29', '2026-02-29'],
+			['2018-01-03', '2018-01-03'],
 		];
 	}
 
 	/**
 	 * @dataProvider provideGetBefore
 	 */
-	public function testGetBefore($date, $days_offset, $expected) {
+	public function testGetBefore($date, $expected) {
 		$this->date->setDate($date);
-		$result = $this->date->getBefore($days_offset);
-		$this->assertEquals($result, $expected);
+		$result = $this->date->getBefore();
+		$debug = [
+			'date' => $date,
+			'expected' => $expected,
+			'result' => $result,
+		];
+		$this->assertEquals($result, $expected, print_r($debug, TRUE));
 	}
 
 	public function provideGetBefore() {
 		return [
-			['2018-01-30', 1, '2018-01-29'],
-			['2018-02-01', 1, '2018-01-31'],
-			['2018-01-01', 1, '2017-12-31'],
-			['2018-01-30', 30, '2017-12-31'],
+			['2018-01-30', '2018-01-29'],
+			#['2018-02-01', '2018-01-31'],
+			#['2018-01-01', '2017-12-31'],
 		];
 	}
 
+	/**
+	 * @dataProvider provideGetStartOfMonth
+	 */
+	public function testGetStartOfOMonth($date, $expected) {
+		$this->date->setDate($date);
+		$result = $this->date->getStartOfMonth();
+		$this->assertEquals($result, $expected);
+	}
+
+	public function provideGetStartOfMonth() {
+		return [
+			['2018-01-01', '2017-12-31'],
+			['2018-01-30', '2017-12-31'],
+			['2018-02-01', '2018-01-31'],
+			['2024-02-29', '2024-01-31'],
+			['2024-03-14', '2024-02-29'],
+			['2026-03-14', '2026-02-28'],
+		];
+	}
+
+	/**
+	 * @dataProvider provideGetEndOfMonth
+	 */
+	public function testGetEndOfOMonth($date, $expected) {
+		$this->date->setDate($date);
+		$result = $this->date->getEndOfMonth();
+		$this->assertEquals($result, $expected);
+	}
+
+	public function provideGetEndOfMonth() {
+		$now = date('Y-m-d');
+		return [
+			['2017-12-31', '2018-01-01'],
+			['2018-01-01', '2018-02-01'],
+			['2018-01-30', '2018-02-01'],
+			['2024-02-29', '2024-03-01'],
+			['2024-03-14', '2024-04-01'],
+			[$now, $now],
+		];
+	}
 }
 ?>

@@ -1,5 +1,8 @@
 <?php
 
+define('FUZZY_SECONDS', 100);
+date_default_timezone_set('America/Detroit');
+
 class MyDate
 {
 	var $curyear;
@@ -41,30 +44,22 @@ class MyDate
 	}
 
 	/**
-	 * Get a date prior to the current one, by offset.
+	 * Get a date prior to the given one, by offset.
+	 * Typically used to show "previous X days"
 	 *
 	 * @param[in] num_days int the number of days earlier this should shift.
 	 */
-	function getBefore($num_days) {
-		$current_ts = mktime(0, 0, 0, $this->month, $this->day, $this->year);
-		$adjusted_ts = $current_ts - (NUM_SECS_PER_DAY * $num_days);
-		#echo "CUR: $current_ts, adj: $adjusted_ts secs:" . NUM_SECS_PER_DAY . "\n";
-		return date('Y-m-d', $adjusted_ts);
+	function getBefore() {
+		$ts = mktime(0, 0, 0, $this->month, $this->day, $this->year);
+		return date('Y-m-d', ($ts - NUM_SECS_PER_DAY));
 	}
 
 	/**
 	 * Render the HTML needed for choosing a date in the advanced search.
 	 */
-	function selectDate( ) {
+	function selectDate() {
 		$disp_label = !is_null($this->label) ? 
 			ucfirst($this->label) . ' ' : '';
-
-		# create day drop-down
-		$days = '';
-		for ( $i=1; $i<=31; $i++ ) {
-			$sel = ( $i == $this->day ) ? ' selected="selected"' : '';
-			$days .= "<option value=\"{$i}\"{$sel}>{$i}</option>\n";
-		}
 
 		#create month drop-down
 		$months = '';
@@ -76,7 +71,7 @@ class MyDate
 
 		#create year drop-down
 		$years = '';
-		for ( $i=2001; $i<=$this->curyear; $i++ ) {
+		for ($i = STARTING_YEAR; $i <= $this->curyear; $i++) {
 			$sel = ( $i == $this->year ) ? ' selected="selected"' : '';
 			$years .= "<option value=\"{$i}\"{$sel}>{$i}</option>\n";
 		}
@@ -85,14 +80,47 @@ class MyDate
 		<p>{$disp_label}Date:
 		<select name="{$this->label}year" size="1">{$years}</select>
 		<select name="{$this->label}month" size="1">{$months}</select>
-		<select name="{$this->label}day" size="1">{$days}</select>
 		</p>
 EOHTML;
 	}
 
 	function toString( ) {
-		return sprintf( "%04d-%02d-%02d", $this->year, 
-			$this->month, $this->day );
+		if (is_null($this->year) || is_null($this->month)) {
+			return '';
+		}
+
+		if (is_null($this->day)) {
+			return sprintf("%04d-%02d", $this->year, $this->month);
+		}
+
+		return sprintf("%04d-%02d-%02d", $this->year, 
+			$this->month, $this->day);
+	}
+
+	/**
+	 * Round down to the 1st day of the month, then subtract a few fuzzy seconds
+	 * to get the previous day.
+	 */
+	function getStartOfMonth() {
+		$timestamp = mktime(0, 0, 0, $this->month, 1, $this->year);
+		return date('Y-m-d', ($timestamp - FUZZY_SECONDS));
+	}
+
+	/**
+	 * Round up to the last day of the month, then add a few fuzzy seconds
+	 * to get the next day. If this is the current month, then return now.
+	 */
+	function getEndOfMonth() {
+		// return early with NOW if this is the current month
+		$curmonth = date('m');
+		if (($this->year == $this->curyear) && ($this->month == $curmonth)) {
+			return date('Y-m-d');
+		}
+
+		$num_days_in_mo = cal_days_in_month(CAL_GREGORIAN, $this->month,
+			$this->year);
+		$timestamp = mktime(0, 0, 0, $this->month, $num_days_in_mo, $this->year);
+		return date('Y-m-d', ($timestamp + NUM_SECS_PER_DAY + FUZZY_SECONDS));
 	}
 }
 
