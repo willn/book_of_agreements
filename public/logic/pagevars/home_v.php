@@ -1,6 +1,6 @@
 <?php
 	# don't make this plural, since it's used in a SQL query
-	$limit_time = '30 day';
+	$limit_time = '90 day';
 
 	$title = 'Recently Active Items (' . $limit_time . 's)';
 	$cmty_num = NULL;
