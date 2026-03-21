@@ -173,3 +173,52 @@ function get_months() {
 	];
 }
 
+function getCommitteesList() {
+	$mysql_api = get_mysql_api();
+
+	$sql = <<<EOSQL
+select cid, cmty from committees where parent=cid or parent=0 order by parent
+EOSQL;
+	$CInfo = $mysql_api->get($sql, 'cid');
+
+	$Cmtys = [];
+	foreach($CInfo as $i=>$Info) {
+		$Cmtys[$Info['cid']] = $Info['cmty'];
+	}
+
+	return $Cmtys;
+}
+
+function getSubCommitteesList() {
+	$mysql_api = get_mysql_api();
+
+	$sql = 'select * from committees where cid!=parent order by cid';
+	$SubInfo = $mysql_api->get($sql);
+
+	$SubCmtys = [];
+	foreach( $SubInfo as $i=>$Info ) {
+		$SubCmtys[$Info['parent']][$Info['cid']] = $Info['cmty'];
+	}
+
+	return $SubCmtys;
+}
+
+function getAllCommittees() {
+	$Cmtys = getCommitteesList();
+	$SubCmtys = getSubCommitteesList();
+
+	$AllCmtys = [];
+	foreach($Cmtys as $num=>$cm) {
+		if (is_string($cm)) {
+			$AllCmtys[$num] = $cm;
+		}
+		if (isset($SubCmtys[$num])) {
+			foreach($SubCmtys[$num] as $subnum=>$subname) {
+				$AllCmtys[$subnum] = $cm . ': ' . $subname;
+			}
+		}
+	}
+
+	return $AllCmtys;
+}
+

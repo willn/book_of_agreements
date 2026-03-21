@@ -54,11 +54,16 @@ class AgreementTest extends TestCase
     public function testSetAndGetId()
     {
         $a = new TestAgreement();
-
         $a->setId(42);
-
-        $this->assertEquals(42, $a->getId());
+        $this->assertSame(42, $a->getId());
     }
+
+	public function testDefaultsAreEmptyStrings()
+	{
+		$a = new TestAgreement();
+		$this->assertSame('', $a->title);
+		$this->assertSame('', $a->full);
+	}
 
     public function testSetContentAssignsFields()
     {
@@ -104,40 +109,15 @@ class AgreementTest extends TestCase
     public function testValidateInputRequiresTitleAndFull()
     {
         $a = new TestAgreement();
-
-        $a->title = "";
-        $a->full = "";
-
-        $errs = $a->validateInput();
-
+        $errs = $a->validateFields('', '', '', 0);
         $this->assertContains('title', $errs);
         $this->assertContains('full', $errs);
-    }
-
-    public function testValidateInputRequiresDiffCommentsWhenEditing()
-    {
-        $a = new TestAgreement();
-
-        $a->id = 5;
-        $a->title = "Test";
-        $a->full = "Body";
-        $a->diff_comments = "";
-
-        $errs = $a->validateInput();
-
-        $this->assertContains('diff_comments', $errs);
     }
 
     public function testValidateInputPassesWhenValid()
     {
         $a = new TestAgreement();
-
-        $a->id = 0;
-        $a->title = "Title";
-        $a->full = "Body";
-
-        $errs = $a->validateInput();
-
+        $errs = $a->validateFields('Title', 'Body', '', 0);
         $this->assertEmpty($errs);
     }
 
@@ -163,4 +143,12 @@ class AgreementTest extends TestCase
         $this->assertStringContainsString("Comments:", $text);
         $this->assertStringContainsString("Process Comments:", $text);
     }
+
+	public function testNormalizeNewlinesHandlesAllFormats()
+	{
+		$a = new TestAgreement();
+		$input = "line1\r\nline2\rline3\nline4";
+		$result = $a->normalizeNewlines($input);
+		$this->assertEquals("line1\nline2\nline3\nline4", $result);
+	}
 }

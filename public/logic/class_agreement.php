@@ -9,19 +9,19 @@ class Agreement extends BOADoc
 {
 	public $doc_type = 'agreement';
 	public $id = null;
-	public $title = null;
-	public $summary = null;
-	public $full = null;
-	public $background = null;
-	public $comments = null;
-	public $processnotes = null;
+	public $title = '';
+	public $summary = '';
+	public $full = '';
+	public $background = '';
+	public $comments = '';
+	public $processnotes = '';
 	public $cid = null;
 	public $Date;
 	public $expired;
 	public $search_points = 0;
 	public $found = '';
-	public $world_public = false;
-	public $found_summary = false;
+	public $world_public = FALSE;
+	public $found_summary = FALSE;
 
 	public $diff_comments;
 	public $previous_versions;
@@ -36,6 +36,10 @@ class Agreement extends BOADoc
 		parent::__construct();
 		$this->Date = new MyDate();
 		$this->processRequest();
+
+		$this->title = '';
+		$this->full = '';
+		$this->summary = '';
 	}
 
 	/**
@@ -67,16 +71,13 @@ class Agreement extends BOADoc
 
 		$this->title = $title;
 		$this->summary = $summary;
-
-		$full = str_replace(["\r\n", "\r"], "\n", $full);
-		$this->full = $full;
-
+		$this->full = $this->normalizeNewlines($full);
 		$this->background = $background;
 		$this->comments = $comments;
 		$this->processnotes = $processnotes;
 		$this->cid = $committee_id;
 		$this->expired = $expired;
-		$this->world_public = $is_public;
+		$this->world_public = (bool)$is_public;
 
 		if ( !is_object( $date_obj )) {
 			$this->Date = new MyDate( );
@@ -168,22 +169,28 @@ MODE) ) HAVING relevance > 0 ORDER BY relevance DESC;
 	 * @return array, Empty if valid. Populated with the keys of the required
 	 * elements which aren't valid.
 	 */
-	public function validateInput()
+	public function validateFields($title, $full, $diff_comments, $id)
 	{
-		$errs = array();
+		$errs = [];
 
 		// if editing and no comments
-		if (($this->id != 0) && empty($this->diff_comments)) {
+		if ($id && trim($diff_comments)) {
 			$errs[] = 'diff_comments';
 		}
 
-		if (empty($this->title)) {
+		if (trim($title) === '') {
 			$errs[] = 'title';
 		}
-		if (empty($this->full)) {
+		if (trim($full) === '') {
 			$errs[] = 'full';
 		}
+
 		return $errs;
+	}
+
+	public function validateInput() {
+		return $this->validateFields($this->title, $this->full,
+			$this->diff_comments, $this->id);
 	}
 
 	public function actionChoices( )
@@ -884,9 +891,7 @@ EOHTML;
 				continue;
 			}
 			$l = trim($l);
-			$l = str_replace('\r\n', "\n", $l);
-			$l = str_replace('\n', "\n", $l);
-			$l = str_replace('\r', "\n", $l);
+			$l = $this->normalizeNewlines($l);
 			$l = wordwrap($l, 90);
 
 			if (!$use_html) {

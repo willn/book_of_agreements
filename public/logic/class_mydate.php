@@ -5,11 +5,13 @@ date_default_timezone_set('America/Detroit');
 
 class MyDate
 {
-	var $curyear;
-	var $year;
-	var $month;
-	var $day;
-	var $label;
+	protected $curyear;
+	protected $curmonth;
+
+	protected $year;
+	protected $month;
+	protected $day;
+	protected $label;
 
 	/**
 	 * Create a new MyDate object.
@@ -19,8 +21,10 @@ class MyDate
 	 * @param[in] day int the 2-digit day of the month in question.
 	 * @param[in] label string a prefix for a selector, e.g. "start" or "end".
 	 */
-	function __construct( $year='', $month='', $day='', $label=NULL) {
+	function __construct($year='', $month='', $day='', $label=NULL) {
 		$this->curyear = date('Y');
+		$this->curmonth = date('m');
+
 		$this->year = is_int( $year ) ? $year : $this->curyear;
 		$this->month = is_int( $month ) ? $month : date('n');
 		$this->day = is_int( $day ) ? $day : date('j');
@@ -111,9 +115,13 @@ EOHTML;
 	 * to get the next day. If this is the current month, then return now.
 	 */
 	function getEndOfMonth() {
+		// if date is not set, then use NOW
+		if ($this->year == 0) {
+			return date('Y-m-d');
+		}
+
 		// return early with NOW if this is the current month
-		$curmonth = date('m');
-		if (($this->year == $this->curyear) && ($this->month == $curmonth)) {
+		if (($this->year == $this->curyear) && ($this->month == $this->curmonth)) {
 			return date('Y-m-d');
 		}
 

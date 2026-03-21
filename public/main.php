@@ -11,8 +11,6 @@
 	$stylesheets = array();
 
 	$MainNav = array();
-	$Cmtys = array();
-	$SubCmtys = array();
 	$id = '';
 	$cmty = '';
 	$sub = '';

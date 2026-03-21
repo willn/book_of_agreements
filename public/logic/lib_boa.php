@@ -20,7 +20,7 @@ abstract class BOADoc {
 	}
 
 	public function setId($id) {
-		$this->id = $id;
+		$this->id = (int)$id;
 		$this->cmty->setId($id);
 	}
 
@@ -34,6 +34,10 @@ abstract class BOADoc {
 		}
 
 		$this->mysql_api = get_mysql_api();
+	}
+
+	public function normalizeNewlines($text) {
+		return str_replace(["\r\n", "\r"], "\n", $text);
 	}
 }
 
