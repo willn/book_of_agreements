@@ -36,10 +36,6 @@ class Agreement extends BOADoc
 		parent::__construct();
 		$this->Date = new MyDate();
 		$this->processRequest();
-
-		$this->title = '';
-		$this->full = '';
-		$this->summary = '';
 	}
 
 	/**
