@@ -99,12 +99,19 @@ class SearchTest extends TestCase {
 	public function testExpiredClauseOnlyWhenIncludeExpiredTrue()
 	{
 		$_GET = ['include_expired' => 'on'];
-
 		$s = new Search();
 		$s->parseGetVars();
 		$sql = $s->createAgrQuery();
+		$this->assertStringNotContainsString('expired=', $sql);
+	}
 
-		$this->assertStringContainsString('expired=1', $sql);
+	public function testNoExpiredClauseWhenGetEmpty()
+	{
+		$_GET = [];
+		$s = new Search();
+		$s->parseGetVars();
+		$sql = $s->createAgrQuery();
+		$this->assertStringContainsString('expired=0', $sql);
 	}
 
 	public function testRunSearchesAgreementsOnly()

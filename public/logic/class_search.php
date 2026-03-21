@@ -83,8 +83,8 @@ class Search {
 			$clauses[] = "cid='{$this->cmty_num}'";
 		}
 		$clauses = array_merge($clauses, $this->processDates());
-		if ($this->include_expired) {
-			$clauses[] = 'expired=1';
+		if (!$this->include_expired) {
+			$clauses[] = 'expired=0';
 		}
 
 		$clause_string = '';
@@ -134,9 +134,6 @@ EOSQL;
 			$clauses[] = "cid='{$this->cmty_num}'";
 		}
 		$clauses = array_merge($clauses, $this->processDates());
-		if ($this->include_expired) {
-			$clauses[] = 'expired=0';
-		}
 
 		$clause_string = '';
 		if (!empty($clauses)) {
