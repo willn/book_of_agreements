@@ -124,7 +124,8 @@ EOHTML;
 			"where agreements.cid=committees.cid and " . 
 			"agreements.expired = 0 $clause order by agreements.date desc";
 		if ( $max > 0 ) { $sql .= " limit $max"; }
-		global $mysql_api;
+
+		$mysql_api = get_mysql_api();
 		$Info = $mysql_api->get($sql );
 
 		if ( !count( $Info ))
