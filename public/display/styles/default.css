@@ -29,7 +29,6 @@ img.titlephoto {
 }
 
 .error, p .error {
-	background: #fb9a54 url('/display/images/tango/32x32/status/dialog-error.png') no-repeat 9px 5px;
 	color: #900;
 	padding: 5px 48px;
 	font-size: 24px;
@@ -334,10 +333,6 @@ div.cmty_title {
 
 .nowrap {
 	white-space: nowrap;
-}
-
-.tango {
-	vertical-align: -7px;
 }
 
 #search input, #advanced_options input {
