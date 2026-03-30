@@ -258,7 +258,21 @@ EOTXT;
 	 *     - search, display search results
 	 *     - document, display full document for html presentation
 	 */
-	public function display($type='document', $errors=array()) {
+	public function display($type='document', $errors=[]) {
+		echo $this->renderDisplay($type, $errors);
+	}
+
+	/**
+	 * Render as HTML the agreement in the format specified.
+	 *
+	 * @param[in] type string (default: document) specifies the output
+	 * format. Possible options would be:
+	 *     - form, the edit form
+	 *     - search, display search results
+	 *     - document, display full document for html presentation
+	 * @return string the output html
+	 */
+	public function renderDisplay($type='document', $errors=[]) {
 		global $sub_summary_length;
 		$admin_info = $this->adminActions( );
 		$short = '';
@@ -276,6 +290,8 @@ EOTXT;
 		if ( $this->expired ) {
 			$condition = '<p class="notice">Agreement Expired</p>';
 		}
+
+		$output = '';
 
 		// XXX break this out into separate functions
 		switch( $type ) {
@@ -316,7 +332,7 @@ EOHTML;
 					$this->actionChoices();
 
 				$action = ($num == '') ? 'Add' : 'Edit';
-				echo <<<EOHTML
+				$output = <<<EOHTML
 				<h1>{$action} Agreement</h1>
 				<form action="?id=admin" method="post">
 				<input type="hidden" name="doctype" value="agreement">
@@ -391,7 +407,7 @@ EOHTML;
 				$date = $this->Date->toString( );
 				$cmty_name = $this->cmty->getName();
 
-				echo <<<EOHTML
+				$output = <<<EOHTML
 					<div class="agreement">
 						<h2 class="agrm">
 							{$date} 
@@ -439,7 +455,7 @@ EOHTML;
 				$related_minutes = $this->getRelatedMinutes();
 
 				$current_date = date('r');
-				echo <<<EOHTML
+				$output = <<<EOHTML
 					<div class="agreement">
 						<div id="print_version_link">
 							<a href="#" id="print_document">print</a>
@@ -460,7 +476,7 @@ EOHTML;
 				break;
 		}
 
-		return 1;
+		return $output;
 	}
 
 

@@ -199,6 +199,17 @@ EOSQL;
 	}
 
 	/**
+	 * Render the results of a SQL query
+	 */
+	public function renderResults($found) {
+		$out = '';
+		foreach($found as $doc) {
+			$out .= $doc->renderDisplay('search');
+		}
+		return $out;
+	}
+
+	/**
 	 * Render this to HTML
 	 */
 	public function toString() {
@@ -266,6 +277,7 @@ EOHTML;
 			return;
 		}
 
+		// XXX replace with renderResults()
 		foreach($found as $doc) {
 			$doc->display('search');
 		}

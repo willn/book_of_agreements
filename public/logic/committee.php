@@ -60,8 +60,8 @@ EOHTML;
 			return '';
 		}
 
-		global $Cmtys;
-		global $SubCmtys;
+		$Cmtys = getCommitteesList();
+		$SubCmtys = getSubCommitteesList();
 		$name = '';
 
 		$id = $this->cid;
