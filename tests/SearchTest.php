@@ -44,38 +44,9 @@ class SearchTest extends TestCase {
 		$this->assertStringContainsString("against('o\\'reilly')", $clause);
 	}
 
-	public function testStartDateClauseValid()
-	{
-		$s = new Search();
-		$clause = $s->getStartDateClause(2024, 3);
-		$this->assertStringContainsString('date>=', $clause);
-		$this->assertStringContainsString('2024-02-29', $clause);
-	}
-
-	public function testStartDateClauseMissingValues()
-	{
-		$s = new Search();
-		$clause = $s->getStartDateClause(null, null);
-		$this->assertEquals('', $clause);
-	}
-
-	public function testProcessDatesReturnsTwoClauses()
-	{
-		$_GET = [
-			'startyear' => '2024',
-			'startmonth' => '1',
-			'endyear' => '2024',
-			'endmonth' => '12',
-		];
-		$s = new Search();
-		$clauses = $s->processDates();
-		$this->assertCount(2, $clauses);
-	}
-
 	public function testCreateAgrQueryIncludesCorePieces()
 	{
 		$_GET = ['q' => 'budget'];
-
 		$s = new Search();
 		$s->parseGetVars();
 		$sql = $s->createAgrQuery();
@@ -114,7 +85,19 @@ class SearchTest extends TestCase {
 		$this->assertStringContainsString('expired=0', $sql);
 	}
 
-	public function testRunSearchesAgreementsOnly()
+	public function testCreateAgrQuerySql() {
+		$s = new Search();
+		$sql = $s->createAgrQuery();
+
+		$today = date('Y-m-d');
+		$expected = <<<EOSQL
+ SELECT agreements.*, committees.cmty, match(title, summary, full, background, comments, processnotes) against('') AS score FROM agreements JOIN committees ON committees.cid = agreements.cid WHERE (date>="2000-12-31" and date<="2026-03-29" and match(title, summary, full, background, comments, processnotes) against('') and expired=0) ORDER BY score DESC;
+EOSQL;
+
+		$this->assertEquals($expected, remove_whitespace($sql));
+	}
+
+	public function testMockRunSearchesAgreementsOnly()
 	{
 		$s = $this->getMockBuilder(Search::class)
 			->onlyMethods(['searchAgreements', 'createAgrQuery'])
@@ -139,7 +122,5 @@ class SearchTest extends TestCase {
 		$result = $s->runSearches();
 		$this->assertEquals(['m'], $result);
 	}
-
-
 }
 ?>

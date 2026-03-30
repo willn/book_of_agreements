@@ -1,7 +1,7 @@
 <?php
 
 define('FUZZY_SECONDS', 100);
-date_default_timezone_set('America/Detroit');
+require_once('utils.php');
 
 class MyDate
 {
@@ -25,9 +25,15 @@ class MyDate
 		$this->curyear = date('Y');
 		$this->curmonth = date('m');
 
-		$this->year = is_int( $year ) ? $year : $this->curyear;
-		$this->month = is_int( $month ) ? $month : date('n');
-		$this->day = is_int( $day ) ? $day : date('j');
+		$year = intval($year);
+		$this->year = ($year) ? $year : STARTING_YEAR;
+
+		$month = intval($month);
+		$this->month = ($month) ? $month : 1;
+
+		$day = intval($day);
+		$this->day = ($day) ? $day : 1;
+
 		$this->label = $label;
 	}
 
@@ -37,7 +43,7 @@ class MyDate
 	 * @param[in] date_string string the date to use, should be formatted
 	 *     as '2018-01-30'.
 	 */
-	function setDate( $date_string ) {
+	function setDate($date_string) {
 		if (!preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/', $date_string, $Matches)) {
 			return;
 		}
@@ -48,23 +54,9 @@ class MyDate
 	}
 
 	/**
-	 * Get a date prior to the given one, by offset.
-	 * Typically used to show "previous X days"
-	 *
-	 * @param[in] num_days int the number of days earlier this should shift.
-	 */
-	function getBefore() {
-		$ts = mktime(0, 0, 0, $this->month, $this->day, $this->year);
-		return date('Y-m-d', ($ts - NUM_SECS_PER_DAY));
-	}
-
-	/**
 	 * Render the HTML needed for choosing a date in the advanced search.
 	 */
 	function selectDate() {
-		$disp_label = !is_null($this->label) ? 
-			ucfirst($this->label) . ' ' : '';
-
 		#create month drop-down
 		$months = '';
 		$Months_list = get_months();
@@ -79,6 +71,9 @@ class MyDate
 			$sel = ( $i == $this->year ) ? ' selected="selected"' : '';
 			$years .= "<option value=\"{$i}\"{$sel}>{$i}</option>\n";
 		}
+
+		$disp_label = !is_null($this->label) ? 
+			ucfirst($this->label) . ' ' : '';
 
 		return <<<EOHTML
 		<p>{$disp_label}Date:
@@ -100,6 +95,31 @@ EOHTML;
 		return sprintf("%04d-%02d-%02d", $this->year, 
 			$this->month, $this->day);
 	}
+}
+
+class StartDate extends MyDate {
+	protected $label = 'start';
+
+	/**
+	 * Create a new StartDate object.
+	 *
+	 * @param[in] year int the 4-digit year in question.
+	 * @param[in] month int the 2-digit month in question.
+	 * @param[in] day int the 2-digit day of the month in question.
+	 * @param[in] label string a prefix for a selector, e.g. "start" or "end".
+	 */
+	function __construct($year='', $month='', $day='', $label=NULL) {
+		parent::__construct($year, $month, $day, 'start');
+
+		$year = intval($year);
+		$this->year = ($year) ? $year : STARTING_YEAR;
+
+		$month = intval($month);
+		$this->month = ($month) ? $month : 1;
+
+		$day = intval($day);
+		$this->day = ($day) ? $day : 1;
+	}
 
 	/**
 	 * Round down to the 1st day of the month, then subtract a few fuzzy seconds
@@ -108,6 +128,34 @@ EOHTML;
 	function getStartOfMonth() {
 		$timestamp = mktime(0, 0, 0, $this->month, 1, $this->year);
 		return date('Y-m-d', ($timestamp - FUZZY_SECONDS));
+	}
+
+}
+
+class EndDate extends MyDate {
+	protected $label = 'end';
+	
+	/**
+	 * Create a new StartDate object.
+	 *
+	 * @param[in] year int the 4-digit year in question.
+	 * @param[in] month int the 2-digit month in question.
+	 * @param[in] day int the 2-digit day of the month in question.
+	 * @param[in] label string a prefix for a selector, e.g. "start" or "end".
+	 */
+	function __construct($year='', $month='', $day='', $label=NULL) {
+		parent::__construct($year, $month, $day, 'end');
+		$this->year = intval($year) ? intval($year) : $this->curyear;
+		$this->month = intval($month) ? intval($month) : $this->curmonth;
+
+		$year = intval($year);
+		$this->year = ($year) ? $year : $this->curyear;
+
+		$month = intval($month);
+		$this->month = ($month) ? $month : $this->curmonth;
+
+		$day = intval($day);
+		$this->day = ($day) ? $day : date('d');
 	}
 
 	/**

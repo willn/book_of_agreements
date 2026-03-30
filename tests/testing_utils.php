@@ -4,6 +4,13 @@
  */
 
 /**
+ * Remove extraneous whitespace
+ */
+function remove_whitespace($input) {
+	return preg_replace('/\s+/', ' ', $input);
+}
+
+/**
  * Remove whitespace before and after html tags
  */
 function remove_html_whitespace($input) {

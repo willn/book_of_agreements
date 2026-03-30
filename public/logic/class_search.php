@@ -19,6 +19,10 @@ class Search {
 	protected $start_date;
 	protected $end_date;
 
+	public function __construct() {
+		$this->start_date = new StartDate();
+		$this->end_date = new EndDate();
+	}
 
 	public function parseGetVars() {
 		$this->cmty_num = intval($this->getParam('cmty'));
@@ -26,8 +30,10 @@ class Search {
 		$this->setTerms($this->getParam('q'));
 		$this->setIncludeExpired($this->getParam('include_expired'));
 
-		$this->start_date = new MyDate();
-		$this->end_date = new MyDate();
+		$this->start_date = new StartDate($this->getParam('startyear'),
+			$this->getParam('startmonth'));
+		$this->end_date = new EndDate($this->getParam('endyear'),
+			$this->getParam('endmonth'));
 	}
 
 	public function setDocType($type) {
@@ -69,35 +75,39 @@ class Search {
 		return "against('{$terms}')";
 	}
 
+	public function getDateClauses() {
+		return [
+			'date>="' . $this->start_date->getStartOfMonth() . '"',
+			'date<="' . $this->end_date->getEndOfMonth() . '"',
+		];
+	}
+
 	/**
 	 * Create the SQL query for searching for agreements
 	 */
 	public function createAgrQuery() {
-		$clauses = [];
+		$clauses = $this->getDateClauses();
 
-		$ft_match = 'match( title, summary, full, background, comments, processnotes )' .
+		$ft_match = 'match(title, summary, full, background, comments, processnotes) ' .
 			$this->getAgainstClause();
 		$clauses[] = $ft_match;
 
 		if ($this->cmty_num != 0) {
 			$clauses[] = "cid='{$this->cmty_num}'";
 		}
-		$clauses = array_merge($clauses, $this->processDates());
+
 		if (!$this->include_expired) {
 			$clauses[] = 'expired=0';
 		}
 
-		$clause_string = '';
-		if (!empty($clauses)) {
-			$clause_string = implode(' and ', $clauses);
-		}
+		$clause_string = implode(' and ', $clauses);
 
 		return <<<EOSQL
 			SELECT agreements.*, committees.cmty, {$ft_match} AS score
 			FROM agreements
 			JOIN committees
 				ON committees.cid = agreements.cid
-			WHERE {$clause_string}
+			WHERE ({$clause_string})
 			ORDER BY score DESC;
 EOSQL;
 	}
@@ -125,7 +135,7 @@ EOSQL;
 
 
 	public function createMinsQuery() {
-		$clauses = [];
+		$clauses = $this->getDateClauses();
 
 		$ft_match = 'match(notes, agenda, content)' . $this->getAgainstClause();
 		$clauses[] = $ft_match;
@@ -133,7 +143,6 @@ EOSQL;
 		if ($this->cmty_num != 0) {
 			$clauses[] = "cid='{$this->cmty_num}'";
 		}
-		$clauses = array_merge($clauses, $this->processDates());
 
 		$clause_string = '';
 		if (!empty($clauses)) {
@@ -189,48 +198,6 @@ EOSQL;
 		return $found;
 	}
 
-	public function processDates() {
-		$clauses = [];
-
-		$start_year = intval($this->getParam('startyear'));
-		$start_month = intval($this->getParam('startmonth'));
-		$clauses[] = $this->getStartDateClause($start_year, $start_month);
-
-		$end_year = intval($this->getParam('endyear'));
-		$end_month = intval($this->getParam('endmonth'));
-		$clauses[] = $this->getEndDateClause($end_year, $end_month);
-
-		return $clauses;
-	}
-
-	/**
-	 * Get the start date clause
-	 */
-	public function getStartDateClause($year, $month) {
-		$this->start_date = new MyDate($year, $month, 1, 'start');
-
-		$clause = '';
-		if (!is_null($year) && !is_null($month)) {
-			$this->start_date = new MyDate($year, $month, NULL, 'start');
-			$clause = 'date>="' . $this->start_date->getStartOfMonth() . '"';
-		}
-		return $clause;
-	}
-
-	/**
-	 * Get the start date clause
-	 */
-	public function getEndDateClause($year, $month) {
-		$this->end_date = new MyDate($year, $month, NULL, 'end');
-
-		$clause = '';
-		if (!is_null($year) && !is_null($month)) {
-			$this->end_date = new MyDate($year, $month, NULL, 'end');
-			$clause = 'date<="' . $this->end_date->getEndOfMonth() . '"';
-		}
-		return $clause;
-	}
-
 	/**
 	 * Render this to HTML
 	 */
@@ -240,8 +207,8 @@ EOSQL;
 		$search_terms_display = !empty($this->terms) ? 
 			'query: [<b>' . $this->terms . '</b>]' : '';
 
-		$start = $this->start_date->selectDate();
-		$end = $this->end_date->selectDate();
+		$start_select = $this->start_date->selectDate();
+		$end_select = $this->end_date->selectDate();
 
 		$found = $this->runSearches();
 		$num_matches = count($found);
@@ -264,8 +231,12 @@ EOSQL;
 EOHTML;
 		}
 
+		$start_string = $this->start_date->toString();
+		$end_string = $this->end_date->toString();
+
 		echo <<<EOHTML
 			<h1>Search</h1>
+			{$start_string} {$end_string}
 			<div id="search_query">{$search_terms_display}
 				number of results: {$num_matches}
 
@@ -275,8 +246,8 @@ EOHTML;
 						<input type="hidden" name="id" value="search"/>
 						<p><input type="search" name="q" value="{$this->terms}" size="50"/></p>
 						<p>Committee:&nbsp;<select name="cmty">{$com_options}</select></p>
-						{$start}
-						{$end}
+						{$start_select}
+						{$end_select}
 						<p>{$document_types}</p>
 						<p>
 							Include expired documents: 

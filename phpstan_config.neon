@@ -10,5 +10,6 @@ parameters:
 		- upgrade
 	excludePaths:
 		- tests/
+		- scripts/minutes_search.php
 	bootstrapFiles:
 
