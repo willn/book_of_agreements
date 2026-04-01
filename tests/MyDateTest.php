@@ -35,5 +35,27 @@ class MyDateTest extends TestCase {
 			['2018-01-03', '2018-01-03'],
 		];
 	}
+
+	/**
+	 * @dataProvider provideGetBefore
+	 */
+	public function testGetBefore($date, $expected) {
+		$this->date->setDate($date);
+		$result = $this->date->getBefore();
+		$debug = [
+			'date' => $date,
+			'expected' => $expected,
+			'result' => $result,
+		];
+		$this->assertEquals($result, $expected, print_r($debug, TRUE));
+	}
+
+	public function provideGetBefore() {
+		return [
+			['2018-01-30', '2018-01-29'],
+			#['2018-02-01', '2018-01-31'],
+			#['2018-01-01', '2017-12-31'],
+		];
+	}
 }
 ?>

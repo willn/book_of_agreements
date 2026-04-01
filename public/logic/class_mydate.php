@@ -54,6 +54,18 @@ class MyDate
 	}
 
 	/**
+	 * Get a date prior to the given one, by offset.
+	 * Typically used to show "previous X days"
+	 *
+	 * @param[in] num_days int the number of days earlier this should shift.
+	 */
+	function getBefore() {
+		$ts = mktime(0, 0, 0, $this->month, $this->day, $this->year);
+		return date('Y-m-d', ($ts - NUM_SECS_PER_DAY));
+	}
+
+
+	/**
 	 * Render the HTML needed for choosing a date in the advanced search.
 	 */
 	function selectDate() {
