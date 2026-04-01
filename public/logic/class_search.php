@@ -93,7 +93,7 @@ class Search {
 		$clauses[] = $ft_match;
 
 		if ($this->cmty_num != 0) {
-			$clauses[] = "cid='{$this->cmty_num}'";
+			$clauses[] = "agreements.cid='{$this->cmty_num}'";
 		}
 
 		if (!$this->include_expired) {
@@ -247,7 +247,6 @@ EOHTML;
 
 		echo <<<EOHTML
 			<h1>Search</h1>
-			{$start_string} {$end_string}
 			<div id="search_query">{$search_terms_display}
 				number of results: {$num_matches}
 

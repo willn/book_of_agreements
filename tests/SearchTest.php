@@ -113,43 +113,48 @@ EOSQL;
 	/**
 	 * @dataProvider provideRunSearchAgreements
 	 */
-	public function testRunSearchAgreements($search_q, $expected) {
-		$_GET = ['q' => $search_q];
+	public function testRunSearchAgreements($search_q, $start_year, $end_year, $cmty, $count, $expected) {
+		$_GET = [
+			'q' => $search_q,
+			'startyear' => $start_year,
+			'startmonth' => 1,
+			'endyear' => $end_year,
+			'endmonth' => 12,
+			'cmty' => $cmty,
+		];
 		$s = new Search();
 		$s->parseGetVars();
 		$sql = $s->createAgrQuery();
 		$query_result = $s->searchAgreements($sql);
 		$result = $s->renderResults($query_result);
 
+		$this->assertEquals(count($query_result), $count);
 		$this->assertEquals(remove_whitespace($expected), remove_whitespace($result));
 	}
 
 	public function provideRunSearchAgreements() {
-		$egress_list = <<<EOHTML
- <div class="agreement"> 
-<h2 class="agrm"> 2019-09-16 <a href="?id=agreement&amp;num=268">Basement Egress Proposal #1 - What's Allowed </a> [Great Oak Community] </h2> <div class="item_topic"> <div class="info">This proposal outlines the requirements for tenants to have a completely separate entrance/exit to their walkout apartment.</div> </div> </div> <div class="agreement"> 
-<h2 class="agrm"> 2019-09-16 <a href="?id=agreement&amp;num=269">Basement Egress Proposal #2 - Building Center Stairs To Wetland and Connector Pathways</a> [Great Oak Community] </h2> <div class="item_topic"> <div class="info">Proposal to build a 3rd set of concrete stairs to the wetlands, along with 2 leveled gravel paths to the adjacent buildings, and pay for it with a loan from the Reserve.<br> </div> </div> </div> <div class="agreement"> 
-<h2 class="agrm"> 2019-09-16 <a href="?id=agreement&amp;num=270">Basement Egress Proposal #3 - Creating Safe Pathways Behind Units 14-20</a> [Great Oak Community] </h2> <div class="item_topic"> <div class="info">This proposal creates gravel pathways behind units 14-20 and outlines the cost, maintenance, and job requirements for them.</div> </div> </div> <div class="agreement"> 
-<h2 class="agrm"> 2002-04-14 <a href="?id=agreement&amp;num=120">Master Deed</a> [Finance &amp; Legal] </h2> <div class="item_topic"> <div class="info">This is the legal document which defines what you own, and how we're comprised as a legal entity. This document contains sections such as: "Definitions", "Title of Project", "Nature of Project", "Common Elements", "Unit Description and Percentage of Value", "Rights of Mortgagees", "Damage to Project", "Easements", "Future Access and Utility Easements", "Future Easements, Licenses and Rights-of-Way", "Amendment or Termination", "Assignment"</div> </div> </div>
-EOHTML;
-
 		$fence_list = <<<EOHTML
  <div class="agreement"> 
-<h2 class="agrm"> 2003-06-30 <a href="?id=agreement&amp;num=90">GO Fence Policy</a> [Grounds] </h2> <div class="item_topic"> <div class="info">The GO fence policy allows backyard fences up to 6 feet high and front yard decorative fences up to 1.5 feet high. The policy aims to balance the community's desire for privacy and pet containment with the preservation of Great Oak's aesthetics and open space.</div> </div> </div> <div class="agreement"> 
-<h2 class="agrm"> 2011-11-21 <a href="?id=agreement&amp;num=209">Proposal to Include Great Oak Garden in Annual Operating Budget</a> [Great Oak Community] </h2> <div class="item_topic"> <div class="info">The garden is considered a shared resource and specific expenses will be included in the Great Oak operating budget for Grounds, including woodchips, replacement hoses and sprinklers, a water meter, and a larger diameter water line to be installed in the center.</div> </div> </div> <div class="agreement"> 
-<h2 class="agrm"> 2007-10-15 <a href="?id=agreement&amp;num=180">Hot Tub Trial Policies</a> [Common House: Hot Tub] </h2> <div class="item_topic"> <div class="info">The Common House Committee has issued a set of policies for a 6-month trial period that covers expenses, safety, health, reservations, respect and manners, and usage, and will be re-evaluated after 6 months.</div> </div> </div> <div class="agreement"> 
-<h2 class="agrm"> 2022-05-28 <a href="?id=agreement&amp;num=289">Hot Tub Policies</a> [Common House: Hot Tub] </h2> <div class="item_topic"> <div class="info">This document outlines the policies for the usage of the Great Oak hot tub, including safety, health, reservations, respect, and manners. Policies include the need for adult supervision of children, showering before use, no food or glass containers, and a reservation system.</div> </div> </div> <div class="agreement"> 
-<h2 class="agrm"> 2004-08-16 <a href="?id=agreement&amp;num=116">Proposal For Usage of Common Land Adjacent To Our LCEs</a> [Grounds] </h2> <div class="item_topic"> <div class="info">Proposal For Usage of Common Land Adjacent To Our LCEs</div> </div> </div> <div class="agreement"> 
-<h2 class="agrm"> 2003-03-03 <a href="?id=agreement&amp;num=98">Pet Policy (minus the Cat section)</a> [Great Oak Community] </h2> <div class="item_topic"> <div class="info">The policy aims to create a harmonious environment for people, pets, and nature. It addresses various types of pets including dogs and other outdoor pets, as well as concerns around safety, cleanliness, damage, and noise. Pet owners are responsible for their pets' actions and damages. The "Cat Clause" covers cats and is a separate policy.</div> </div> </div> <div class="agreement"> 
-<h2 class="agrm"> 2001-09-17 <a href="?id=agreement&amp;num=46">Proposal Template proposal</a> [Process] </h2> <div class="item_topic"> <div class="info">Proposals should be drafted according to a specific template which provides for certain categories of information.</div> </div> </div> <div class="agreement"> 
-<h2 class="agrm"> 2003-08-06 <a href="?id=agreement&amp;num=99">Interim Architectural Review Committee (ARC)</a> [Buildings: ARC] </h2> <div class="item_topic"> <div class="info">Creation of a committee to review changes that members would like to make, especially to their units.</div> </div> </div> <div class="agreement"> 
-<h2 class="agrm"> 2004-06-02 <a href="?id=agreement&amp;num=115">Planting Trees and Shrubs within Limited Common Elements (LCEs)</a> [Grounds] </h2> <div class="item_topic"> <div class="info">Households are free to plant trees and shrubs within their LCEs, which have an expected maximum growth height of 20 feet high or less without approval from the grounds committee, provided they follow specific guidelines. The proposal aims to address issues related to tree planting, which can cause conflicts among neighbors and damage to in-ground infrastructure.</div> </div> </div> <div class="agreement"> 
-<h2 class="agrm"> 2004-04-19 <a href="?id=agreement&amp;num=108">Changes to the Great Oak Landscape: A Proposal to Empower the Grounds Cmtee</a> [Grounds] </h2> <div class="item_topic"> <div class="info">The Grounds Committee is empowered to propose, review, revise and approve changes to the Great Oak landscape.</div> </div> </div>
+<h2 class="agrm"> 2007-10-15 <a href="?id=agreement&amp;num=180">Hot Tub Trial Policies</a> [Common House: Hot Tub] </h2> <div class="item_topic"> <div class="info">The Common House Committee has issued a set of policies for a 6-month trial period that covers expenses, safety, health, reservations, respect and manners, and usage, and will be re-evaluated after 6 months.</div> </div> </div>
+EOHTML;
+
+		$garden_list = <<<EOHTML
+ <div class="agreement"> <h2 class="agrm"> 2011-11-21 <a href="?id=agreement&amp;num=209">Proposal to Include Great Oak Garden in Annual Operating Budget</a> [Great Oak Community] </h2> <div class="item_topic"> <div class="info">The garden is considered a shared resource and specific expenses will be included in the Great Oak operating budget for Grounds, including woodchips, replacement hoses and sprinklers, a water meter, and a larger diameter water line to be installed in the center.</div> </div> </div>
+EOHTML;
+
+		$parking_list = <<<EOHTML
+ <div class="agreement"> <h2 class="agrm"> 2006-06-03 <a href="?id=agreement&amp;num=156">Scooter parking areas</a> [Common House] </h2> <div class="item_topic"> <div class="info">Great Oak will establish 1-3 parking areas for scooters at CH entrances out of the way of doors and walkways. Implementation will be handled by the Common House committee.</div> </div> </div> <div class="agreement"> <h2 class="agrm"> 2006-08-02 <a href="?id=agreement&amp;num=164">Parking Agreement</a> [Grounds] </h2> <div class="item_topic"> <div class="info">To live with limited parking spaces, these guidelines cover removing dead vehicles, storing little-used vehicles off-site, limiting parking of trailers, using garages solely for parking vehicles, and parking only in designated spaces.</div> </div> </div>
+EOHTML;
+
+		$effect_list = <<<EOHTML
+ <div class="agreement"> <h2 class="agrm"> 2026-01-21 <a href="?id=agreement&amp;num=320">Committee Effectiveness Agreement with Convenor and Member Responsibilities</a> [Process] </h2> <div class="item_topic"> <div class="info">A revised Committee Effectiveness agreement to strengthen the Great Oak committee system by giving specific direction to committees on how to effectively function and fulfill their mandates. This is intended to institute best practices for committees to follow in three major areas, namely Committee Mandates, Roles and Responsibilities, and Questions, Concerns, and Controversial Decisions. Section A (Mandates) contains updated content; the rest of the agreement dates from 2019.</div> </div> </div>
 EOHTML;
 
 		return [
-			['egress', $egress_list],
-			['fence', $fence_list],
+			['fence', 2006, 2007, 0, 1, $fence_list],
+			['garden', 2011, 2011, 0, 1, $garden_list],
+			['parking', 2006, 2007, 0, 2, $parking_list],
+			['Effectiveness', 2022, 2026, 9, 1, $effect_list],
 		];
 	}
 
