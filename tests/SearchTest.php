@@ -98,11 +98,11 @@ class SearchTest extends TestCase {
 
 	public function provideCreateAgrQuerySql() {
 		$parking = <<<EOSQL
- SELECT agreements.*, committees.cmty, match(title, summary, full, background, comments, processnotes) against('parking') AS score FROM agreements JOIN committees ON committees.cid = agreements.cid WHERE (date>="2000-12-31" and date<="2007-07-01" and match(title, summary, full, background, comments, processnotes) against('parking') and expired=0) ORDER BY score DESC;
+ SELECT agreements.*, c.cmty, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags, match(title, summary, full, background, comments, processnotes) against('parking') AS score FROM agreements JOIN committees c ON c.cid = agreements.cid LEFT JOIN tags_to_agreements tta ON tta.agreement_id = agreements.id LEFT JOIN tags t ON t.id = tta.tag_id WHERE (date>="2000-12-31" and date<="2007-07-01" and match(title, summary, full, background, comments, processnotes) against('parking') and expired=0) GROUP BY agreements.id ORDER BY score DESC;
 EOSQL;
 
 		$vendor = <<<EOSQL
- SELECT agreements.*, committees.cmty, match(title, summary, full, background, comments, processnotes) against('trusted vendor') AS score FROM agreements JOIN committees ON committees.cid = agreements.cid WHERE (date>="2018-02-28" and date<="2018-07-01" and match(title, summary, full, background, comments, processnotes) against('trusted vendor') and expired=0) ORDER BY score DESC;
+ SELECT agreements.*, c.cmty, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags, match(title, summary, full, background, comments, processnotes) against('trusted vendor') AS score FROM agreements JOIN committees c ON c.cid = agreements.cid LEFT JOIN tags_to_agreements tta ON tta.agreement_id = agreements.id LEFT JOIN tags t ON t.id = tta.tag_id WHERE (date>="2018-02-28" and date<="2018-07-01" and match(title, summary, full, background, comments, processnotes) against('trusted vendor') and expired=0) GROUP BY agreements.id ORDER BY score DESC;
 EOSQL;
 
 		return [
@@ -163,7 +163,7 @@ EOSQL;
 EOHTML;
 
 		$garden_list = <<<EOHTML
- <div class="agreement"> <h2 class="agrm"> 2011-11-21 <a href="?id=agreement&amp;num=209">Proposal to Include Great Oak Garden in Annual Operating Budget</a> [Great Oak Community] </h2> <div class="item_topic"> <div class="info">The garden is considered a shared resource and specific expenses will be included in the Great Oak operating budget for Grounds, including woodchips, replacement hoses and sprinklers, a water meter, and a larger diameter water line to be installed in the center.</div> </div> </div>
+ <div class="agreement"> <h2 class="agrm"> 2011-11-21 <a href="?id=agreement&amp;num=209">Proposal to Include Great Oak Garden in Annual Operating Budget</a> [Great Oak Community] </h2> <div class="item_topic"> <div class="info">The garden is considered a shared resource and specific expenses will be included in the Great Oak operating budget for Grounds, including woodchips, replacement hoses and sprinklers, a water meter, and a larger diameter water line to be installed in the center.</div> <div class="tags">Tags: <span class="tag_entry">budget</span> </div> </div> </div>
 EOHTML;
 
 		$parking_list = <<<EOHTML
@@ -173,6 +173,10 @@ EOHTML;
 		$effect_list = <<<EOHTML
  <div class="agreement"> <h2 class="agrm"> 2026-01-21 <a href="?id=agreement&amp;num=320">Committee Effectiveness Agreement with Convenor and Member Responsibilities</a> [Process] </h2> <div class="item_topic"> <div class="info">A revised Committee Effectiveness agreement to strengthen the Great Oak committee system by giving specific direction to committees on how to effectively function and fulfill their mandates. This is intended to institute best practices for committees to follow in three major areas, namely Committee Mandates, Roles and Responsibilities, and Questions, Concerns, and Controversial Decisions. Section A (Mandates) contains updated content; the rest of the agreement dates from 2019.</div> </div> </div>
 EOHTML;
+
+		$five_fall = <<<EOSQL
+ <div class="agreement"> <h2 class="agrm"> 2012-06-18 <a href="?id=agreement&amp;num=213">Agreement to lengthen the five fall budget community meetings</a> [Process] </h2> <div class="item_topic"> <div class="info">The proposal suggests pre-approving five community meetings a year, when the annual budget is discussed, to extend up to 120 minutes instead of 90 minutes, from 6:30 to 8:30 pm, when needed. This is intended to allow for more in-depth discussions, finishing the budget in fewer meetings, and reducing tension around rushed agenda items.</div> <div class="tags">Tags: <span class="tag_entry">budget</span> <span class="tag_entry">meeting-format</span> </div> </div> </div>
+EOSQL;
 
 		return [
 			[
@@ -222,6 +226,18 @@ EOHTML;
 				],
 				1,
 				$effect_list
+			],
+			[
+				[
+					'q' => 'five fall budget community meetings ',
+					'startyear' => 2012,
+					'startmonth' => 6,
+					'endyear' => 2012,
+					'endmonth' => 6,
+					'cmty' => 9,
+				],
+				1,
+				$five_fall
 			],
 		];
 	}

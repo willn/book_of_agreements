@@ -397,3 +397,13 @@ div.cmty_title {
 .listing .date {
 	white-space: nowrap;
 }
+
+.tags {
+	padding: 6px;
+}
+.tags .tag_entry {
+	padding: 4px;
+	background-color: #AFEEEE;
+	color: #000080;
+	margin: 4px;
+}

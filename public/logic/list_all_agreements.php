@@ -72,16 +72,20 @@ EOHTML;
 	}
 
 	$sql = <<<EOSQL
-		select agreements.id, agreements.cid, agreements.title,
-			agreements.date, committees.cmty, committees.parent,
-			agreements.summary
-		from agreements, committees where committees.cid=agreements.cid
-		{$pub_constrain}
-		{$conditions}
-		{$order}
+		SELECT a.id, a.cid, a.title, a.date, c.cmty, c.parent, a.summary,
+		  GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags
+		FROM agreements a
+		JOIN committees c ON c.cid = a.cid
+		LEFT JOIN tags_to_agreements tta ON tta.agreement_id = a.id
+		LEFT JOIN tags t ON t.id = tta.tag_id
+		WHERE a.expired = 0
+		GROUP BY 
+		  a.id, a.cid, a.title, a.date, c.cmty, c.parent, a.summary
+		ORDER BY a.date DESC, a.id DESC;
 EOSQL;
+
 	$mysql_api = get_mysql_api();
-	$All = $mysql_api->get($sql );
+	$All = $mysql_api->get($sql);
 	$count = count($All);
 
 	echo <<<EOHTML
@@ -115,13 +119,14 @@ EOHTML;
 				$name = $Cmty->getName();
 				$title = stripslashes( $Item['title'] );
 				$summary = stripslashes( $Item['summary'] );
+				$tags_html = render_tags(stripslashes($Item['tags']));
 
 				echo <<<EOHTML
 					<tr>
 						<td valign="top">{$name}</td>
 						<td valign="top" class="date">{$Item['date']}</td>
 						<td valign="top"><a href="?id=agreement&amp;num={$Item['id']}">{$title}</a></td>
-						<td valign="top">{$summary}</td>
+						<td valign="top">{$summary} {$tags_html}</td>
 					</tr>
 EOHTML;
 				

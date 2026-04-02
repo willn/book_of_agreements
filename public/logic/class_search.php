@@ -103,13 +103,21 @@ class Search {
 		$clause_string = implode(' and ', $clauses);
 
 		return <<<EOSQL
-			SELECT agreements.*, committees.cmty, {$ft_match} AS score
+			SELECT agreements.*, c.cmty, 
+			  GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags,
+				{$ft_match} AS score
 			FROM agreements
-			JOIN committees
-				ON committees.cid = agreements.cid
+			JOIN committees c 
+			  ON c.cid = agreements.cid
+			LEFT JOIN tags_to_agreements tta 
+			  ON tta.agreement_id = agreements.id
+			LEFT JOIN tags t 
+			  ON t.id = tta.tag_id
 			WHERE ({$clause_string})
+			GROUP BY agreements.id
 			ORDER BY score DESC;
 EOSQL;
+
 	}
 
 
@@ -127,6 +135,7 @@ EOSQL;
 			$agr->setContent($row['title'], $row['summary'], $row['full'], $row['background'],
 				$row['comments'], $row['processnotes'], $row['cid'], $row['date'],
 				$row['expired'], $row['world_public']);
+			$agr->setTags($row['tags']);
 			$agreements[] = $agr;
 		}
 

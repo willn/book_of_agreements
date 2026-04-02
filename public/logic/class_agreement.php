@@ -22,6 +22,7 @@ class Agreement extends BOADoc
 	public $found = '';
 	public $world_public = FALSE;
 	public $found_summary = FALSE;
+	public $tags = [];
 
 	public $diff_comments;
 	public $previous_versions;
@@ -90,6 +91,17 @@ class Agreement extends BOADoc
 		}
 	}
 
+	public function setTags($tags) {
+		if (empty($tags)) {
+			return;
+		}
+
+		if (is_string($tags)) {
+			$tags = explode(', ', $tags);
+		}
+		$this->tags = $tags;
+	}
+
 	/**
 	 * Load an Agreement entry from the database by ID.
 	 */
@@ -110,18 +122,15 @@ class Agreement extends BOADoc
 		}
 
 		$sql = <<<EOSQL
-			select committees.cmty, agreements.* from agreements, committees
-			where agreements.id={$this->id} and committees.cid=agreements.cid
+			SELECT c.cmty, a.*,
+			  GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags
+			FROM agreements a
+			JOIN committees c ON c.cid = a.cid
+			LEFT JOIN tags_to_agreements tta ON tta.agreement_id = a.id
+			LEFT JOIN tags t ON t.id = tta.tag_id
+			WHERE a.id = {$this->id}
+			GROUP BY a.id;
 EOSQL;
-
-/*
-try mixing relevance in the SQL query...
-
-SELECT *, ( (1.3 * (MATCH(title) AGAINST ('+term +term2' IN BOOLEAN MODE))) +
-(0.6 * (MATCH(text) AGAINST ('+term +term2' IN BOOLEAN MODE))) ) AS relevance
-FROM [table_name] WHERE ( MATCH(title,text) AGAINST ('+term +term2' IN BOOLEAN
-MODE) ) HAVING relevance > 0 ORDER BY relevance DESC;
-*/
 
 		$this->init_mysql_api();
 		$data = $this->mysql_api->get($sql . $pub_constraint, NULL, FALSE);
@@ -157,6 +166,7 @@ MODE) ) HAVING relevance > 0 ORDER BY relevance DESC;
 			$data['expired'],
 			$data['world_public']
 		);
+		$this->setTags($data['tags']);
 	}
 
 	/**
@@ -247,6 +257,13 @@ Date: {$date}
 {$out}
 
 EOTXT;
+	}
+
+	/**
+	 * Render a list of tags.
+	 */
+	public function renderTags() {
+		return render_tags($this->tags);
 	}
 
 	/**
@@ -406,6 +423,7 @@ EOHTML;
 
 				$date = $this->Date->toString( );
 				$cmty_name = $this->cmty->getName();
+				$tag_html = $this->renderTags();
 
 				$output = <<<EOHTML
 					<div class="agreement">
@@ -417,6 +435,7 @@ EOHTML;
 						{$condition}
 						<div class="item_topic">
 							<div class="info">{$short}</div>
+							{$tag_html}
 						</div>
 					</div>
 EOHTML;
@@ -439,6 +458,7 @@ EOHTML;
 				if ( !empty( $summary )) {
 					$content .= "<h3>Summary:</h3>\n$summary\n";
 				}
+				$content .= $this->renderTags();
 				if ( !empty( $background )) {
 					$content .= "<h3>Background:</h3>\n$background\n";
 				}
@@ -964,6 +984,7 @@ EOSQL;
 				$a['background'], $a['comments'], $a['processnotes'],
 				$a['cid'], $a['date'], $a['expired'],
 				$a['world_public']);
+			$this->setTags($a['tags']);
 
 			if (!is_null($prev_agreement)) {
 				$prev_agreement = $a;

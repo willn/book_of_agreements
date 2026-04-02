@@ -222,3 +222,23 @@ function getAllCommittees() {
 	return $AllCmtys;
 }
 
+function render_tags($tags_list) {
+	if (empty($tags_list)) {
+		return '';
+	}
+
+	if (is_string($tags_list)) {
+		$tags_list = explode(', ', $tags_list);
+	}
+
+	$inner = '';
+	foreach($tags_list as $entry) {
+		$inner .= '<span class="tag_entry">' . $entry . '</span> ';
+	}
+	return <<<EOHTML
+<div class="tags">Tags: {$inner}</div>
+EOHTML;
+}
+
+
+
