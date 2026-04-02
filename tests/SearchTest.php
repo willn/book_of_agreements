@@ -85,16 +85,46 @@ class SearchTest extends TestCase {
 		$this->assertStringContainsString('expired=0', $sql);
 	}
 
-	public function testCreateAgrQuerySql() {
+	/**
+	 * @dataProvider provideCreateAgrQuerySql
+	 */
+	public function testCreateAgrQuerySql($get_vars, $expected) {
 		$s = new Search();
+		$_GET = $get_vars;
+		$s->parseGetVars();
 		$sql = $s->createAgrQuery();
+		$this->assertEquals($expected, remove_whitespace($sql));
+	}
 
-		$today = date('Y-m-d');
-		$expected = <<<EOSQL
- SELECT agreements.*, committees.cmty, match(title, summary, full, background, comments, processnotes) against('') AS score FROM agreements JOIN committees ON committees.cid = agreements.cid WHERE (date>="2000-12-31" and date<="{$today}" and match(title, summary, full, background, comments, processnotes) against('') and expired=0) ORDER BY score DESC;
+	public function provideCreateAgrQuerySql() {
+		$parking = <<<EOSQL
+ SELECT agreements.*, committees.cmty, match(title, summary, full, background, comments, processnotes) against('parking') AS score FROM agreements JOIN committees ON committees.cid = agreements.cid WHERE (date>="2000-12-31" and date<="2007-07-01" and match(title, summary, full, background, comments, processnotes) against('parking') and expired=0) ORDER BY score DESC;
 EOSQL;
 
-		$this->assertEquals($expected, remove_whitespace($sql));
+		$vendor = <<<EOSQL
+ SELECT agreements.*, committees.cmty, match(title, summary, full, background, comments, processnotes) against('trusted vendor') AS score FROM agreements JOIN committees ON committees.cid = agreements.cid WHERE (date>="2018-02-28" and date<="2018-07-01" and match(title, summary, full, background, comments, processnotes) against('trusted vendor') and expired=0) ORDER BY score DESC;
+EOSQL;
+
+		return [
+			[
+				[
+					'q' => 'parking',
+					'endyear' => 2007,
+					'endmonth' => 6,
+				],
+				$parking
+			],
+			[
+				[
+					'q' => 'trusted vendor',
+					'startyear' => 2018,
+					'startmonth' => 3,
+					'endyear' => 2018,
+					'endmonth' => 6,
+				],
+				$vendor
+			],
+		];
 	}
 
 	public function testMockRunSearchesAgreementsOnly()
@@ -113,16 +143,10 @@ EOSQL;
 	/**
 	 * @dataProvider provideRunSearchAgreements
 	 */
-	public function testRunSearchAgreements($search_q, $start_year, $end_year, $cmty, $count, $expected) {
-		$_GET = [
-			'q' => $search_q,
-			'startyear' => $start_year,
-			'startmonth' => 1,
-			'endyear' => $end_year,
-			'endmonth' => 12,
-			'cmty' => $cmty,
-		];
+	public function testRunSearchAgreements($get_vars, $count, $expected) {
+
 		$s = new Search();
+		$_GET = $get_vars;
 		$s->parseGetVars();
 		$sql = $s->createAgrQuery();
 		$query_result = $s->searchAgreements($sql);
@@ -151,10 +175,54 @@ EOHTML;
 EOHTML;
 
 		return [
-			['fence', 2006, 2007, 0, 1, $fence_list],
-			['garden', 2011, 2011, 0, 1, $garden_list],
-			['parking', 2006, 2007, 0, 2, $parking_list],
-			['Effectiveness', 2022, 2026, 9, 1, $effect_list],
+			[
+				[
+					'q' => 'fence',
+					'startyear' => 2006,
+					'startmonth' => 1,
+					'endyear' => 2007,
+					'endmonth' => 12,
+					'cmty' => 0,
+				],
+				1,
+				$fence_list
+			],
+			[
+				[
+					'q' => 'garden',
+					'startyear' => 2011,
+					'startmonth' => 1,
+					'endyear' => 2011,
+					'endmonth' => 12,
+					'cmty' => 0,
+				],
+				1,
+				$garden_list
+			],
+			[
+				[
+					'q' => 'parking',
+					'startyear' => 2006,
+					'startmonth' => 1,
+					'endyear' => 2007,
+					'endmonth' => 12,
+					'cmty' => 0,
+				],
+				2,
+				$parking_list
+			],
+			[
+				[
+					'q' => 'Effectiveness',
+					'startyear' => 2022,
+					'startmonth' => 1,
+					'endyear' => 2026,
+					'endmonth' => 12,
+					'cmty' => 9,
+				],
+				1,
+				$effect_list
+			],
 		];
 	}
 
