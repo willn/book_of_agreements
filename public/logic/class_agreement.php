@@ -179,21 +179,25 @@ EOSQL;
 	{
 		$errs = [];
 
-		// if editing and no comments
-		if ($id && trim($diff_comments)) {
-			$errs[] = 'diff_comments';
-		}
-
-		if (trim($title) === '') {
+		if (empty(trim($title))) {
 			$errs[] = 'title';
 		}
-		if (trim($full) === '') {
+
+		if (empty(trim($full))) {
 			$errs[] = 'full';
+		}
+
+		// if editing and no comments
+		if ($id && empty(trim($diff_comments))) {
+			$errs[] = 'diff_comments';
 		}
 
 		return $errs;
 	}
 
+	/**
+	 * This function passes in the object state into the method.
+	 */
 	public function validateInput() {
 		return $this->validateFields($this->title, $this->full,
 			$this->diff_comments, $this->id);
@@ -661,8 +665,9 @@ EOHTML;
 		# check for required items
 		$errs = $this->validateInput();
 		if (!empty($errs)) {
+			$err_keys = implode(', ', $errs);
 			echo <<<EOHTML
-				<div class="error">Missing content!</div>
+				<div class="error">Missing content! {$err_keys}</div>
 EOHTML;
 			$this->display('form', $errs);
 

@@ -106,20 +106,34 @@ class AgreementTest extends TestCase
         );
     }
 
-    public function testValidateInputRequiresTitleAndFull()
+	/**
+	 * @dataProvider provideValidateFields
+	 */
+    public function testValidateFields($title, $full, $diff_comments,
+		$id, $expected)
     {
         $a = new TestAgreement();
-        $errs = $a->validateFields('', '', '', 0);
-        $this->assertContains('title', $errs);
-        $this->assertContains('full', $errs);
+        $errs = $a->validateFields($title, $full, $diff_comments, $id);
+		$this->assertEquals($expected, $errs);
     }
 
-    public function testValidateInputPassesWhenValid()
-    {
-        $a = new TestAgreement();
-        $errs = $a->validateFields('Title', 'Body', '', 0);
-        $this->assertEmpty($errs);
-    }
+	public function provideValidateFields() {
+		return [
+			# all pass
+			['title', 'full', 'diff comments', 123, []],
+
+			# missing one key at a time
+			['', 'full', 'diff comments', 124, ['title']],
+			['title', '', 'diff comments', 125, ['full']],
+			['title', 'full', '', 126, ['diff_comments']],
+
+			# all are missing when adding
+			['', '', '', 0, ['title', 'full']],
+
+			# missing all when editing an existing agreement
+			['', '', '', 1, ['title', 'full', 'diff_comments']],
+		];
+	}
 
     public function testGetTextVersionIncludesSections()
     {
