@@ -1,6 +1,7 @@
 <?php
 require_once('logic/utils.php');
 require_once('logic/class_minute.php');
+require_once('logic/class_mydate.php');
 
 $update_string = '';
 $update = false;
@@ -56,7 +57,7 @@ else {
 		'<input type="hidden" name="admin_post" value="1">' . "\n".
 		'<input type="hidden" name="num" value="'.$num.'">' . "\n".
 		$update_string . 
-		$Mins->Date->selectDate( ) .
+		$Mins->Date->selectDate(TRUE) .
 		$Cmty->getSelectCommittee($Cmtys, $SubCmtys);
 	$Mins->display( 'form' );
 	echo '<p><input type="submit" name="save" ' .

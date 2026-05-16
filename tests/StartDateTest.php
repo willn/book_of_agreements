@@ -93,6 +93,7 @@ class StartDateTest extends TestCase {
 <option value="11">November</option>
 <option value="12">December</option>
 </select>
+		
 		</p>
 EOHTML;
 

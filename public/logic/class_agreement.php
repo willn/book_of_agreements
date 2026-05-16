@@ -344,7 +344,7 @@ EOHTML;
 
 				global $Cmtys;
 				global $SubCmtys;
-				$controls = $this->Date->selectDate() .
+				$controls = $this->Date->selectDate(TRUE) .
 					$this->cmty->getSelectCommittee($Cmtys, $SubCmtys) .
 					$this->actionChoices();
 

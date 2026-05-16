@@ -5,8 +5,9 @@ require_once('utils.php');
 
 class MyDate
 {
-	protected $curyear;
-	protected $curmonth;
+	protected $cur_year;
+	protected $cur_month;
+	protected $cur_day;
 
 	protected $year;
 	protected $month;
@@ -22,17 +23,18 @@ class MyDate
 	 * @param[in] label string a prefix for a selector, e.g. "start" or "end".
 	 */
 	function __construct($year='', $month='', $day='', $label=NULL) {
-		$this->curyear = date('Y');
-		$this->curmonth = date('m');
+		$this->cur_year = date('Y');
+		$this->cur_month = date('m');
+		$this->cur_day = date('d');
 
 		$year = intval($year);
-		$this->year = ($year) ? $year : STARTING_YEAR;
+		$this->year = ($year) ? $year : $this->cur_year;
 
 		$month = intval($month);
-		$this->month = ($month) ? $month : 1;
+		$this->month = ($month) ? $month : $this->cur_month;
 
 		$day = intval($day);
-		$this->day = ($day) ? $day : 1;
+		$this->day = ($day) ? $day : $this->cur_day;
 
 		$this->label = $label;
 	}
@@ -68,7 +70,7 @@ class MyDate
 	/**
 	 * Render the HTML needed for choosing a date in the advanced search.
 	 */
-	function selectDate() {
+	function selectDate($include_day=FALSE) {
 		#create month drop-down
 		$months = '';
 		$Months_list = get_months();
@@ -79,9 +81,22 @@ class MyDate
 
 		#create year drop-down
 		$years = '';
-		for ($i = STARTING_YEAR; $i <= $this->curyear; $i++) {
+		for ($i = STARTING_YEAR; $i <= $this->cur_year; $i++) {
 			$sel = ( $i == $this->year ) ? ' selected="selected"' : '';
 			$years .= "<option value=\"{$i}\"{$sel}>{$i}</option>\n";
+		}
+
+		# create day of month drop-down
+		$day_selector = '';
+		if ($include_day) {
+			$days = '';
+			for ($i = 1; $i <= 31; $i++) {
+				$sel = ($i == $this->day) ? ' selected="selected"' : '';
+				$days .= "<option value=\"{$i}\"{$sel}>{$i}</option>\n";
+			}
+			$day_selector = <<<EOHTML
+		<select name="{$this->label}day" size="1">{$days}</select>
+EOHTML;
 		}
 
 		$disp_label = !is_null($this->label) ? 
@@ -91,6 +106,7 @@ class MyDate
 		<p>{$disp_label}Date:
 		<select name="{$this->label}year" size="1">{$years}</select>
 		<select name="{$this->label}month" size="1">{$months}</select>
+		{$day_selector}
 		</p>
 EOHTML;
 	}
@@ -157,14 +173,14 @@ class EndDate extends MyDate {
 	 */
 	function __construct($year='', $month='', $day='', $label=NULL) {
 		parent::__construct($year, $month, $day, 'end');
-		$this->year = intval($year) ? intval($year) : $this->curyear;
-		$this->month = intval($month) ? intval($month) : $this->curmonth;
+		$this->year = intval($year) ? intval($year) : $this->cur_year;
+		$this->month = intval($month) ? intval($month) : $this->cur_month;
 
 		$year = intval($year);
-		$this->year = ($year) ? $year : $this->curyear;
+		$this->year = ($year) ? $year : $this->cur_year;
 
 		$month = intval($month);
-		$this->month = ($month) ? $month : $this->curmonth;
+		$this->month = ($month) ? $month : $this->cur_month;
 
 		$day = intval($day);
 		$this->day = ($day) ? $day : date('d');
@@ -181,7 +197,7 @@ class EndDate extends MyDate {
 		}
 
 		// return early with NOW if this is the current month
-		if (($this->year == $this->curyear) && ($this->month == $this->curmonth)) {
+		if (($this->year == $this->cur_year) && ($this->month == $this->cur_month)) {
 			return date('Y-m-d');
 		}
 
