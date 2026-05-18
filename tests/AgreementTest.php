@@ -3,12 +3,11 @@
 use PHPUnit\Framework\TestCase;
 
 $root = dirname(__DIR__);
-set_include_path(
-    get_include_path()
-    . PATH_SEPARATOR . $root . '/public'
-    . PATH_SEPARATOR . $root . '/public/logic'
-);
+set_include_path(get_include_path() .
+	PATH_SEPARATOR . $root . '/public' .
+	PATH_SEPARATOR . $root . '/public/logic');
 require_once $root . '/public/logic/class_agreement.php';
+require_once 'class_mydate.php';
 
 /**
  * Simple stub replacements for dependencies
@@ -21,30 +20,37 @@ class StubCommittee {
     }
 }
 
-class StubDate {
-    private $date = '2024-01-01';
-
-    public function setDate($d) {
-        $this->date = $d;
-    }
-
-    public function toString() {
-        return $this->date;
-    }
-}
-
 /**
  * Testable subclass that bypasses request processing
  */
 class TestAgreement extends Agreement {
-    public function __construct() {
-        // bypass parent constructor behavior
-        $this->cmty = new StubCommittee();
-        $this->Date = new StubDate();
-    }
-
     public function processRequest() {
         // disable request handling
+    }
+
+    public function adminActions()
+    {
+        return '<div class="admin-actions">ADMIN</div>';
+    }
+
+    public function renderTags()
+    {
+        return '<div class="tags">TAGS</div>';
+    }
+
+    public function displayPreviousVersions()
+    {
+        return '<div class="previous-versions">PREVIOUS</div>';
+    }
+
+    public function getRelatedMinutes()
+    {
+        return '<div class="related-minutes">MINUTES</div>';
+    }
+
+    public function actionChoices()
+    {
+        return '<div class="action-choices">ACTIONS</div>';
     }
 }
 
@@ -165,4 +171,19 @@ class AgreementTest extends TestCase
 		$result = $a->normalizeNewlines($input);
 		$this->assertEquals("line1\nline2\nline3\nline4", $result);
 	}
+
+	public function testRenderFormForNewAgreement()
+	{
+		$agreement = new TestAgreement();
+		$agreement->id = 0;
+		$agreement->title = 'Test Title';
+		$agreement->full = 'Proposal text';
+
+		$html = $agreement->renderDisplay('form');
+
+		$this->assertStringContainsString('<h1>Add Agreement</h1>', $html);
+		$this->assertStringNotContainsString('name="update"', $html);
+		$this->assertStringNotContainsString('Diff comments:', $html);
+	}
+
 }

@@ -85,7 +85,7 @@ EOHTML;
 				if ( empty( $summary ))
 				{
 					$summary = format_html( substr( $Minutes['content'], 
-						0, $sub_summary_length ) . '...' );
+						0, SUB_SUMMARY_LENGTH ) . '...' );
 				}
 
 				$cmty_name = $Cmty->getName();
@@ -119,7 +119,7 @@ EOHTML;
 		$sql = 'select agreements.id, agreements.date, ' .
 			'agreements.title, agreements.summary, agreements.cid, ' .
 			'agreements.expired, ' .
-			"substr( agreements.full, 1, $sub_summary_length) as partial, " .
+			"substr( agreements.full, 1, ' . SUB_SUMMARY_LENGTH . ') as partial, " .
 			'committees.cmty from agreements, committees ' .
 			"where agreements.cid=committees.cid and " . 
 			"agreements.expired = 0 $clause order by agreements.date desc";

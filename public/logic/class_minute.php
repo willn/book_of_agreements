@@ -86,7 +86,6 @@ class Minutes extends BOADoc {
 	 */
 	public function display( $type='document' )
 	{
-		global $sub_summary_length;
 		$admin_info = $this->displayAdminActions( );
 		$short = '';
 
@@ -138,7 +137,7 @@ class Minutes extends BOADoc {
 			case 'summary':
 				if ( empty( $short )) { $short = $agenda . $notes; }
 				if ( empty( $short ))
-				{ $short = substr( $content, 0, $sub_summary_length ) . '...'; }
+				{ $short = substr( $content, 0, SUB_SUMMARY_LENGTH ) . '...'; }
 
 				$date_string = $this->Date->toString( );
 				$cmty_name = $this->cmty->getName();

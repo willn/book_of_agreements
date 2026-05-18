@@ -294,7 +294,6 @@ EOTXT;
 	 * @return string the output html
 	 */
 	public function renderDisplay($type='document', $errors=[]) {
-		global $sub_summary_length;
 		$admin_info = $this->adminActions( );
 		$short = '';
 		$expired = intval( $this->expired );
@@ -346,8 +345,8 @@ EOHTML;
 				$update_string = ( $num <= 0 ) ? '' :
 					'<input type="hidden" name="update" value="1">';
 
-				global $Cmtys;
-				global $SubCmtys;
+				$Cmtys = getAllCommittees();
+				$SubCmtys = getSubCommitteesList();
 				$controls = $this->Date->selectDate(TRUE) .
 					$this->cmty->getSelectCommittee($Cmtys, $SubCmtys) .
 					$this->actionChoices();
@@ -422,7 +421,7 @@ EOHTML;
 				}
 				else {
 					$short = !empty($summary) ? $summary :
-						substr( $full, 0, $sub_summary_length ) . '...';
+						substr($full, 0, SUB_SUMMARY_LENGTH) . '...';
 				}
 
 				$date = $this->Date->toString( );
@@ -833,7 +832,7 @@ EOSQL;
 	 * Delete the current agreement.
 	 */
 	public function delete( ) {
-		global $Cmtys;
+		$Cmtys = getAllCommittees();
 		$HDUP = get_hdup();
 
 		if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {

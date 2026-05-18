@@ -15,7 +15,8 @@
 	$cmty = '';
 	$sub = '';
 	$search_terms = '';
-	$sub_summary_length = 150;
+
+	define('SUB_SUMMARY_LENGTH', 150);
 
 	#-------[ over-write defaults with page-specific variables ]---------
 	#grab page id value

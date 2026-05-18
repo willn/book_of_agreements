@@ -42,8 +42,8 @@ elseif( isset( $_GET['delete'] )) {
 	$Mins->delete( $confirm_del );
 }
 else {
-	global $Cmtys;
-	global $SubCmtys;
+	$Cmtys = getAllCommittees();
+	$SubCmtys = getSubCommitteesList();
 	$Cmty->setId($Mins->cid);
 
 	if ( $num > 0 ) {
