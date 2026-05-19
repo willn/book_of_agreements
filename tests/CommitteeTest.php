@@ -5,6 +5,7 @@ set_include_path('../' . PATH_SEPARATOR . '../public/');
 require_once '../public/constants.php';
 require_once '../public/logic/committee.php';
 require_once 'testing_utils.php';
+require_once 'logic/utils.php';
 
 class CommitteeTest extends TestCase {
 	private $committee;
@@ -27,30 +28,20 @@ class CommitteeTest extends TestCase {
 	/**
 	 * @dataProvider provideGetSelectCommittee
 	 */
-	public function testGetSelectCommittee($cmtys, $subcmtys, $expected) {
+	public function testGetSelectCommittee($expected) {
 		$this->committee->setId(4);
-		$result = $this->committee->getSelectCommittee($cmtys, $subcmtys);
+		$result = $this->committee->getSelectCommittee();
 		$this->assertEquals(remove_html_whitespace($result),
 			remove_html_whitespace($expected));
 	}
 
 	public function provideGetSelectCommittee() {
 		$html = <<<EOHTML
-		<label>
-			<span>Committee:</span>
-			<select name="cid" size="1">
-				<option value="1">Buildings</option>
-<option value="103">Buildings:ARC</option>
-<option value="2">CDC</option>
-<option value="4" selected="selected">Design</option>
-<option value="101">Design:Color</option>
-			</select>
-		</label>
+<label><span>Committee:</span><select name="cid" size="1"><option value="14">Great Oak Community</option><option value="1">Buildings</option><option value="103">Buildings:ARC</option><option value="103">Buildings: ARC</option><option value="3">Common House</option><option value="109">Common House:Hot Tub</option><option value="109">Common House: Hot Tub</option><option value="5">Finance &amp; Legal</option><option value="102">Finance &amp; Legal:Budget</option><option value="102">Finance &amp; Legal: Budget</option><option value="6">Grounds</option><option value="7">Meals</option><option value="8">Membership</option><option value="105">Membership:Fun-Club</option><option value="106">Membership:Affordability</option><option value="110">Membership:Marketing</option><option value="105">Membership: Fun-Club</option><option value="106">Membership: Affordability</option><option value="110">Membership: Marketing</option><option value="9">Process</option><option value="108">Process:Infoco</option><option value="108">Process: Infoco</option><option value="10">Steering</option><option value="12">Work</option><option value="13">Workshop</option><option value="15">Lilacc</option></select></label>
 EOHTML;
 
 		return [
-			[[], [], '<label><span>Committee:</span><select name="cid" size="1"></select></label>'],
-			[$this->ex_top, $this->ex_sub, $html],
+			[$html],
 		];
 	}
 }

@@ -1,6 +1,7 @@
 <?php
 
 require_once('lib_boa.php');
+require_once('constants.php');
 
 /**
  * Agreements
@@ -293,215 +294,212 @@ EOTXT;
 	 *     - document, display full document for html presentation
 	 * @return string the output html
 	 */
-	public function renderDisplay($type='document', $errors=[]) {
-		$admin_info = $this->adminActions( );
-		$short = '';
-		$expired = intval( $this->expired );
-
-		$pub = ( $this->world_public ) ? ' checked="checked"' : '';
-		$title = format_html( $this->title );
-		$summary = format_html( $this->summary );
-		$full = format_html( $this->full );
-		$background = format_html( $this->background );
-		$comments = format_html( $this->comments );
-		$processnotes = format_html( $this->processnotes );
-
-		$condition = '';
-		if ( $this->expired ) {
-			$condition = '<p class="notice">Agreement Expired</p>';
-		}
-
-		$output = '';
-
-		// XXX break this out into separate functions
-		switch( $type ) {
+	public function renderDisplay($type='document', $errors=[])
+	{
+		switch ($type) {
 			case 'form':
-				$title = format_html( $this->title, true );
-				$summary = format_html( $this->summary, true );
-				$full = format_html( $this->full, true );
-				$background = format_html( $this->background, true );
-				$comments = format_html( $this->comments, true );
-				$processnotes = format_html( $this->processnotes, true );
-
-				$exp = ($this->expired) ? ' checked' : '';
-
-				$diff_comments = '';
-				if ($this->id != 0) {
-					$css = !in_array('diff_comments', $errors) ? '' :
-						' class="err"';
-
-					$diff_comments = <<<EOHTML
-					<label{$css}>
-						<span>Diff comments: *</span>
-						<input type="text" name="diff_comments" value="" size="70">
-					</label>
-EOHTML;
-				}
-
-				$css_title = !in_array('title', $errors) ? '' : ' class="err"';
-				$css_full = !in_array('full', $errors) ? '' : ' class="err"';
-
-				$num = $this->getId();
-				$update_string = ( $num <= 0 ) ? '' :
-					'<input type="hidden" name="update" value="1">';
-
-				$Cmtys = getAllCommittees();
-				$SubCmtys = getSubCommitteesList();
-				$controls = $this->Date->selectDate(TRUE) .
-					$this->cmty->getSelectCommittee($Cmtys, $SubCmtys) .
-					$this->actionChoices();
-
-				$action = ($num == '') ? 'Add' : 'Edit';
-				$output = <<<EOHTML
-				<h1>{$action} Agreement</h1>
-				<form action="?id=admin" method="post">
-				<input type="hidden" name="doctype" value="agreement">
-				<input type="hidden" name="admin_post" value="1">
-				<input type="hidden" name="num" value="{$num}">
-				{$update_string}
-
-				{$controls}
-
-				<label>
-					Make this agreement public to the world:
-					<input type="checkbox" name="world_public" {$pub}>
-				</label>
-
-				<label>
-					Mark this agreement as expired:
-					<input type="checkbox" name="expired"{$exp}>
-				</label>
-
-				<label{$css_title}>
-					<span>Title: *</span>
-					<input type="text" name="title" value="{$title}" size="70">
-				</label>
-
-				<label>
-					<span>Summary:</span>
-					<textarea name="summary" cols="85" rows="3">{$summary}</textarea>
-				</label>
-
-				<label>
-					<span>Background:</span>
-					<textarea name="background" cols="85" 
-						rows="7">{$background}</textarea>
-				</label>
-
-				<label{$css_full}>
-					<span>Proposal: *</span>
-					<textarea name="full" cols="85" rows="30">{$full}</textarea>
-				</label>
-
-				{$diff_comments}
-
-				<label>
-					<span>Comments:</span>
-					<textarea name="comments" cols="85" rows="5">{$comments}</textarea>
-				</label>
-
-				<label>
-					<span>Process Notes:</span>
-					<textarea name="processnotes" cols="85" 
-						rows="3">{$processnotes}</textarea>
-				</label>
-
-				<p><input type="submit" name="save" value="save changes &rarr;"></p>
-				</form>
-EOHTML;
-
-				break;
+				return $this->renderFormDisplay($errors);
 
 			case 'search':
-				if ( !empty( $this->found )) {
-					$short = '<p class="short">' . $this->found . "</p>\n";
-					if (!$this->found_summary) {
-						$short .= "<br/>SUMMARY: $summary\n";
-					}
-				}
-				else {
-					$short = !empty($summary) ? $summary :
-						substr($full, 0, SUB_SUMMARY_LENGTH) . '...';
-				}
-
-				$date = $this->Date->toString( );
-				$cmty_name = $this->cmty->getName();
-				$tag_html = $this->renderTags();
-
-				$output = <<<EOHTML
-					<div class="agreement">
-						<h2 class="agrm">
-							{$date} 
-							<a href="?id=agreement&amp;num={$this->id}">{$this->title}</a>
-							[{$cmty_name}]
-						</h2>
-						{$condition}
-						<div class="item_topic">
-							<div class="info">{$short}</div>
-							{$tag_html}
-						</div>
-					</div>
-EOHTML;
-				break;
+				return $this->renderSearchDisplay();
 
 			case 'document':
-				// only show previous version disply with full document display
-				$condition .= $this->displayPreviousVersions();
-
-				$print_ver_dest = '';
-				$print_ver_label = <<<EOHTML
-					format for printing
-EOHTML;
-
-				$date = $this->Date->toString( );
-
-				$cmty_name = $this->cmty->getName();
-				$content = '';
-
-				if ( !empty( $summary )) {
-					$content .= "<h3>Summary:</h3>\n$summary\n";
-				}
-				$content .= $this->renderTags();
-				if ( !empty( $background )) {
-					$content .= "<h3>Background:</h3>\n$background\n";
-				}
-				if ( !empty( $full )) {
-					$content .= "<h3>Proposal:</h3>\n$full\n";
-				}
-				if ( !empty( $comments )) {
-					$content .= "<h3>Comments:</h3>\n$comments\n";
-				}
-				if ( !empty( $processnotes )) {
-					$content .= "<h3>Process Comments:</h3>\n$processnotes\n";
-				}
-
-				$related_minutes = $this->getRelatedMinutes();
-
-				$current_date = date('r');
-				$output = <<<EOHTML
-					<div class="agreement">
-						<div id="print_version_link">
-							<a href="#" id="print_document">print</a>
-						</div>
-
-						<h1 class="agrm">{$title}</h1>
-						{$condition}
-						{$admin_info}
-						<div class="info">
-							{$related_minutes}
-							<h3>{$cmty_name}&nbsp;{$date}</h3>
-							{$content}
-						</div>
-					</div>
-					<p class="print_date">As of: {$current_date}</p>
-EOHTML;
-
-				break;
+			default:
+				return $this->renderDocumentDisplay();
 		}
-
-		return $output;
 	}
 
+	private function getFormattedFields($for_form=false)
+	{
+		return [
+			'title' => format_html($this->title, $for_form),
+			'summary' => format_html($this->summary, $for_form),
+			'full' => format_html($this->full, $for_form),
+			'background' => format_html($this->background, $for_form),
+			'comments' => format_html($this->comments, $for_form),
+			'processnotes' => format_html($this->processnotes, $for_form),
+		];
+	}
+
+	private function renderExpiredNotice()
+	{
+		return $this->expired ? 
+			'<p class="notice">Agreement Expired</p>' : '';
+	}
+
+	public function renderFormDisplay(array $errors=[])
+	{
+		$fields = $this->getFormattedFields(true);
+		$num = $this->getId();
+		$action = ($num <= 0) ? 'Add' : 'Edit';
+		$controls = $this->renderFormControls();
+		$diff_comments = $this->renderDiffCommentsField($errors);
+		$css_title = in_array('title', $errors) ? ' class="err"' : '';
+		$css_full = in_array('full', $errors) ? ' class="err"' : '';
+
+		$num = $this->getId();
+		$update_string = ( $num <= 0 ) ? '' :
+			'<input type="hidden" name="update" value="1">';
+
+		$Cmtys = getAllCommittees();
+		$SubCmtys = getSubCommitteesList();
+		$controls = $this->Date->selectDate(TRUE) .
+			$this->cmty->getSelectCommittee() .
+			$this->actionChoices();
+
+		$pub = ( $this->world_public ) ? ' checked="checked"' : '';
+		$exp = ($this->expired) ? ' checked' : '';
+
+		$action = ($num == '') ? 'Add' : 'Edit';
+		return <<<EOHTML
+		<h1>{$action} Agreement</h1>
+		<form action="?id=admin" method="post">
+		<input type="hidden" name="doctype" value="agreement">
+		<input type="hidden" name="admin_post" value="1">
+		<input type="hidden" name="num" value="{$num}">
+		{$update_string}
+
+		{$controls}
+
+		<label>
+			Make this agreement public to the world:
+			<input type="checkbox" name="world_public" {$pub}>
+		</label>
+
+		<label>
+			Mark this agreement as expired:
+			<input type="checkbox" name="expired"{$exp}>
+		</label>
+
+		<label{$css_title}>
+			<span>Title: *</span>
+			<input type="text" name="title" value="{$fields['title']}" size="70">
+		</label>
+
+		<label>
+			<span>Summary:</span>
+			<textarea name="summary" cols="85" rows="3">{$fields['summary']}</textarea>
+		</label>
+
+		<label>
+			<span>Background:</span>
+			<textarea name="background" cols="85" 
+				rows="7">{$fields['background']}</textarea>
+		</label>
+
+		<label{$css_full}>
+			<span>Proposal: *</span>
+			<textarea name="full" cols="85" rows="30">{$fields['full']}</textarea>
+		</label>
+
+		{$diff_comments}
+
+		<label>
+			<span>Comments:</span>
+			<textarea name="comments" cols="85" rows="5">{$fields['comments']}</textarea>
+		</label>
+
+		<label>
+			<span>Process Notes:</span>
+			<textarea name="processnotes" cols="85" 
+				rows="3">{$fields['processnotes']}</textarea>
+		</label>
+
+		<p><input type="submit" name="save" value="save changes &rarr;"></p>
+		</form>
+EOHTML;
+	}
+
+	private function renderFormControls()
+	{
+		return $this->Date->selectDate(TRUE) .
+			$this->cmty->getSelectCommittee() .
+			$this->actionChoices();
+	}
+
+	private function renderDiffCommentsField(array $errors=[])
+	{
+		if ($this->id == 0) {
+			return '';
+		}
+
+		$css = in_array('diff_comments', $errors)
+			? ' class="err"'
+			: '';
+
+		return <<<EOHTML
+	<label{$css}>
+		<span>Diff comments: *</span>
+		<input type="text" name="diff_comments" value="" size="70">
+	</label>
+EOHTML;
+	}
+
+	private function renderDocumentSection($title, $content)
+	{
+		return empty($content) ? '' : "<h3>{$title}:</h3>\n{$content}\n";
+	}
+
+	private function renderDocumentContent()
+	{
+		$fields = $this->getFormattedFields();
+		$content = $this->renderDocumentSection('Summary', $fields['summary']);
+		$content .= $this->renderTags();
+		$content .= $this->renderDocumentSection('Background', $fields['background']);
+		$content .= $this->renderDocumentSection('Proposal', $fields['full']);
+		$content .= $this->renderDocumentSection('Comments', $fields['comments']);
+		$content .= $this->renderDocumentSection('Process Comments',
+			$fields['processnotes']);
+		return $content;
+	}
+
+
+	private function renderSearchSummary()
+	{
+		$summary = format_html($this->summary);
+		$full = format_html($this->full);
+
+		if (!empty($this->found)) {
+			$short = '<p class="short">' . $this->found . "</p>\n";
+
+			if (!$this->found_summary) {
+				$short .= "<br/>SUMMARY: $summary\n";
+			}
+
+			return $short;
+		}
+
+		return !empty($summary)
+			? $summary
+			: substr($full, 0, SUB_SUMMARY_LENGTH) . '...';
+	}
+
+	public function renderSearchDisplay()
+	{
+		$date = $this->Date->toString();
+		$cmty_name = $this->cmty->getName();
+		$condition = $this->renderExpiredNotice();
+		$short = $this->renderSearchSummary();
+		$tag_html = $this->renderTags();
+		$title = format_html($this->title);
+
+		return <<<EOHTML
+	<div class="agreement">
+		<h2 class="agrm">
+			{$date}
+			<a href="?id=agreement&amp;num={$this->id}">{$title}</a>
+			[{$cmty_name}]
+		</h2>
+
+		{$condition}
+
+		<div class="item_topic">
+			<div class="info">{$short}</div>
+			{$tag_html}
+		</div>
+	</div>
+EOHTML;
+	}
 
 	/**
 	 * Render to HTML a brief listing of recently occured minutes.
@@ -1072,6 +1070,51 @@ EOHTML;
 		];
 		error_log(var_export($info, TRUE));
 	}
+
+	/**
+	 * Display the document
+	 */
+	private function renderDocumentDisplay()
+	{
+		$fields = $this->getFormattedFields();
+		$condition = $this->renderExpiredNotice() .
+			$this->displayPreviousVersions();
+
+		$date = $this->Date->toString();
+		$cmty_name = $this->cmty->getName();
+		$content = $this->renderDocumentContent();
+		$related_minutes = $this->getRelatedMinutes();
+		$admin_info = $this->adminActions();
+		$current_date = date('r');
+
+		return <<<EOHTML
+	<div class="agreement">
+		{$this->renderPrintLink()}
+
+		<h1 class="agrm">{$fields['title']}</h1>
+		{$condition}
+		{$admin_info}
+
+		<div class="info">
+			{$related_minutes}
+			<h3>{$cmty_name}&nbsp;{$date}</h3>
+			{$content}
+		</div>
+	</div>
+
+	<p class="print_date">As of: {$current_date}</p>
+EOHTML;
+	}
+
+	private function renderPrintLink()
+	{
+		return <<<EOHTML
+	<div id="print_version_link">
+		<a href="#" id="print_document">print</a>
+	</div>
+EOHTML;
+	}
+
 }
 
 ?>

@@ -16,7 +16,10 @@ class Committee {
 		$this->cid = $cid;
 	}
 
-	function getSelectCommittee($Cmtys, $SubCmtys) {
+	function getSelectCommittee() {
+		$Cmtys = getAllCommittees();
+		$SubCmtys = getSubCommitteesList();
+
 		$out = '';
 		foreach( $Cmtys as $cmty_num=>$c ) {
 			if ( $this->cid == $cmty_num ) {

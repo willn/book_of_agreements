@@ -186,4 +186,192 @@ class AgreementTest extends TestCase
 		$this->assertStringNotContainsString('Diff comments:', $html);
 	}
 
+	public function testRenderFormForExistingAgreement()
+	{
+		$agreement = new TestAgreement();
+		$agreement->id = 42;
+		$agreement->title = 'Test Title';
+		$agreement->full = 'Proposal text';
+
+		$html = $agreement->renderDisplay('form');
+
+		$this->assertStringContainsString('<h1>Edit Agreement</h1>', $html);
+		$this->assertStringContainsString('name="update"', $html);
+		$this->assertStringContainsString('Diff comments:', $html);
+	}
+
+	public function testRenderFormShowsTitleErrorClass()
+	{
+		$agreement = new TestAgreement();
+		$html = $agreement->renderDisplay('form', ['title']);
+		$this->assertStringContainsString( '<label class="err">', $html);
+	}
+
+	public function testRenderFormShowsFullErrorClass()
+	{
+		$agreement = new TestAgreement();
+		$html = $agreement->renderDisplay('form', ['full']);
+		$this->assertStringContainsString(
+			'<span>Proposal: *</span>',
+			$html
+		);
+
+		$this->assertStringContainsString(
+			'label class="err"',
+			$html
+		);
+	}
+
+	public function testRenderFormEscapesHtmlInFields()
+	{
+		$agreement = new TestAgreement();
+		$agreement->title = '<script>alert(1)</script>';
+		$html = $agreement->renderDisplay('form');
+
+		$this->assertStringNotContainsString('<script>', $html);
+		$this->assertStringContainsString('&lt;script&gt;', $html);
+	}
+
+	public function testSearchDisplayUsesFoundSnippet()
+	{
+		$agreement = new TestAgreement();
+		$agreement->id = 1;
+		$agreement->title = 'Title';
+		$agreement->found = 'MATCHED TEXT';
+		$agreement->found_summary = true;
+
+		$html = $agreement->renderDisplay('search');
+
+		$this->assertStringContainsString('MATCHED TEXT', $html);
+	}
+
+	public function testSearchDisplayAppendsSummaryWhenFoundSummaryFalse()
+	{
+		$agreement = new TestAgreement();
+		$agreement->summary = 'Summary text';
+		$agreement->found = 'Matched';
+		$agreement->found_summary = false;
+
+		$html = $agreement->renderDisplay('search');
+
+		$this->assertStringContainsString('SUMMARY:', $html);
+		$this->assertStringContainsString('Summary text', $html);
+	}
+
+	public function testSearchDisplayUsesSummaryFallback()
+	{
+		$agreement = new TestAgreement();
+		$agreement->summary = 'Summary fallback';
+
+		$html = $agreement->renderDisplay('search');
+
+		$this->assertStringContainsString('Summary fallback', $html);
+	}
+
+	public function testSearchDisplayFallsBackToTruncatedFullText()
+	{
+		$agreement = new TestAgreement();
+
+		$agreement->summary = '';
+		$agreement->full = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+		$html = $agreement->renderDisplay('search');
+
+		$expected = substr(format_html($agreement->full), 0,
+			SUB_SUMMARY_LENGTH) . '...';
+		$this->assertStringContainsString($expected, $html);
+	}
+
+	public function testSearchDisplayShowsExpiredNotice()
+	{
+		$agreement = new TestAgreement();
+		$agreement->expired = 1;
+
+		$html = $agreement->renderDisplay('search');
+
+		$this->assertStringContainsString(
+			'Agreement Expired',
+			$html
+		);
+	}
+
+	public function testDocumentDisplayRendersAllSections()
+	{
+		$agreement = new TestAgreement();
+
+		$agreement->title = 'Agreement Title';
+		$agreement->summary = 'Summary';
+		$agreement->background = 'Background';
+		$agreement->full = 'Proposal';
+		$agreement->comments = 'Comments';
+		$agreement->processnotes = 'Process Notes';
+
+		$html = $agreement->renderDisplay('document');
+
+		$this->assertStringContainsString('Summary:', $html);
+		$this->assertStringContainsString('Background:', $html);
+		$this->assertStringContainsString('Proposal:', $html);
+		$this->assertStringContainsString('Comments:', $html);
+		$this->assertStringContainsString('Process Comments:', $html);
+	}
+
+	public function testDocumentDisplayOmitsEmptySections()
+	{
+		$agreement = new TestAgreement();
+		$agreement->full = 'Proposal only';
+
+		$html = $agreement->renderDisplay('document');
+
+		$this->assertStringNotContainsString('Summary:', $html);
+		$this->assertStringNotContainsString('Background:', $html);
+		$this->assertStringContainsString('Proposal:', $html);
+	}
+
+	public function testDocumentDisplayIncludesRelatedBlocks()
+	{
+		$agreement = new TestAgreement();
+
+		$html = $agreement->renderDisplay('document');
+
+		$this->assertStringContainsString('PREVIOUS', $html);
+		$this->assertStringContainsString('MINUTES', $html);
+		$this->assertStringContainsString('ADMIN', $html);
+		$this->assertStringContainsString('TAGS', $html);
+	}
+
+	public function testDocumentDisplayIncludesPrintLink()
+	{
+		$agreement = new TestAgreement();
+
+		$html = $agreement->renderDisplay('document');
+
+		$this->assertStringContainsString(
+			'id="print_document"',
+			$html
+		);
+	}
+
+	/**
+	 * @dataProvider displayTypeProvider
+	 */
+	public function testRenderDisplayReturnsNonEmptyHtml($type)
+	{
+		$agreement = new TestAgreement();
+		$agreement->title = 'Title';
+		$agreement->full = 'Full';
+
+		$html = $agreement->renderDisplay($type);
+
+		$this->assertIsString($html);
+		$this->assertNotEmpty(trim($html));
+	}
+
+	public static function displayTypeProvider()
+	{
+		return [
+			['form'],
+			['search'],
+			['document'],
+		];
+	}
 }

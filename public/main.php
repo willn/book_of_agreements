@@ -16,8 +16,6 @@
 	$sub = '';
 	$search_terms = '';
 
-	define('SUB_SUMMARY_LENGTH', 150);
-
 	#-------[ over-write defaults with page-specific variables ]---------
 	#grab page id value
 	$id = 'home';

@@ -1,6 +1,7 @@
 <?php
 
-require_once 'mysql_api.php';
+require_once dirname(__DIR__) . '/logic/mysql_api.php';
+require_once dirname(__DIR__) . '/config.php';
 
 /**
  * Get the MySQL API

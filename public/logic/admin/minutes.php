@@ -42,8 +42,6 @@ elseif( isset( $_GET['delete'] )) {
 	$Mins->delete( $confirm_del );
 }
 else {
-	$Cmtys = getAllCommittees();
-	$SubCmtys = getSubCommitteesList();
 	$Cmty->setId($Mins->cid);
 
 	if ( $num > 0 ) {
@@ -58,7 +56,7 @@ else {
 		'<input type="hidden" name="num" value="'.$num.'">' . "\n".
 		$update_string . 
 		$Mins->Date->selectDate(TRUE) .
-		$Cmty->getSelectCommittee($Cmtys, $SubCmtys);
+		$Cmty->getSelectCommittee();
 	$Mins->display( 'form' );
 	echo '<p><input type="submit" name="save" ' .
 		'value="save changes &rarr;">' . "</p></form>\n";
