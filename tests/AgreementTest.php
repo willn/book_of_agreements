@@ -133,6 +133,12 @@ class AgreementTest extends TestCase
 			['title', '', 'diff comments', 125, ['full']],
 			['title', 'full', '', 126, ['diff_comments']],
 
+			# invalid words in title
+			['another agreement', 'full', 'diff comments', 127, ['title']],
+			['this is my policy', 'full', 'diff comments', 127, ['title']],
+			['yet more policies revised', 'full', 'diff comments', 127, ['title']],
+			['a proposal for...', 'full', 'diff comments', 128, ['title']],
+
 			# all are missing when adding
 			['', '', '', 0, ['title', 'full']],
 

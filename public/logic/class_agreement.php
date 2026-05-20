@@ -33,6 +33,13 @@ class Agreement extends BOADoc
 	// agreement id, version
 	public $filename_format = '/tmp/book_of_agreements_%s_%s';
 
+	protected $avoid_words = [
+		'agreement',
+		'policy',
+		'policies',
+		'proposal'
+	];
+
 	# agreement
 	public function __construct() {
 		parent::__construct();
@@ -179,8 +186,14 @@ EOSQL;
 	public function validateFields($title, $full, $diff_comments, $id)
 	{
 		$errs = [];
+		$found = [];
 
-		if (empty(trim($title))) {
+		foreach ($this->avoid_words as $avoid) {
+			if (stripos($title, $avoid) !== FALSE) {
+				$found[] = $avoid;
+			}
+		}
+		if (empty(trim($title)) || !empty($found)) {
 			$errs[] = 'title';
 		}
 
@@ -351,6 +364,8 @@ EOTXT;
 		$exp = ($this->expired) ? ' checked' : '';
 
 		$action = ($num == '') ? 'Add' : 'Edit';
+		$avoid_words = implode($this->avoid_words, ', ');
+
 		return <<<EOHTML
 		<h1>{$action} Agreement</h1>
 		<form action="?id=admin" method="post">
@@ -374,6 +389,7 @@ EOTXT;
 		<label{$css_title}>
 			<span>Title: *</span>
 			<input type="text" name="title" value="{$fields['title']}" size="70">
+			<p>Do not include the following words in the title: {$avoid_words}</p>
 		</label>
 
 		<label>
@@ -423,9 +439,7 @@ EOHTML;
 			return '';
 		}
 
-		$css = in_array('diff_comments', $errors)
-			? ' class="err"'
-			: '';
+		$css = in_array('diff_comments', $errors) ? ' class="err"' : '';
 
 		return <<<EOHTML
 	<label{$css}>
@@ -664,7 +678,7 @@ EOHTML;
 		if (!empty($errs)) {
 			$err_keys = implode(', ', $errs);
 			echo <<<EOHTML
-				<div class="error">Missing content! {$err_keys}</div>
+				<div class="error">Validation error! {$err_keys}</div>
 EOHTML;
 			$this->display('form', $errs);
 
