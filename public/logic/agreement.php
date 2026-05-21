@@ -6,5 +6,5 @@
 			</div>
 EOHTML;
 	}
-	$Agrms->renderDocumentDisplay();
+	echo $Agrms->renderDocumentDisplay();
 ?>

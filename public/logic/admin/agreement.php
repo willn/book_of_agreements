@@ -47,7 +47,7 @@ elseif( isset( $_GET['delete'] )) {
 	$Agrms->delete();
 }
 else {
-	$Agrms->renderFormDisplay();
+	echo $Agrms->renderFormDisplay();
 }
 
 ?>

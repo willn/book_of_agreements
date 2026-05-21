@@ -57,7 +57,7 @@ else {
 		$update_string . 
 		$Mins->Date->selectDate(TRUE) .
 		$Cmty->getSelectCommittee();
-	$Mins->display( 'form' );
+	echo $Mins->display( 'form' );
 	echo '<p><input type="submit" name="save" ' .
 		'value="save changes &rarr;">' . "</p></form>\n";
 }

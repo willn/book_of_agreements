@@ -1,3 +1,3 @@
 <?php
-	$Mins->display('document');
+	echo $Mins->display('document');
 ?>

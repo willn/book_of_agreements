@@ -642,7 +642,7 @@ EOHTML;
 			echo <<<EOHTML
 				<div class="error">Validation error! {$err_keys}</div>
 EOHTML;
-			$this->renderFormDisplay($errs);
+			echo $this->renderFormDisplay($errs);
 
 			return FALSE;
 		}
