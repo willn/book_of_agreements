@@ -72,13 +72,13 @@ class Search {
 
 	public function getAgainstClause() {
 		$terms = addslashes($this->terms);
-		return "against('{$terms}')";
+		return "AGAINST('{$terms}' IN NATURAL LANGUAGE MODE)";
 	}
 
 	public function getDateClauses() {
 		return [
-			'date>="' . $this->start_date->getStartOfMonth() . '"',
-			'date<="' . $this->end_date->getEndOfMonth() . '"',
+			'doc.date>="' . $this->start_date->getStartOfMonth() . '"',
+			'doc.date<="' . $this->end_date->getEndOfMonth() . '"',
 		];
 	}
 
@@ -86,43 +86,48 @@ class Search {
 	 * Create the SQL query for searching for agreements
 	 */
 	public function createAgrQuery() {
-		$clauses = $this->getDateClauses();
 
-		$ft_match = 'match(title, summary, full, background, comments, processnotes) ' .
-			$this->getAgainstClause();
-		$clauses[] = $ft_match;
+		$match = <<<EOSQL
+MATCH(doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes)
+EOSQL;
+		$against = $this->getAgainstClause();
 
-		if ($this->cmty_num != 0) {
-			$clauses[] = "agreements.cid='{$this->cmty_num}'";
-		}
-
+		$clauses = [];
+		$clauses[] = implode(' AND ', $this->getDateClauses());
 		if (!$this->include_expired) {
 			$clauses[] = 'expired=0';
 		}
-
-		$clause_string = implode(' and ', $clauses);
+		$clauses[] = "({$match} {$against} OR tg.tags='{$this->terms}')";
+		if ($this->cmty_num != 0) {
+			$clauses[] = "doc.cid='{$this->cmty_num}'";
+		}
+		$clause_string = implode("\n\t\tAND ", $clauses);
 
 		return <<<EOSQL
-			SELECT agreements.*, c.cmty, 
-			  GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags,
-				{$ft_match} AS score
-			FROM agreements
-			JOIN committees c 
-			  ON c.cid = agreements.cid
-			LEFT JOIN tags_to_agreements tta 
-			  ON tta.agreement_id = agreements.id
-			LEFT JOIN tags t 
-			  ON t.id = tta.tag_id
-			WHERE ({$clause_string})
-			GROUP BY agreements.id
-			ORDER BY score DESC;
+	SELECT doc.*, c.cmty, tg.tags, {$match} {$against} AS score
+	FROM agreements doc
+	JOIN committees c
+		ON c.cid = doc.cid
+	LEFT JOIN (
+		SELECT
+			tta.agreement_id,
+			GROUP_CONCAT(DISTINCT t.tag SEPARATOR ', ') AS tags
+		FROM tags_to_agreements tta
+		JOIN tags t
+			ON t.id = tta.tag_id
+		GROUP BY tta.agreement_id
+	) tg
+		ON tg.agreement_id = doc.id
+	WHERE {$clause_string}
+	ORDER BY score DESC;
 EOSQL;
-
 	}
 
 
 	/**
 	 * search for agreements
+	 *
+	 * @return array list of agreement objects
 	 */
 	public function searchAgreements($sql_a) {
 		$mysql_api = get_mysql_api();
@@ -144,23 +149,20 @@ EOSQL;
 
 
 	public function createMinsQuery() {
-		$clauses = $this->getDateClauses();
+		$match = 'match(doc.notes, doc.agenda, doc.content)' .
+			$this->getAgainstClause();
 
-		$ft_match = 'match(notes, agenda, content)' . $this->getAgainstClause();
-		$clauses[] = $ft_match;
-
+		$clauses = [];
+		$clauses[] = implode(' AND ', $this->getDateClauses());
+		$clauses[] = $match;
 		if ($this->cmty_num != 0) {
-			$clauses[] = "cid='{$this->cmty_num}'";
+			$clauses[] = "doc.cid='{$this->cmty_num}'";
 		}
-
-		$clause_string = '';
-		if (!empty($clauses)) {
-			$clause_string = implode(' and ', $clauses);
-		}
+		$clause_string = implode("\n\t\tAND ", $clauses);
 
 		return <<<EOSQL
-			SELECT *, {$ft_match} as score
-				FROM minutes
+			SELECT doc.*, {$match} as score
+				FROM minutes as doc
 				WHERE {$clause_string}
 				ORDER BY score desc
 EOSQL;
@@ -213,7 +215,7 @@ EOSQL;
 	public function renderResults($found) {
 		$out = '';
 		foreach($found as $doc) {
-			$out .= $doc->renderDisplay('search');
+			$out .= $doc->renderSearchDisplay();
 		}
 		return $out;
 	}
@@ -287,7 +289,7 @@ EOHTML;
 
 		// XXX replace with renderResults()
 		foreach($found as $doc) {
-			$doc->display('search');
+			echo $doc->renderSearchDisplay();
 		}
 	}
 }

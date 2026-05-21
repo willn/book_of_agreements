@@ -185,7 +185,7 @@ class AgreementTest extends TestCase
 		$agreement->title = 'Test Title';
 		$agreement->full = 'Proposal text';
 
-		$html = $agreement->renderDisplay('form');
+		$html = $agreement->renderFormDisplay();
 
 		$this->assertStringContainsString('<h1>Add Agreement</h1>', $html);
 		$this->assertStringNotContainsString('name="update"', $html);
@@ -199,7 +199,7 @@ class AgreementTest extends TestCase
 		$agreement->title = 'Test Title';
 		$agreement->full = 'Proposal text';
 
-		$html = $agreement->renderDisplay('form');
+		$html = $agreement->renderFormDisplay();
 
 		$this->assertStringContainsString('<h1>Edit Agreement</h1>', $html);
 		$this->assertStringContainsString('name="update"', $html);
@@ -209,14 +209,14 @@ class AgreementTest extends TestCase
 	public function testRenderFormShowsTitleErrorClass()
 	{
 		$agreement = new TestAgreement();
-		$html = $agreement->renderDisplay('form', ['title']);
+		$html = $agreement->renderFormDisplay(['title']);
 		$this->assertStringContainsString( '<label class="err">', $html);
 	}
 
 	public function testRenderFormShowsFullErrorClass()
 	{
 		$agreement = new TestAgreement();
-		$html = $agreement->renderDisplay('form', ['full']);
+		$html = $agreement->renderFormDisplay(['full']);
 		$this->assertStringContainsString(
 			'<span>Proposal: *</span>',
 			$html
@@ -232,7 +232,7 @@ class AgreementTest extends TestCase
 	{
 		$agreement = new TestAgreement();
 		$agreement->title = '<script>alert(1)</script>';
-		$html = $agreement->renderDisplay('form');
+		$html = $agreement->renderFormDisplay();
 
 		$this->assertStringNotContainsString('<script>', $html);
 		$this->assertStringContainsString('&lt;script&gt;', $html);
@@ -246,7 +246,7 @@ class AgreementTest extends TestCase
 		$agreement->found = 'MATCHED TEXT';
 		$agreement->found_summary = true;
 
-		$html = $agreement->renderDisplay('search');
+		$html = $agreement->renderSearchDisplay();
 
 		$this->assertStringContainsString('MATCHED TEXT', $html);
 	}
@@ -258,7 +258,7 @@ class AgreementTest extends TestCase
 		$agreement->found = 'Matched';
 		$agreement->found_summary = false;
 
-		$html = $agreement->renderDisplay('search');
+		$html = $agreement->renderSearchDisplay();
 
 		$this->assertStringContainsString('SUMMARY:', $html);
 		$this->assertStringContainsString('Summary text', $html);
@@ -269,7 +269,7 @@ class AgreementTest extends TestCase
 		$agreement = new TestAgreement();
 		$agreement->summary = 'Summary fallback';
 
-		$html = $agreement->renderDisplay('search');
+		$html = $agreement->renderSearchDisplay();
 
 		$this->assertStringContainsString('Summary fallback', $html);
 	}
@@ -281,7 +281,7 @@ class AgreementTest extends TestCase
 		$agreement->summary = '';
 		$agreement->full = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-		$html = $agreement->renderDisplay('search');
+		$html = $agreement->renderSearchDisplay();
 
 		$expected = substr(format_html($agreement->full), 0,
 			SUB_SUMMARY_LENGTH) . '...';
@@ -293,7 +293,7 @@ class AgreementTest extends TestCase
 		$agreement = new TestAgreement();
 		$agreement->expired = 1;
 
-		$html = $agreement->renderDisplay('search');
+		$html = $agreement->renderSearchDisplay();
 
 		$this->assertStringContainsString(
 			'Agreement Expired',
@@ -312,7 +312,7 @@ class AgreementTest extends TestCase
 		$agreement->comments = 'Comments';
 		$agreement->processnotes = 'Process Notes';
 
-		$html = $agreement->renderDisplay('document');
+		$html = $agreement->renderDocumentDisplay();
 
 		$this->assertStringContainsString('Summary:', $html);
 		$this->assertStringContainsString('Background:', $html);
@@ -326,7 +326,7 @@ class AgreementTest extends TestCase
 		$agreement = new TestAgreement();
 		$agreement->full = 'Proposal only';
 
-		$html = $agreement->renderDisplay('document');
+		$html = $agreement->renderDocumentDisplay();
 
 		$this->assertStringNotContainsString('Summary:', $html);
 		$this->assertStringNotContainsString('Background:', $html);
@@ -337,7 +337,7 @@ class AgreementTest extends TestCase
 	{
 		$agreement = new TestAgreement();
 
-		$html = $agreement->renderDisplay('document');
+		$html = $agreement->renderDocumentDisplay();
 
 		$this->assertStringContainsString('PREVIOUS', $html);
 		$this->assertStringContainsString('MINUTES', $html);
@@ -349,35 +349,11 @@ class AgreementTest extends TestCase
 	{
 		$agreement = new TestAgreement();
 
-		$html = $agreement->renderDisplay('document');
+		$html = $agreement->renderDocumentDisplay();
 
 		$this->assertStringContainsString(
 			'id="print_document"',
 			$html
 		);
-	}
-
-	/**
-	 * @dataProvider displayTypeProvider
-	 */
-	public function testRenderDisplayReturnsNonEmptyHtml($type)
-	{
-		$agreement = new TestAgreement();
-		$agreement->title = 'Title';
-		$agreement->full = 'Full';
-
-		$html = $agreement->renderDisplay($type);
-
-		$this->assertIsString($html);
-		$this->assertNotEmpty(trim($html));
-	}
-
-	public static function displayTypeProvider()
-	{
-		return [
-			['form'],
-			['search'],
-			['document'],
-		];
 	}
 }

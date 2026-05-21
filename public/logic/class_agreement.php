@@ -284,44 +284,6 @@ EOTXT;
 		return render_tags($this->tags);
 	}
 
-	/**
-	 * Display the agreement in the format specified.
-	 *
-	 * @param[in] type string (default: document) specifies the output
-	 * format. Possible options would be:
-	 *     - form, the edit form
-	 *     - search, display search results
-	 *     - document, display full document for html presentation
-	 */
-	public function display($type='document', $errors=[]) {
-		echo $this->renderDisplay($type, $errors);
-	}
-
-	/**
-	 * Render as HTML the agreement in the format specified.
-	 *
-	 * @param[in] type string (default: document) specifies the output
-	 * format. Possible options would be:
-	 *     - form, the edit form
-	 *     - search, display search results
-	 *     - document, display full document for html presentation
-	 * @return string the output html
-	 */
-	public function renderDisplay($type='document', $errors=[])
-	{
-		switch ($type) {
-			case 'form':
-				return $this->renderFormDisplay($errors);
-
-			case 'search':
-				return $this->renderSearchDisplay();
-
-			case 'document':
-			default:
-				return $this->renderDocumentDisplay();
-		}
-	}
-
 	private function getFormattedFields($for_form=false)
 	{
 		return [
@@ -680,7 +642,7 @@ EOHTML;
 			echo <<<EOHTML
 				<div class="error">Validation error! {$err_keys}</div>
 EOHTML;
-			$this->display('form', $errs);
+			$this->renderFormDisplay($errs);
 
 			return FALSE;
 		}
@@ -1088,7 +1050,7 @@ EOHTML;
 	/**
 	 * Display the document
 	 */
-	private function renderDocumentDisplay()
+	public function renderDocumentDisplay()
 	{
 		$fields = $this->getFormattedFields();
 		$condition = $this->renderExpiredNotice() .

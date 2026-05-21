@@ -81,6 +81,10 @@ class Minutes extends BOADoc {
 			$Min[0]['agenda'], $Min[0]['content'], $Min[0]['cid'], $Min[0]['date']);
 	}
 
+	public function renderSearchDisplay() {
+		return $this->display('search');
+	}
+
 	/**
 	 * Display a Minutes instance.
 	 */
@@ -93,6 +97,7 @@ class Minutes extends BOADoc {
 		$agenda = format_html( $this->agenda );
 		$content = format_html( $this->content, FALSE);
 
+		$output = '';
 		switch( $type )
 		{
 			case 'form':
@@ -108,16 +113,16 @@ class Minutes extends BOADoc {
 					$content . "</textarea>\n";
 
 				if ( !empty( $notes ))
-				{ echo "<h3>Special Notes:</h3>\n$notes\n"; }
+				{ $output .= "<h3>Special Notes:</h3>\n$notes\n"; }
 				if ( !empty( $agenda ))
-				{ echo "<h3>Agenda:</h3>\n$agenda\n"; }
+				{ $output .= "<h3>Agenda:</h3>\n$agenda\n"; }
 				if ( !empty( $content ))
-				{ echo "<h3>Minutes:</h3>\n$content\n"; }
+				{ $output .= "<h3>Minutes:</h3>\n$content\n"; }
 
 				break;
 
 			case 'compact':
-				echo "<tr>\n" .
+				$output .= "<tr>\n" .
 					"\t<td>" . $this->cmty->getName() . "</td>\n" .
 					"\t<td>" . '<a href="?id=minutes&num=' . $this->id . '">' .
 						$this->Date->toString( ) . "</a></td>\n" . 
@@ -141,7 +146,7 @@ class Minutes extends BOADoc {
 
 				$date_string = $this->Date->toString( );
 				$cmty_name = $this->cmty->getName();
-				echo <<<EOHTML
+				$output .= <<<EOHTML
 					<div class="minutes">
 						<h2 class="mins">
 							<a href="?id=minutes&num={$this->id}">{$date_string} 
@@ -155,23 +160,23 @@ EOHTML;
 				break;
 
 			case 'document':
-				echo '<div class="minutes">' . "\n" .
+				$output .= '<div class="minutes">' . "\n" .
 					'<h1 class="mins">' . $this->cmty->getName() .
 					' minutes: ' . $this->Date->toString( ) . "</h1>\n" .
 					'<div class="info">' . $admin_info;
 
 				if ( !empty( $notes ))
-				{ echo "<h3>Special Notes:</h3>\n$notes\n"; }
+				{ $output .= "<h3>Special Notes:</h3>\n$notes\n"; }
 				if ( !empty( $agenda ))
-				{ echo "<h3>Agenda:</h3>\n$agenda\n"; }
+				{ $output .= "<h3>Agenda:</h3>\n$agenda\n"; }
 				if ( !empty( $content ))
-				{ echo "<h3>Minutes:</h3>\n{$content}\n"; }
+				{ $output .= "<h3>Minutes:</h3>\n{$content}\n"; }
 
-				echo "</div>\n</div>\n\n";
+				$output .= "</div>\n</div>\n\n";
 				break;
 		}
 
-		return 1;
+		return $output;
 	}
 
 	/**

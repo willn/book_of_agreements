@@ -41,7 +41,8 @@ class SearchTest extends TestCase {
 		$s = new Search();
 		$s->setTerms("O'Reilly");
 		$clause = $s->getAgainstClause();
-		$this->assertStringContainsString("against('o\\'reilly')", $clause);
+		$this->assertStringContainsString(
+			"AGAINST('o\\'reilly' IN NATURAL LANGUAGE MODE)", $clause);
 	}
 
 	public function testCreateAgrQueryIncludesCorePieces()
@@ -52,8 +53,8 @@ class SearchTest extends TestCase {
 		$sql = $s->createAgrQuery();
 
 		$this->assertStringContainsString('FROM agreements', $sql);
-		$this->assertStringContainsString('match(', $sql);
-		$this->assertStringContainsString('against', $sql);
+		$this->assertStringContainsString('MATCH(', $sql);
+		$this->assertStringContainsString('AGAINST(', $sql);
 		$this->assertStringContainsString('ORDER BY score DESC', $sql);
 	}
 
@@ -98,11 +99,11 @@ class SearchTest extends TestCase {
 
 	public function provideCreateAgrQuerySql() {
 		$parking = <<<EOSQL
- SELECT agreements.*, c.cmty, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags, match(title, summary, full, background, comments, processnotes) against('parking') AS score FROM agreements JOIN committees c ON c.cid = agreements.cid LEFT JOIN tags_to_agreements tta ON tta.agreement_id = agreements.id LEFT JOIN tags t ON t.id = tta.tag_id WHERE (date>="2000-12-31" and date<="2007-07-01" and match(title, summary, full, background, comments, processnotes) against('parking') and expired=0) GROUP BY agreements.id ORDER BY score DESC;
+ SELECT doc.*, c.cmty, tg.tags, MATCH(doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes) AGAINST('parking' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE doc.date>="2000-12-31" AND doc.date<="2007-07-01" AND expired=0 AND (MATCH(doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes) AGAINST('parking' IN NATURAL LANGUAGE MODE) OR tg.tags='parking') ORDER BY score DESC;
 EOSQL;
 
 		$vendor = <<<EOSQL
- SELECT agreements.*, c.cmty, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags, match(title, summary, full, background, comments, processnotes) against('trusted vendor') AS score FROM agreements JOIN committees c ON c.cid = agreements.cid LEFT JOIN tags_to_agreements tta ON tta.agreement_id = agreements.id LEFT JOIN tags t ON t.id = tta.tag_id WHERE (date>="2018-02-28" and date<="2018-07-01" and match(title, summary, full, background, comments, processnotes) against('trusted vendor') and expired=0) GROUP BY agreements.id ORDER BY score DESC;
+ SELECT doc.*, c.cmty, tg.tags, MATCH(doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes) AGAINST('trusted vendor' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE doc.date>="2018-02-28" AND doc.date<="2018-07-01" AND expired=0 AND (MATCH(doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes) AGAINST('trusted vendor' IN NATURAL LANGUAGE MODE) OR tg.tags='trusted vendor') ORDER BY score DESC;
 EOSQL;
 
 		return [
