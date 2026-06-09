@@ -161,7 +161,7 @@ span.date {
 	margin: 1em 20px 1em 180px;
 }
 
-#content p {
+#content p, #content div {
 	margin: 0px;
 	padding: 0px 5px 5px 5px;
 }
@@ -407,3 +407,4 @@ div.cmty_title {
 	color: #000080;
 	margin: 4px;
 }
+

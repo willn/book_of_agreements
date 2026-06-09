@@ -94,16 +94,24 @@ class SearchTest extends TestCase {
 		$_GET = $get_vars;
 		$s->parseGetVars();
 		$sql = $s->createAgrQuery();
-		$this->assertEquals($expected, remove_whitespace($sql));
+		$this->assertEquals(remove_whitespace($expected), remove_whitespace($sql));
 	}
 
 	public function provideCreateAgrQuerySql() {
 		$parking = <<<EOSQL
- SELECT doc.*, c.cmty, tg.tags, MATCH(doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes) AGAINST('parking' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE doc.date>="2000-12-31" AND doc.date<="2007-07-01" AND expired=0 AND (MATCH(doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes) AGAINST('parking' IN NATURAL LANGUAGE MODE) OR tg.tags='parking') ORDER BY score DESC;
+ SELECT doc.*, c.cmty, tg.tags, MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('parking' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE doc.date>="2000-12-31" AND doc.date<="2007-07-01" AND expired=0 AND ( MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('parking' IN NATURAL LANGUAGE MODE) ) ORDER BY score DESC;
 EOSQL;
 
 		$vendor = <<<EOSQL
- SELECT doc.*, c.cmty, tg.tags, MATCH(doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes) AGAINST('trusted vendor' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE doc.date>="2018-02-28" AND doc.date<="2018-07-01" AND expired=0 AND (MATCH(doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes) AGAINST('trusted vendor' IN NATURAL LANGUAGE MODE) OR tg.tags='trusted vendor') ORDER BY score DESC;
+ SELECT doc.*, c.cmty, tg.tags, MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('trusted vendor' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE doc.date>="2018-02-28" AND doc.date<="2018-07-01" AND expired=0 AND ( MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('trusted vendor' IN NATURAL LANGUAGE MODE) ) ORDER BY score DESC;
+EOSQL;
+
+		$monday_budget = <<<EOSQL
+ SELECT doc.*, c.cmty, tg.tags, MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('monday' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE doc.date>="2012-01-31" AND doc.date<="2012-10-01" AND expired=0 AND ( MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('monday' IN NATURAL LANGUAGE MODE) ) AND EXISTS ( SELECT 1 FROM tags_to_agreements tta2 JOIN tags t2 ON t2.id = tta2.tag_id WHERE tta2.agreement_id = doc.id AND t2.tag = 'budget' ) ORDER BY score DESC;
+EOSQL;
+
+		$garden_list = <<<EOSQL
+ SELECT doc.*, c.cmty, tg.tags, MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('garden' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE doc.date>="2010-12-31" AND doc.date<="2012-01-01" AND expired=0 AND ( MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('garden' IN NATURAL LANGUAGE MODE) ) ORDER BY score DESC;
 EOSQL;
 
 		return [
@@ -115,6 +123,7 @@ EOSQL;
 				],
 				$parking
 			],
+
 			[
 				[
 					'q' => 'trusted vendor',
@@ -125,6 +134,33 @@ EOSQL;
 				],
 				$vendor
 			],
+
+			[
+				[
+					'q' => 'monday',
+					'startyear' => 2012,
+					'startmonth' => 2,
+					'endyear' => 2012,
+					'endmonth' => 9,
+					'tags' => 'budget',
+				],
+				$monday_budget
+			],
+
+
+			[
+				[
+					'q' => 'garden',
+					'startyear' => 2011,
+					'startmonth' => 1,
+					'endyear' => 2011,
+					'endmonth' => 12,
+					'cmty' => 0,
+					'tags' => '',
+				],
+				$garden_list
+			],
+
 		];
 	}
 
@@ -144,7 +180,7 @@ EOSQL;
 	/**
 	 * @dataProvider provideRunSearchAgreements
 	 */
-	public function testRunSearchAgreements($get_vars, $count, $expected) {
+	public function testRunSearchAgreements($get_vars, $expected) {
 
 		$s = new Search();
 		$_GET = $get_vars;
@@ -152,9 +188,14 @@ EOSQL;
 		$sql = $s->createAgrQuery();
 		$query_result = $s->searchAgreements($sql);
 		$result = $s->renderResults($query_result);
+		$debug = [
+			'expected' => $expected,
+			'result' => $result,
+			'sql' => $sql,
+		];
 
-		$this->assertEquals(count($query_result), $count);
-		$this->assertEquals(remove_whitespace($expected), remove_whitespace($result));
+		$this->assertEquals(remove_whitespace($expected), remove_whitespace($result),
+			print_r($debug, TRUE));
 	}
 
 	public function provideRunSearchAgreements() {
@@ -175,9 +216,13 @@ EOHTML;
  <div class="agreement"> <h2 class="agrm"> 2026-01-21 <a href="?id=agreement&amp;num=320">Committee Effectiveness Agreement with Convenor and Member Responsibilities</a> [Process] </h2> <div class="item_topic"> <div class="info">A revised Committee Effectiveness agreement to strengthen the Great Oak committee system by giving specific direction to committees on how to effectively function and fulfill their mandates. This is intended to institute best practices for committees to follow in three major areas, namely Committee Mandates, Roles and Responsibilities, and Questions, Concerns, and Controversial Decisions. Section A (Mandates) contains updated content; the rest of the agreement dates from 2019.</div> </div> </div>
 EOHTML;
 
-		$five_fall = <<<EOSQL
+		$five_fall = <<<EOHTML
  <div class="agreement"> <h2 class="agrm"> 2012-06-18 <a href="?id=agreement&amp;num=213">Agreement to lengthen the five fall budget community meetings</a> [Process] </h2> <div class="item_topic"> <div class="info">The proposal suggests pre-approving five community meetings a year, when the annual budget is discussed, to extend up to 120 minutes instead of 90 minutes, from 6:30 to 8:30 pm, when needed. This is intended to allow for more in-depth discussions, finishing the budget in fewer meetings, and reducing tension around rushed agenda items.</div> <div class="tags">Tags: <span class="tag_entry">budget</span> <span class="tag_entry">meeting-format</span> </div> </div> </div>
-EOSQL;
+EOHTML;
+
+		$orientation_tag = <<<EOHTML
+ <div class="agreement"> <h2 class="agrm"> 2009-03-16 <a href="?id=agreement&amp;num=187">Great Oak Common House Children Supervision Policy </a> [Common House] </h2> <div class="item_topic"> <div class="info">An agreement for child supervision in the common house to increase safety, cleanliness, clarity, and decrease tension caused by different parenting styles in the shared space, with specific rules for children aged 0-9, 10-12, and 13-18.</div> <div class="tags">Tags: <span class="tag_entry">health-safety</span> <span class="tag_entry">orientation</span> </div> </div> </div>
+EOHTML;
 
 		return [
 			[
@@ -189,9 +234,9 @@ EOSQL;
 					'endmonth' => 12,
 					'cmty' => 0,
 				],
-				1,
 				$fence_list
 			],
+
 			[
 				[
 					'q' => 'garden',
@@ -200,10 +245,11 @@ EOSQL;
 					'endyear' => 2011,
 					'endmonth' => 12,
 					'cmty' => 0,
+					'tags' => '',
 				],
-				1,
 				$garden_list
 			],
+
 			[
 				[
 					'q' => 'parking',
@@ -213,9 +259,9 @@ EOSQL;
 					'endmonth' => 12,
 					'cmty' => 0,
 				],
-				2,
 				$parking_list
 			],
+
 			[
 				[
 					'q' => 'Effectiveness',
@@ -225,9 +271,9 @@ EOSQL;
 					'endmonth' => 12,
 					'cmty' => 9,
 				],
-				1,
 				$effect_list
 			],
+
 			[
 				[
 					'q' => 'five fall budget community meetings ',
@@ -237,8 +283,20 @@ EOSQL;
 					'endmonth' => 6,
 					'cmty' => 9,
 				],
-				1,
 				$five_fall
+			],
+
+			[
+				[
+					'q' => '',
+					'startyear' => 2009,
+					'startmonth' => 3,
+					'endyear' => 2009,
+					'endmonth' => 3,
+					'cmty' => '',
+					'tags' => 'orientation',
+				],
+				$orientation_tag
 			],
 		];
 	}

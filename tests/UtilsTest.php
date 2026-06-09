@@ -59,5 +59,12 @@ class UtilsTest extends TestCase {
 		$months = get_months();
 		$this->assertEquals(count($months), 12);
 	}
+
+	public function test_get_all_tags() {
+		$tags = get_all_tags();	
+		$this->assertNotEmpty($tags);
+		$this->assertGreaterThan(5, count($tags));
+	}
+
 }
 ?>

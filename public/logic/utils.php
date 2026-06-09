@@ -223,6 +223,25 @@ function getAllCommittees() {
 	return $AllCmtys;
 }
 
+
+/**
+ * Query the database for a full list of all existing tags.
+ */
+function get_all_tags() {
+	$mysql_api = get_mysql_api();
+
+	$sql = 'select id, tag from tags order by tag ASC';
+	$results = $mysql_api->get($sql);
+
+	$tags = [];
+	foreach($results as $entry=>$row) {
+		$tags[$row['id']] = $row['tag'];
+	}
+
+	return $tags;
+}
+
+
 function render_tags($tags_list) {
 	if (empty($tags_list)) {
 		return '';

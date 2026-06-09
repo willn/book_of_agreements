@@ -19,6 +19,8 @@ class Search {
 	protected $start_date;
 	protected $end_date;
 
+	protected $tags = [];
+
 	public function __construct() {
 		$this->start_date = new StartDate();
 		$this->end_date = new EndDate();
@@ -34,6 +36,11 @@ class Search {
 			$this->getParam('startmonth'));
 		$this->end_date = new EndDate($this->getParam('endyear'),
 			$this->getParam('endmonth'));
+
+		$tags = $this->getParam('tags');
+		if (!empty($tags)) {
+			$this->tags[] =  $tags;
+		}
 	}
 
 	public function setDocType($type) {
@@ -71,6 +78,10 @@ class Search {
 	}
 
 	public function getAgainstClause() {
+		if (empty($this->terms)) {
+			return '';
+		}
+
 		$terms = addslashes($this->terms);
 		return "AGAINST('{$terms}' IN NATURAL LANGUAGE MODE)";
 	}
@@ -82,47 +93,142 @@ class Search {
 		];
 	}
 
-	/**
-	 * Create the SQL query for searching for agreements
-	 */
-	public function createAgrQuery() {
-
-		$match = <<<EOSQL
-MATCH(doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes)
-EOSQL;
-		$against = $this->getAgainstClause();
-
+	public function getQueryClausesString($match, $against) {
 		$clauses = [];
+
 		$clauses[] = implode(' AND ', $this->getDateClauses());
+
 		if (!$this->include_expired) {
 			$clauses[] = 'expired=0';
 		}
-		$clauses[] = "({$match} {$against} OR tg.tags='{$this->terms}')";
+
+		if (!empty($against)) {
+			$clauses[] = "({$match} {$against} OR tg.tags='{$this->terms}')";
+		}
+
 		if ($this->cmty_num != 0) {
 			$clauses[] = "doc.cid='{$this->cmty_num}'";
 		}
-		$clause_string = implode("\n\t\tAND ", $clauses);
+
+		$tags_clause = '';
+		$tags_clause_entries = [];
+		foreach($this->tags as $tag) {
+			$tags_clause_entries[] = "tag='{$tag}'";
+		}
+		if (!empty($tags_clause_entries)) {
+			$tags_clause = '(' . implode(' AND ', $tags_clause_entries) . ')';
+		}
+
+		if (empty($clauses)) {
+			return '';
+		}
+
+		return 'WHERE ' . implode("\n\t\tAND ", $clauses);
+	}
+
+	protected function buildAgreementWhereClauses() {
+		$clauses = [];
+
+		// Date range
+		$clauses = array_merge($clauses, $this->getDateClauses());
+
+		if (!$this->include_expired) {
+			$clauses[] = 'expired=0';
+		}
+
+		if ($this->cmty_num != 0) {
+			$clauses[] = "doc.cid='{$this->cmty_num}'";
+		}
+
+		// Search text
+		if (!empty($this->terms)) {
+			$terms = addslashes($this->terms);
+
+			//$tag_term = empty($this->tags) ? " OR t.tag='{$terms}'" : '';
+			$clauses[] = "(
+				MATCH(
+					doc.title,
+					doc.summary,
+					doc.full,
+					doc.background,
+					doc.comments,
+					doc.processnotes
+				) AGAINST('{$terms}' IN NATURAL LANGUAGE MODE)
+			)";
+		}
+
+		// Explicit tag filters
+		foreach ($this->tags as $tag) {
+			$tag = addslashes($tag);
+
+			$clauses[] = "
+				EXISTS (
+					SELECT 1
+					FROM tags_to_agreements tta2
+					JOIN tags t2 ON t2.id = tta2.tag_id
+					WHERE tta2.agreement_id = doc.id
+					AND t2.tag = '{$tag}'
+				)
+			";
+		}
+
+		return $clauses;
+	}
+
+	protected function buildWhereString(array $clauses) {
+		if (empty($clauses)) {
+			return '';
+		}
+
+		return "WHERE\n\t" . implode("\n\tAND ", $clauses);
+	}
+
+	public function createAgrQuery() {
+		$score = '0 AS score';
+		$order = '';
+
+		if (!empty($this->terms)) {
+			$terms = addslashes($this->terms);
+
+			$score = "
+				MATCH(
+					doc.title,
+					doc.summary,
+					doc.full,
+					doc.background,
+					doc.comments,
+					doc.processnotes
+				) AGAINST('{$terms}' IN NATURAL LANGUAGE MODE) AS score
+			";
+
+			$order = 'ORDER BY score DESC';
+		}
+
+		$where = $this->buildWhereString($this->buildAgreementWhereClauses());
 
 		return <<<EOSQL
-	SELECT doc.*, c.cmty, tg.tags, {$match} {$against} AS score
+	SELECT 
+		doc.*,
+		c.cmty,
+		tg.tags,
+		{$score}
 	FROM agreements doc
 	JOIN committees c
 		ON c.cid = doc.cid
 	LEFT JOIN (
 		SELECT
 			tta.agreement_id,
-			GROUP_CONCAT(DISTINCT t.tag SEPARATOR ', ') AS tags
+			GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags
 		FROM tags_to_agreements tta
 		JOIN tags t
 			ON t.id = tta.tag_id
 		GROUP BY tta.agreement_id
 	) tg
 		ON tg.agreement_id = doc.id
-	WHERE {$clause_string}
-	ORDER BY score DESC;
+	{$where}
+	{$order};
 EOSQL;
 	}
-
 
 	/**
 	 * search for agreements
@@ -140,7 +246,7 @@ EOSQL;
 			$agr->setContent($row['title'], $row['summary'], $row['full'], $row['background'],
 				$row['comments'], $row['processnotes'], $row['cid'], $row['date'],
 				$row['expired'], $row['world_public']);
-			$agr->setTags($row['tags']);
+			$agr->setTags($row['tags'] ?? '');
 			$agreements[] = $agr;
 		}
 
@@ -220,6 +326,35 @@ EOSQL;
 		return $out;
 	}
 
+	public function getCommitteeOptions() {
+		$com_options = '<option value="0">All</option>';
+		$AllCmtys = getAllCommittees();
+		foreach($AllCmtys as $cid=>$name) {
+			$selected = ($cid == $this->cmty_num) ? ' selected' : '';
+			$com_options .= "<option value=\"{$cid}\"{$selected}>{$name}</option>\n";
+		}
+		return $com_options;
+	}
+
+	/**
+	 * Render HTML for a multi-tag selector
+	 * array list the list of tags to render.
+	 */
+	public function renderTagSelector($list) {
+		$tag_options = "<option value=\"0\">None</option>\n";
+		foreach($list as $id=>$name) {
+			// $selected = ($id == $this->tag_num) ? ' selected' : '';
+			$selected = '';
+			$tag_options .= "<option value=\"{$id}\"{$selected}>{$name}</option>\n";
+		}
+
+		return <<<EOHTML
+			<div>
+				Tag:&nbsp;<select name="tags">{$tag_options}</select>
+			</div>
+EOHTML;
+	}
+
 	/**
 	 * Render this to HTML
 	 */
@@ -229,18 +364,14 @@ EOSQL;
 		$search_terms_display = !empty($this->terms) ? 
 			'query: [<b>' . $this->terms . '</b>]' : '';
 
+		$com_options = $this->getCommitteeOptions();
+		$tag_selector = $this->renderTagSelector(get_all_tags());
+
 		$start_select = $this->start_date->selectDate();
 		$end_select = $this->end_date->selectDate();
 
 		$found = $this->runSearches();
 		$num_matches = count($found);
-
-		$com_options = '<option value="0">All</option>';
-		$AllCmtys = getAllCommittees();
-		foreach($AllCmtys as $cid=>$name) {
-			$selected = ($cid == $this->cmty_num) ? ' selected' : '';
-			$com_options .= "<option value=\"{$cid}\"{$selected}>{$name}</option>\n";
-		}
 
 		// the default type
 		$document_types = '';
@@ -265,8 +396,9 @@ EOHTML;
 					<h3>Advanced Search Options</h3>
 					<form name="advanced_search" method="get" action="?id=search">
 						<input type="hidden" name="id" value="search"/>
-						<p><input type="search" name="q" value="{$this->terms}" size="50"/></p>
-						<p>Committee:&nbsp;<select name="cmty">{$com_options}</select></p>
+						<div><input type="search" name="q" value="{$this->terms}" size="50"/></div>
+						<div>Committee:&nbsp;<select name="cmty">{$com_options}</select></div>
+						{$tag_selector}
 						{$start_select}
 						{$end_select}
 						<p>{$document_types}</p>
@@ -275,7 +407,7 @@ EOHTML;
 							<input type="checkbox" name="include_expired"{$exp_checked}>
 						</p>
 
-						<p><input type="submit" value="search" style="margin-left: 300px;"></p>
+						<div><input type="submit" value="search"></div>
 					</form>
 				</div>
 			</div>

@@ -21,6 +21,9 @@ var toggleHideShow = function (event) {
 
 document.addEventListener("DOMContentLoaded", function() {
 	var versionsBlock = document.querySelector('#versions_block');
+	if (!versionsBlock) {
+		return;
+	}
 	var listener = versionsBlock.addEventListener('click', toggleHideShow, false);
 });
 
@@ -32,3 +35,4 @@ document.addEventListener("click", function() {
 	
 	window.print();
 });
+
