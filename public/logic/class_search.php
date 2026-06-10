@@ -291,9 +291,14 @@ EOSQL;
 		return $minutes;
 	}
 
-
 	public function runSearches() {
+		if (empty($this->terms) && empty($this->tags) &&
+			($this->cmty_num == 0)) {
+			return;
+		}
+
 		$found = [];
+		$search_minutes = empty($this->tags);
 
 		switch($this->doc_type_chosen) {
 			case 'agreements':
@@ -301,15 +306,20 @@ EOSQL;
 				$found = $this->searchAgreements($sql_a);
 				break;
 			case 'minutes':
-				$sql_m = $this->createMinsQuery();
-				$found = $this->searchMinutes($sql_m);
+				if ($search_minutes) {
+					$sql_m = $this->createMinsQuery();
+					$found = $this->searchMinutes($sql_m);
+				}
 				break;
 			case 'both':
 			case 'all':
 				$sql_a = $this->createAgrQuery();
-				$sql_m = $this->createMinsQuery();
-				$found = array_merge($this->searchAgreements($sql_a),
-					$this->searchMinutes($sql_m));
+				$found = $this->searchAgreements($sql_a);
+
+				if ($search_minutes) {
+					$sql_m = $this->createMinsQuery();
+					$found = array_merge($found, $this->searchMinutes($sql_m));
+				}
 		}
 
 		return $found;
@@ -343,9 +353,8 @@ EOSQL;
 	public function renderTagSelector($list) {
 		$tag_options = "<option value=\"0\">None</option>\n";
 		foreach($list as $id=>$name) {
-			// $selected = ($id == $this->tag_num) ? ' selected' : '';
-			$selected = '';
-			$tag_options .= "<option value=\"{$id}\"{$selected}>{$name}</option>\n";
+			$selected = in_array($name, $this->tags) ? ' selected' : '';
+			$tag_options .= "<option value=\"{$name}\"{$selected}>{$name}</option>\n";
 		}
 
 		return <<<EOHTML
@@ -415,7 +424,15 @@ EOHTML;
 
 
 		if ( !$num_matches ) {
-			echo '<p class="highlight">No results found.</p>';
+			echo <<<EOHTML
+<div class="highlight">No results found. Please do 1 or more of the following:
+	<ul>
+		<li>enter a search term</li>
+		<li>select a tag</li>
+		<li>select a committee</li>
+	</ul>
+</div>
+EOHTML;
 			return;
 		}
 

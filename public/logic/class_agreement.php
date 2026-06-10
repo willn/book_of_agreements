@@ -35,9 +35,11 @@ class Agreement extends BOADoc
 
 	protected $avoid_words = [
 		'agreement',
+		'approval',
 		'policy',
 		'policies',
-		'proposal'
+		'proposal',
+		'proposed'
 	];
 
 	# agreement
