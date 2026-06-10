@@ -77,15 +77,6 @@ class Search {
 		];
 	}
 
-	public function getAgainstClause() {
-		if (empty($this->terms)) {
-			return '';
-		}
-
-		$terms = addslashes($this->terms);
-		return "AGAINST('{$terms}' IN NATURAL LANGUAGE MODE)";
-	}
-
 	public function getDateClauses() {
 		return [
 			'doc.date>="' . $this->start_date->getStartOfMonth() . '"',
@@ -254,23 +245,33 @@ EOSQL;
 	}
 
 
+	/**
+	 * Create the SQL query for requesting minutes
+	 */
 	public function createMinsQuery() {
-		$match = 'match(doc.notes, doc.agenda, doc.content)' .
-			$this->getAgainstClause();
+		$score = '0 AS score';
+		$order = '';
 
-		$clauses = [];
-		$clauses[] = implode(' AND ', $this->getDateClauses());
-		$clauses[] = $match;
+		$clauses = $this->getDateClauses();
 		if ($this->cmty_num != 0) {
 			$clauses[] = "doc.cid='{$this->cmty_num}'";
 		}
-		$clause_string = implode("\n\t\tAND ", $clauses);
+
+		if (!empty($this->terms)) {
+			$terms = addslashes($this->terms);
+			$match = 'MATCH(doc.notes, doc.agenda, doc.content)';
+			$against = "AGAINST('{$terms}' IN NATURAL LANGUAGE MODE)";
+			$clauses[] = "{$match} {$against}";
+			$score = "{$match} {$against} AS score";
+			$order = 'ORDER BY score DESC';
+		}
+		$where = implode("\n\t\tAND ", $clauses);
 
 		return <<<EOSQL
-			SELECT doc.*, {$match} as score
-				FROM minutes as doc
-				WHERE {$clause_string}
-				ORDER BY score desc
+	SELECT doc.*, {$score}
+	FROM minutes doc
+	WHERE {$where}
+	{$order};
 EOSQL;
 	}
 
@@ -298,7 +299,7 @@ EOSQL;
 		}
 
 		$found = [];
-		$search_minutes = empty($this->tags);
+		$skip_minutes = !empty($this->tags);
 
 		switch($this->doc_type_chosen) {
 			case 'agreements':
@@ -306,7 +307,7 @@ EOSQL;
 				$found = $this->searchAgreements($sql_a);
 				break;
 			case 'minutes':
-				if ($search_minutes) {
+				if (!$skip_minutes) {
 					$sql_m = $this->createMinsQuery();
 					$found = $this->searchMinutes($sql_m);
 				}
@@ -316,7 +317,7 @@ EOSQL;
 				$sql_a = $this->createAgrQuery();
 				$found = $this->searchAgreements($sql_a);
 
-				if ($search_minutes) {
+				if (!$skip_minutes) {
 					$sql_m = $this->createMinsQuery();
 					$found = array_merge($found, $this->searchMinutes($sql_m));
 				}
@@ -351,7 +352,7 @@ EOSQL;
 	 * array list the list of tags to render.
 	 */
 	public function renderTagSelector($list) {
-		$tag_options = "<option value=\"0\">None</option>\n";
+		$tag_options = "<option value=\"\">None</option>\n";
 		foreach($list as $id=>$name) {
 			$selected = in_array($name, $this->tags) ? ' selected' : '';
 			$tag_options .= "<option value=\"{$name}\"{$selected}>{$name}</option>\n";

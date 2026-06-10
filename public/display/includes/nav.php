@@ -1,9 +1,5 @@
 <p class="menu">
 <?php
-	if ( $id != 'home' )	#special link home
-	{ echo '<a href="?id=home">Recent</a><br>'."\n"; }
-	else { echo '<span class="link">Recent</span><br>'."\n"; }
-
 	if (( $id == 'agreement' ) && ( !isset( $num )))
 	{ echo '<span class="link">All Agreements</span><br>'."\n"; }
 	else { echo '<a href="?id=agreement">All Agreements</a><br>'."\n"; }
@@ -28,7 +24,7 @@
 		else
 		{
 			echo <<<EOHTML
-			<a href="?id=committee&amp;cmty={$link}">{$name}</a><br>
+			<a href="?id=search&cmty={$link}&show_docs=agreements">{$name}</a><br>
 EOHTML;
 		}
 
@@ -48,8 +44,7 @@ EOHTML;
 				else
 				{
 					$link_content = <<<EOHTML
-						<a href="?id=committee&amp;cmty={$link}&amp;sub={$sublink}">
-						&nbsp; &nbsp; &middot; {$subname}</a><br>
+						<a href="?id=search&cmty={$sublink}&show_docs=agreements">{$subname}</a><br>
 EOHTML;
 				}
 				echo <<<EOHTML
