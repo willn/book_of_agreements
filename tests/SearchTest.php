@@ -40,9 +40,13 @@ class SearchTest extends TestCase {
 	{
 		$s = new Search();
 		$s->setTerms("O'Reilly");
-		$clause = $s->getAgainstClause();
+
+		$clauses = $s->buildAgreementWhereClauses();
+		$sql = implode(' ', $clauses);
+
 		$this->assertStringContainsString(
-			"AGAINST('o\\'reilly' IN NATURAL LANGUAGE MODE)", $clause);
+			"AGAINST('o\\'reilly' IN NATURAL LANGUAGE MODE)", $sql
+		);
 	}
 
 	public function testCreateAgrQueryIncludesCorePieces()
@@ -164,19 +168,6 @@ EOSQL;
 		];
 	}
 
-	public function testMockRunSearchesAgreementsOnly()
-	{
-		$s = $this->getMockBuilder(Search::class)
-			->onlyMethods(['searchAgreements', 'createAgrQuery'])
-			->getMock();
-		$s->setDocType('agreements');
-
-		$s->method('createAgrQuery')->willReturn('SQL');
-		$s->method('searchAgreements')->willReturn(['a']);
-		$result = $s->runSearches();
-		$this->assertEquals(['a'], $result);
-	}
-
 	/**
 	 * @dataProvider provideRunSearchAgreements
 	 */
@@ -205,11 +196,11 @@ EOSQL;
 EOHTML;
 
 		$garden_list = <<<EOHTML
- <div class="agreement"> <h2 class="agrm"> 2011-11-21 <a href="?id=agreement&amp;num=209">Proposal to Include Great Oak Garden in Annual Operating Budget</a> [Great Oak Community] </h2> <div class="item_topic"> <div class="info">The garden is considered a shared resource and specific expenses will be included in the Great Oak operating budget for Grounds, including woodchips, replacement hoses and sprinklers, a water meter, and a larger diameter water line to be installed in the center.</div> <div class="tags">Tags: <span class="tag_entry">budget</span> </div> </div> </div>
+ <div class="agreement"> <h2 class="agrm"> 2011-11-21 <a href="?id=agreement&amp;num=209">Proposal to Include Great Oak Garden in Annual Operating Budget</a> [Great Oak Community] </h2> <div class="item_topic"> <div class="info">The garden is considered a shared resource and specific expenses will be included in the Great Oak operating budget for Grounds, including woodchips, replacement hoses and sprinklers, a water meter, and a larger diameter water line to be installed in the center.</div> <div class="tags">Tags: <a href="/boa/?id=search&tags=budget" class="tag_entry">budget</a> </div> </div> </div>
 EOHTML;
 
 		$parking_list = <<<EOHTML
- <div class="agreement"> <h2 class="agrm"> 2006-08-02 <a href="?id=agreement&amp;num=164">Parking Agreement</a> [Grounds] </h2> <div class="item_topic"> <div class="info">To live with limited parking spaces, these guidelines cover removing dead vehicles, storing little-used vehicles off-site, limiting parking of trailers, using garages solely for parking vehicles, and parking only in designated spaces.</div> <div class="tags">Tags: <span class="tag_entry">orientation</span> </div> </div> </div> <div class="agreement"> <h2 class="agrm"> 2006-06-03 <a href="?id=agreement&amp;num=156">Scooter parking areas</a> [Common House] </h2> <div class="item_topic"> <div class="info">Great Oak will establish 1-3 parking areas for scooters at CH entrances out of the way of doors and walkways. Implementation will be handled by the Common House committee.</div> </div> </div>
+ <div class="agreement"> <h2 class="agrm"> 2006-08-02 <a href="?id=agreement&amp;num=164">Parking Agreement</a> [Grounds] </h2> <div class="item_topic"> <div class="info">To live with limited parking spaces, these guidelines cover removing dead vehicles, storing little-used vehicles off-site, limiting parking of trailers, using garages solely for parking vehicles, and parking only in designated spaces.</div> <div class="tags">Tags: <a href="/boa/?id=search&tags=orientation" class="tag_entry">orientation</a> </div> </div> </div> <div class="agreement"> <h2 class="agrm"> 2006-06-03 <a href="?id=agreement&amp;num=156">Scooter parking areas</a> [Common House] </h2> <div class="item_topic"> <div class="info">Great Oak will establish 1-3 parking areas for scooters at CH entrances out of the way of doors and walkways. Implementation will be handled by the Common House committee.</div> </div> </div>
 EOHTML;
 
 		$effect_list = <<<EOHTML
@@ -217,11 +208,11 @@ EOHTML;
 EOHTML;
 
 		$five_fall = <<<EOHTML
- <div class="agreement"> <h2 class="agrm"> 2012-06-18 <a href="?id=agreement&amp;num=213">Agreement to lengthen the five fall budget community meetings</a> [Process] </h2> <div class="item_topic"> <div class="info">The proposal suggests pre-approving five community meetings a year, when the annual budget is discussed, to extend up to 120 minutes instead of 90 minutes, from 6:30 to 8:30 pm, when needed. This is intended to allow for more in-depth discussions, finishing the budget in fewer meetings, and reducing tension around rushed agenda items.</div> <div class="tags">Tags: <span class="tag_entry">budget</span> <span class="tag_entry">meeting-format</span> </div> </div> </div>
+ <div class="agreement"> <h2 class="agrm"> 2012-06-18 <a href="?id=agreement&amp;num=213">Agreement to lengthen the five fall budget community meetings</a> [Process] </h2> <div class="item_topic"> <div class="info">The proposal suggests pre-approving five community meetings a year, when the annual budget is discussed, to extend up to 120 minutes instead of 90 minutes, from 6:30 to 8:30 pm, when needed. This is intended to allow for more in-depth discussions, finishing the budget in fewer meetings, and reducing tension around rushed agenda items.</div> <div class="tags">Tags: <a href="/boa/?id=search&tags=budget" class="tag_entry">budget</a> <a href="/boa/?id=search&tags=meeting-format" class="tag_entry">meeting-format</a> </div> </div> </div>
 EOHTML;
 
 		$orientation_tag = <<<EOHTML
- <div class="agreement"> <h2 class="agrm"> 2009-03-16 <a href="?id=agreement&amp;num=187">Great Oak Common House Children Supervision Policy </a> [Common House] </h2> <div class="item_topic"> <div class="info">An agreement for child supervision in the common house to increase safety, cleanliness, clarity, and decrease tension caused by different parenting styles in the shared space, with specific rules for children aged 0-9, 10-12, and 13-18.</div> <div class="tags">Tags: <span class="tag_entry">health-safety</span> <span class="tag_entry">orientation</span> </div> </div> </div>
+ <div class="agreement"> <h2 class="agrm"> 2009-03-16 <a href="?id=agreement&amp;num=187">Great Oak Common House Children Supervision Policy </a> [Common House] </h2> <div class="item_topic"> <div class="info">An agreement for child supervision in the common house to increase safety, cleanliness, clarity, and decrease tension caused by different parenting styles in the shared space, with specific rules for children aged 0-9, 10-12, and 13-18.</div> <div class="tags">Tags: <a href="/boa/?id=search&tags=health-safety" class="tag_entry">health-safety</a> <a href="/boa/?id=search&tags=orientation" class="tag_entry">orientation</a> </div> </div> </div>
 EOHTML;
 
 		return [
@@ -301,20 +292,19 @@ EOHTML;
 		];
 	}
 
-
 	public function testRunSearchesMinutesOnly()
 	{
 		$s = $this->getMockBuilder(Search::class)
-			->onlyMethods(['searchMinutes', 'createMinsQuery'])
+			->onlyMethods(['createMinsQuery', 'searchMinutes'])
 			->getMock();
 		$s->setDocType('minutes');
+		$s->setTerms('fence');
+		$s->expects($this->once())->method('createMinsQuery')->willReturn('SQL');
+		$s->expects($this->once())->method('searchMinutes')->with('SQL')
+			->willReturn(['m']);
 
-		$s->method('createMinsQuery')->willReturn('SQL');
-		$s->method('searchMinutes')->willReturn(['m']);
 		$result = $s->runSearches();
-		$this->assertEquals(['m'], $result);
+		$this->assertSame(['m'], $result);
 	}
-
-
 }
 ?>

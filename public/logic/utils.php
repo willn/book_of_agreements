@@ -253,7 +253,9 @@ function render_tags($tags_list) {
 
 	$inner = '';
 	foreach($tags_list as $entry) {
-		$inner .= '<span class="tag_entry">' . $entry . '</span> ';
+		$inner .= <<<EOHTML
+<a href="/boa/?id=search&tags={$entry}" class="tag_entry">{$entry}</a> 
+EOHTML;
 	}
 	return <<<EOHTML
 <div class="tags">Tags: {$inner}</div>

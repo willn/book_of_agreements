@@ -86,7 +86,6 @@ class Search {
 
 	public function getQueryClausesString($match, $against) {
 		$clauses = [];
-
 		$clauses[] = implode(' AND ', $this->getDateClauses());
 
 		if (!$this->include_expired) {
@@ -110,14 +109,10 @@ class Search {
 			$tags_clause = '(' . implode(' AND ', $tags_clause_entries) . ')';
 		}
 
-		if (empty($clauses)) {
-			return '';
-		}
-
 		return 'WHERE ' . implode("\n\t\tAND ", $clauses);
 	}
 
-	protected function buildAgreementWhereClauses() {
+	public function buildAgreementWhereClauses() {
 		$clauses = [];
 
 		// Date range

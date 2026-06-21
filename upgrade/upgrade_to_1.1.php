@@ -5,6 +5,8 @@ if (!file_exists('../public/config.php')) {
 }
 require_once '../public/config.php';
 
+$HDUP = get_hdup();
+
 require_once '../public/logic/mysql_api.php';
 $mysql = new MysqlApi($HDUP['host'], $HDUP['database'], $HDUP['user'],
 	$HDUP['password']);
