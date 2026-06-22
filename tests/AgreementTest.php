@@ -8,6 +8,7 @@ set_include_path(get_include_path() .
 	PATH_SEPARATOR . $root . '/public/logic');
 require_once $root . '/public/logic/class_agreement.php';
 require_once 'class_mydate.php';
+require_once 'setup.php';
 
 /**
  * Simple stub replacements for dependencies
@@ -54,7 +55,7 @@ class TestAgreement extends Agreement {
     }
 }
 
-class AgreementTest extends TestCase
+class AgreementTest extends DatabaseTestCase
 {
 
     public function testSetAndGetId()

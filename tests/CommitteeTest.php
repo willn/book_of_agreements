@@ -6,8 +6,9 @@ require_once '../public/constants.php';
 require_once '../public/logic/committee.php';
 require_once 'testing_utils.php';
 require_once 'logic/utils.php';
+require_once 'setup.php';
 
-class CommitteeTest extends TestCase {
+class CommitteeTest extends DatabaseTestCase {
 	private $committee;
 
 	private $ex_top = [

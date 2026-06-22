@@ -5,8 +5,9 @@ set_include_path('../' . PATH_SEPARATOR . '../public/');
 require_once '../public/constants.php';
 require_once '../public/logic/class_search.php';
 require_once 'testing_utils.php';
+require_once 'setup.php';
 
-class SearchTest extends TestCase {
+class SearchTest extends DatabaseTestCase {
 
 	public function testParseGetVarsSetsProperties()
 	{

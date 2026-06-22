@@ -328,7 +328,7 @@ EOTXT;
 		$exp = ($this->expired) ? ' checked' : '';
 
 		$action = ($num == '') ? 'Add' : 'Edit';
-		$avoid_words = implode($this->avoid_words, ', ');
+		$avoid_words = implode(', ', $this->avoid_words);
 
 		return <<<EOHTML
 		<h1>{$action} Agreement</h1>

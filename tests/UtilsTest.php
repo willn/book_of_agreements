@@ -2,8 +2,9 @@
 use PHPUnit\Framework\TestCase;
 
 require_once '../public/logic/utils.php';
+require_once 'setup.php';
 
-class UtilsTest extends TestCase {
+class UtilsTest extends DatabaseTestCase {
 	/**
 	 * @dataProvider get_clean_html
 	 */
