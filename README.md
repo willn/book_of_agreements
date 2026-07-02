@@ -39,20 +39,6 @@ example:
 	insert into committees values(1, 1, 'Buildings', 'buildings');
 	insert into committees values(2, 2, 'Common House', 'ch');
 
-You'll also want to download a copy of the tango icon library, and place the
-32x32 directory in display/images/tango Instructions for downloading this
-library either as an archive or the source can be found here:
-
-	http://tango.freedesktop.org/Tango_Icon_Library
-
-Direct download example:
-
-	cd public/display/images/
-	wget http://tango.freedesktop.org/releases/tango-icon-theme-0.8.90.tar.gz
-	tar -xzvf tango-icon-theme-0.8.90.tar.gz
-	ln -s tango-icon-theme-0.8.90/ tango
-	rm tango-icon-theme-0.8.90.tar.gz
-
 Now using your web browser, visit your website. There will likely be some
 greeting text, but you'll need to click on the "Member Login" link in the upper
 right corner in order to enter the application. Any username / password
