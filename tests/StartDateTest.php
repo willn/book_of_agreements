@@ -52,8 +52,8 @@ class StartDateTest extends TestCase {
 		$result = $date->selectDate();
 
 		$sample = <<<EOHTML
-		<p>Start Date:
-		<select name="startyear" size="1"><option value="2001">2001</option>
+		<p>Date:
+		<select name="year" size="1"><option value="2001">2001</option>
 <option value="2002">2002</option>
 <option value="2003">2003</option>
 <option value="2004">2004</option>
@@ -80,7 +80,7 @@ class StartDateTest extends TestCase {
 <option value="2025">2025</option>
 <option value="2026">2026</option>
 </select>
-		<select name="startmonth" size="1"><option value="1">January</option>
+		<select name="month" size="1"><option value="1">January</option>
 <option value="2">February</option>
 <option value="3" selected="selected">March</option>
 <option value="4">April</option>

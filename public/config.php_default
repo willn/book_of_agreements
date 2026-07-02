@@ -5,7 +5,7 @@ date_default_timezone_set('America/Detroit');
 
 define('BASE_URL', '');
 
-define('DOMAIN', '');
+define('DOMAIN_NAME', '');
 define('AUDIT_CONTACT', '');
 define('FROM_ADDRESS', '');
 define('REPLYTO', '');

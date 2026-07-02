@@ -1,9 +1,9 @@
 # phpstan config file
 # run with this command:
-# $ phpstan.phar analyse -c phpstan_config.neon .
+# $ phpstan analyse -c phpstan_config.neon .
 
 parameters:
-	level: 0
+	level: 1
 	paths:
 		- public
 		- scripts

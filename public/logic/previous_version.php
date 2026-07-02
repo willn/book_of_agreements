@@ -1,10 +1,9 @@
 <?php
-require_once('logic/class_agreement.php');
+require_once __DIR__ . '/class_agreement.php';
+require_once __DIR__ . '/lib_boa.php';
 
 $agr_id = intval($_REQUEST['agr_id']);
 $version = intval($_REQUEST['prev_id']);
-
-require_once 'logic/lib_boa.php';
 
 $Agr = new Agreement();
 $Agr->setId($agr_id);

@@ -3,15 +3,17 @@
 <head>
 	<meta http-equiv="Content-Security-Policy" content="default-src 'self'">
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-	<title><?= $title; ?></title>
+	<title><?= $title ?? '' ?></title>
 	<link rel="stylesheet" href="display/styles/default.css" type="text/css">
 	<link rel="stylesheet" href="display/styles/print.css" type="text/css" media="print">
 
 <?php
-	foreach($stylesheets as $s) {
-		echo <<<EOHTML
+	if (isset($stylesheets)) {
+		foreach($stylesheets as $s) {
+			echo <<<EOHTML
 	<link rel="stylesheet" href="display/styles/{$s}" type="text/css">
 EOHTML;
+		}
 	}
 ?>
 

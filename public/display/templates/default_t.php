@@ -1,13 +1,15 @@
-<?php include ('display/includes/head.php'); ?>
+<?php include dirname(__DIR__) . '/includes/head.php'; ?>
 <body>
 
 <div id="banner">
-<img src="display/images/gocohologo.gif" alt="<?= $title; ?>"
+<img src="display/images/gocohologo.gif" alt="<?= $title ?? '' ?>"
 width="400" height="72">
 
 <?php
-	if ( !$PUBLIC_USER ) {
-		$terms = str_replace( '"', '&quot;', $search_terms );
+	# if user is logged in, then display advanced search
+	if (isset($PUBLIC_USER) && (!$PUBLIC_USER)) {
+		$terms = !isset($search_terms) ? '' :
+			str_replace( '"', '&quot;', $search_terms );
 		echo <<<EOHTML
 	<form id="search" method="get" action="?id=search">
 		<input type="hidden" name="id" value="search">
@@ -46,11 +48,15 @@ EOHTML;
 ?>
 
 <div id="nav">
-<?php include ('display/includes/nav.php'); ?>
+<?php include dirname(__DIR__) . '/includes/nav.php'; ?>
 </div>
 
 <div id="content">
-<?php include( $body ); ?>
+<?php
+if (isset($body)) {
+	include( $body );
+}
+?>
 </div>
 
 </body>

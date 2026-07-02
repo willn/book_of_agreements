@@ -1,19 +1,24 @@
 <?php
-	if ( $_SESSION['boa-admin-passwd'] === $admin_string ) {
-		$_SESSION['admin'] = true;
-	}
-	elseif ( !isset( $_SESSION ) || 
-		$_SESSION['boa-admin-passwd'] !== $admin_string ) { 
-		if ( isset( $_POST['pw'] )) {
-			$_SESSION['boa-admin-passwd'] = hash('sha256', $_POST['pw']);
-		}
+if (!isset($admin_string)) {
+	error_log(__LINE__ . " admin_string is not set");	
+	exit;
+}
 
-		if ( $_SESSION['boa-admin-passwd'] != $admin_string ) { 
-			echo '<form action="" method="post">
-				admin password: <input type="password" name="pw" value="">
-				</form>';
-			exit( 0 );
-		} 
-		$_SESSION['admin'] = true;
+if ( $_SESSION['boa-admin-passwd'] === $admin_string ) {
+	$_SESSION['admin'] = true;
+}
+elseif ( !isset( $_SESSION ) || 
+	$_SESSION['boa-admin-passwd'] !== $admin_string ) { 
+	if ( isset( $_POST['pw'] )) {
+		$_SESSION['boa-admin-passwd'] = hash('sha256', $_POST['pw']);
 	}
+
+	if ( $_SESSION['boa-admin-passwd'] != $admin_string ) { 
+		echo '<form action="" method="post">
+			admin password: <input type="password" name="pw" value="">
+			</form>';
+		exit( 0 );
+	} 
+	$_SESSION['admin'] = true;
+}
 ?>

@@ -1,5 +1,5 @@
 <?php
-require_once('logic/utils.php');
+require_once dirname(__DIR__) . '/utils.php';
 
 $MainNav['home'] = 'Home';
 

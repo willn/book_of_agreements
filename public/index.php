@@ -50,6 +50,7 @@ function attempt_login() {
 
 	if (!isset($_POST['boa_username']) || !isset($_POST['boa_password'])) {
 		display_login_form();
+		error_log(__FUNCTION__ . ' ' . __LINE__ . " username or password not set");
 		exit;
 	}
 
@@ -62,6 +63,7 @@ function attempt_login() {
 	}
 	else {
 		display_login_form();
+		error_log(__FUNCTION__ . ' ' . __LINE__ . " display login form");
 		exit;
 	}
 }
@@ -104,6 +106,7 @@ EOHTML;
 </form>
 EOHTML;
 
+	error_log(__FUNCTION__ . ' ' . __LINE__ . " finished displaying login form");
 	exit;
 }
 

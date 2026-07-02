@@ -1,10 +1,10 @@
 <?php
 
-require_once('constants.php');
-require_once('utils.php');
-require_once('class_mydate.php');
-require_once('committee.php');
-require_once('config.php');
+require_once dirname(__DIR__) . '/constants.php';
+require_once __DIR__ . '/utils.php';
+require_once __DIR__ . '/class_mydate.php';
+require_once __DIR__ . '/committee.php';
+require_once dirname(__DIR__) . '/config.php';
 
 
 /**

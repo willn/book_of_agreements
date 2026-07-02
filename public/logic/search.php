@@ -1,5 +1,5 @@
 <?php
-require_once('logic/class_search.php');
+require_once __DIR__ . '/class_search.php';
 
 $Search = new Search();
 $Search->parseGetVars();

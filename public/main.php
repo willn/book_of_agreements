@@ -18,7 +18,7 @@
 
 	#-------[ over-write defaults with page-specific variables ]---------
 	#grab page id value
-	$id = 'home';
+	$id = 'recent';
 	if ( isset( $_GET['id'] )) {
 		preg_match( '/^(\w+)$/', $_GET['id'], $Match );
 		if (!empty($Match[1])) {
@@ -61,7 +61,7 @@
 		# punt_public_user();
 	}
 	else {
-		require_once('logic/pagevars/errors_404_v.php');
+		error_log(__FILE__ . ' ' . __LINE__ . " unable to find pagevar");
 	}
 
 	$temploc = "display/templates/$template";

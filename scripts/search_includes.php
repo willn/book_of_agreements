@@ -3,7 +3,7 @@
  * Collection of functions (backed by unit tests) for the minutes search.
  */
 
-require_once 'config.php';
+require_once dirname(__DIR__) . '/public/config.php';
 
 // the daily routine is to go back a day
 define('LOOK_BACK_DAYS', 1);
@@ -34,7 +34,7 @@ function parse_found_files($Directories, $Cmtys, $yest_year, $yest_month_name) {
 
 	foreach($Directories as $dir) {
 		if (empty($dir)) {
-			error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " empty dir");
+			error_log(__FUNCTION__ . ' ' . __LINE__ . " empty dir");
 			return;
 		}
 
@@ -52,14 +52,18 @@ function parse_found_files($Directories, $Cmtys, $yest_year, $yest_month_name) {
 		 * committee for this month yet.
 		 */
 		if (!file_exists($curdir)) {
-			error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " dir does not exist: {$dir}");
+			error_log(__FUNCTION__ . ' ' . __LINE__ . " dir does not exist: {$dir}");
 			continue;
 		}
 
 		$Matches = [];
 		$cmtee_id = NULL;
-		// XXX don't hardcode ".org" here...
-		$match_string = '/private\/([^-]*)-?minutes_' . DOMAIN . '/';
+		$domain = '';
+		if (defined(DOMAIN_NAME)) {
+			$domain = DOMAIN_NAME;
+		}
+
+		$match_string = '/private\/([^-]*)-?minutes_' . $domain . '/';
 		preg_match($match_string, $curdir, $Matches );
 		if (!empty($Matches)) {
 			$cmtee_name = $Matches[1];
@@ -68,13 +72,13 @@ function parse_found_files($Directories, $Cmtys, $yest_year, $yest_month_name) {
 			}
 
 			if (!isset($Cmtys[$cmtee_name]['cid'])) {
-				error_log(__CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " unmatched committee name: {$cmtee_name} {$curdir}");
+				error_log(__FUNCTION__ . ' ' . __LINE__ . " unmatched committee name: {$cmtee_name} {$curdir}");
 				continue;
 			}
 			$cmtee_id = $Cmtys[$cmtee_name]['cid'];
 		}
 		else {
-			echo __CLASS__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " match string:{$match_string}, curdir:{$curdir}\n";
+			echo __FUNCTION__ . ' ' . __LINE__ . " match string:{$match_string}, curdir:{$curdir}\n";
 		}
 
 		// look for html files which live inside this directory

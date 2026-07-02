@@ -1,6 +1,6 @@
 <?php
 
-require_once('lib_boa.php');
+require_once 'lib_boa.php';
 
 /**
  * Minutes
@@ -101,23 +101,20 @@ class Minutes extends BOADoc {
 		switch( $type )
 		{
 			case 'form':
-				$notes = format_html( $this->notes, true );
-				$agenda = format_html( $this->agenda, true );
-				$content = format_html( $this->content, true );
+				$notes = format_html($this->notes, TRUE);
+				$agenda = format_html($this->agenda, TRUE);
+				$content = format_html($this->content, TRUE);
 
-				$notes = '<input type="text" name="notes" value="'.
-					$notes . '" size="50">' . "\n";
-				$agenda = '<textarea name="agenda" cols="85" rows="10">'.
-					$agenda . "</textarea>\n";
-				$content = '<textarea name="content" cols="85" rows="35">'.
-					$content . "</textarea>\n";
+				$output .= <<<EOHTML
+				<h3>Special Notes:</h3>
+				<input type="text" name="notes" value="{$notes}" size="50">
 
-				if ( !empty( $notes ))
-				{ $output .= "<h3>Special Notes:</h3>\n$notes\n"; }
-				if ( !empty( $agenda ))
-				{ $output .= "<h3>Agenda:</h3>\n$agenda\n"; }
-				if ( !empty( $content ))
-				{ $output .= "<h3>Minutes:</h3>\n$content\n"; }
+				<h3>Agenda:</h3>
+				<textarea name="agenda" cols="85" rows="10">{$agenda}</textarea>
+
+				<h3>Minutes:</h3>
+				<textarea name="content" cols="85" rows="35">{$content}</textarea>
+EOHTML;
 
 				break;
 

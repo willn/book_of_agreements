@@ -1,1 +1,3 @@
-<?php include( 'logic/pagevars/agreement_v.php' ); ?>
+<?php
+include __DIR__ . '/agreement_v.php';
+?>

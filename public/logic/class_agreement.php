@@ -1,7 +1,7 @@
 <?php
 
-require_once('lib_boa.php');
-require_once('constants.php');
+require_once __DIR__ . '/lib_boa.php';
+require_once dirname(__DIR__) . '/constants.php';
 
 /**
  * Agreements

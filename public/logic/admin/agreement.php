@@ -1,6 +1,6 @@
 <?php
-require_once('logic/utils.php');
-require_once('logic/class_agreement.php');
+require_once __DIR__ . '/utils.php';
+require_once __DIR__ . '/class_agreement.php';
 
 $update_string = '';
 $update = false;

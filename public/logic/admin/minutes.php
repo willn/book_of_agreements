@@ -1,7 +1,7 @@
 <?php
-require_once('logic/utils.php');
-require_once('logic/class_minute.php');
-require_once('logic/class_mydate.php');
+require_once __DIR__ . 'utils.php';
+require_once __DIR__ . 'class_minute.php';
+require_once __DIR__ . 'class_mydate.php';
 
 $update_string = '';
 $update = false;
@@ -25,7 +25,7 @@ if ( isset( $_POST['admin_post'] )) {
 	);
 	$update = true;
 }
-elseif ( $num > 0 ) {
+elseif (isset($num) && ($num > 0)) {
 	# edit minutes, document number
 	$Mins = new Minutes( $num );
 }
@@ -38,13 +38,13 @@ $Cmty = new Committee( $Mins->cid );
 if ( isset( $_POST['save'] )) {
 	$Mins->save( $update );
 }
-elseif( isset( $_GET['delete'] )) {
+elseif(isset($_GET['delete']) && isset($confirm_del)) {
 	$Mins->delete( $confirm_del );
 }
 else {
 	$Cmty->setId($Mins->cid);
 
-	if ( $num > 0 ) {
+	if (isset($num) && ($num > 0)) {
 		$update_string = 
 			'<input type="hidden" name="update" value="1">' . "\n";
 	}

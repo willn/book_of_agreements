@@ -1,5 +1,6 @@
 <?php
 
+define('NUM_SECS_PER_DAY', 86400);
 define('FUZZY_SECONDS', 100);
 require_once('utils.php');
 
@@ -147,6 +148,8 @@ class StartDate extends MyDate {
 
 		$day = intval($day);
 		$this->day = ($day) ? $day : 1;
+
+		$this->label = $label;
 	}
 
 	/**
@@ -184,6 +187,8 @@ class EndDate extends MyDate {
 
 		$day = intval($day);
 		$this->day = ($day) ? $day : date('d');
+
+		$this->label = $label;
 	}
 
 	/**

@@ -1,8 +1,8 @@
 <?php
-require_once('logic/class_agreement.php');
-require_once('logic/class_minute.php');
-require_once('logic/utils.php');
-require_once('logic/lib_boa.php');
+require_once __DIR__ . '/class_agreement.php';
+require_once __DIR__ . '/class_minute.php';
+require_once __DIR__ . '/utils.php';
+require_once __DIR__ . '/lib_boa.php';
 
 /**
  * Take input, perform a search, and output the results
@@ -376,7 +376,7 @@ EOHTML;
 		$end_select = $this->end_date->selectDate();
 
 		$found = $this->runSearches();
-		$num_matches = count($found);
+		$num_matches = isset($found) ? count($found) : 0;
 
 		// the default type
 		$document_types = '';

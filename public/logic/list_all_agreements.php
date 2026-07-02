@@ -1,11 +1,11 @@
 <?php
-	require_once('logic/utils.php');
+	require_once __DIR__ . '/utils.php';
 
 	$pub = '';
 	$access_img = 'apps/system-users.png';
 	$h1_class = 'agrm';
 	$note = '';
-	if ($PUBLIC_USER) {
+	if (isset($PUBLIC_USER) && $PUBLIC_USER) {
 		$pub = 'Public ';
 		$access_img = 'apps/internet-web-browser.png';
 		$h1_class = 'public';
@@ -42,7 +42,7 @@ EOHTML;
 
 	$show_link = '';
 	$conditions = '';
-	if ( $show == 'expired' ) {
+	if (isset($show) && ($show == 'expired')) {
 		$conditions = 'and agreements.expired=1 ';
 		$show_exp_msg = '<p><a href="?id=agreement">Show active agreements</a></p>';
 		$show_link = '&amp;show=expired';
@@ -58,16 +58,16 @@ EOHTML;
 	}
 
 	$show_exp_msg = '';
-	if ( !$PUBLIC_USER ) {
+	if (!isset($PUBLIC_USER) && $PUBLIC_USER) {
 		echo $show_exp_msg;
 	}
 
-	$order = ( $sort == 'committee' ) ?
+	$order = (isset($sort) && ($sort == 'committee')) ?
 		'order by committees.parent asc, agreements.cid asc' :
 		'order by agreements.date desc, agreements.id desc';
 
 	$pub_constrain = '';
-	if ( $PUBLIC_USER ) {
+	if (isset($PUBLIC_USER) && $PUBLIC_USER) {
 		$pub_constrain = 'and agreements.world_public=1';
 	}
 
@@ -115,8 +115,11 @@ EOHTML;
 EOHTML;
 				
 			foreach( $All as $num=>$Item ) {
-				$Cmty->setId($Item['cid']);
-				$name = $Cmty->getName();
+				$name = '';
+				if (isset($Cmty)) {
+					$Cmty->setId($Item['cid']);
+					$name = $Cmty->getName();
+				}
 				$title = stripslashes( $Item['title'] );
 				$summary = stripslashes( $Item['summary'] );
 				$tags_html = render_tags(stripslashes($Item['tags']));

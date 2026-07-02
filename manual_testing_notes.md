@@ -16,11 +16,13 @@ then, we need to be able to enumerate and manually test the core functionality.
 - search
 
 ## Member users can
-- View Recently Active Items (30 days)
+- View Recently Active Items
 - All Agreements listing
 - All Minutes listing
 - View filtered listing based on committee name
-- View minutes
+- Click on tag to filter to only that
+- View individual minutes entry
+- View individual agreement entry
 - View non-shared agreements
   * View diff [example](http://gocoho.org/boa/?id=previous_version&agr_id=6&prev_id=1)
   * View minutes from previous 50 days (same example as above)
