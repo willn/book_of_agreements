@@ -128,7 +128,7 @@ class Agreement extends BOADoc
 
 		$pub_constraint = '';
 		if ( $PUBLIC_USER ) {
-			$pub_constraint = ' and agreements.world_public=1';
+			$pub_constraint = ' AND a.world_public=1';
 		}
 
 		$sql = <<<EOSQL
@@ -138,12 +138,12 @@ class Agreement extends BOADoc
 			JOIN committees c ON c.cid = a.cid
 			LEFT JOIN tags_to_agreements tta ON tta.agreement_id = a.id
 			LEFT JOIN tags t ON t.id = tta.tag_id
-			WHERE a.id = {$this->id}
+			WHERE a.id = {$this->id}{$pub_constraint}
 			GROUP BY a.id;
 EOSQL;
 
 		$this->init_mysql_api();
-		$data = $this->mysql_api->get($sql . $pub_constraint, NULL, FALSE);
+		$data = $this->mysql_api->get($sql, NULL, FALSE);
 		if ( empty( $data )) {
 			if ( $PUBLIC_USER ) {
 				if (attempt_login()) {

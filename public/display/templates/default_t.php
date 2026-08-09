@@ -25,7 +25,7 @@ EOHTML;
 else {
 	echo <<<EOHTML
 	<div id="login">
-		<a href="?login=1">Member Login</a>
+		<a href="?id=login">Member Login</a>
 	</div>
 EOHTML;
 }

@@ -57,18 +57,9 @@ EOHTML;
 EOHTML;
 	}
 
-	$show_exp_msg = '';
-	if (!isset($PUBLIC_USER) && $PUBLIC_USER) {
-		echo $show_exp_msg;
-	}
-
-	$order = (isset($sort) && ($sort == 'committee')) ?
-		'order by committees.parent asc, agreements.cid asc' :
-		'order by agreements.date desc, agreements.id desc';
-
 	$pub_constrain = '';
 	if (isset($PUBLIC_USER) && $PUBLIC_USER) {
-		$pub_constrain = 'and agreements.world_public=1';
+		$pub_constrain = ' AND a.world_public=1';
 	}
 
 	$sql = <<<EOSQL
@@ -78,7 +69,7 @@ EOHTML;
 		JOIN committees c ON c.cid = a.cid
 		LEFT JOIN tags_to_agreements tta ON tta.agreement_id = a.id
 		LEFT JOIN tags t ON t.id = tta.tag_id
-		WHERE a.expired = 0
+		WHERE a.expired = 0{$pub_constrain}
 		GROUP BY 
 		  a.id, a.cid, a.title, a.date, c.cmty, c.parent, a.summary
 		ORDER BY a.date DESC, a.id DESC;

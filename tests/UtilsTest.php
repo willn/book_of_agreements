@@ -67,5 +67,57 @@ class UtilsTest extends DatabaseTestCase {
 		$this->assertGreaterThan(5, count($tags));
 	}
 
+	public function testGetWordParamReturnsValueWhenValid()
+	{
+		$params = ['id' => 'recent'];
+		$this->assertEquals('recent', getWordParam($params, 'id'));
+	}
+
+	public function testGetWordParamReturnsDefaultWhenMissing()
+	{
+		$params = [];
+		$this->assertEquals('recent', getWordParam($params, 'id', 'recent'));
+	}
+
+	public function testGetWordParamRejectsInvalidValue()
+	{
+		$params = ['id' => 'foo/bar'];
+		$this->assertEquals('recent', getWordParam($params, 'id', 'recent'));
+	}
+
+	public function testGetWordParamRejectsEmptyValue()
+	{
+		$params = ['id' => ''];
+		$this->assertEquals('recent', getWordParam($params, 'id', 'recent'));
+	}
+
+	public function testGetWordParamAllowsNumbersAndUnderscores()
+	{
+		$params = ['id' => 'page_123'];
+		$this->assertEquals('page_123', getWordParam($params, 'id'));
+	}
+
+	public function testAuthenticatedUserGetsRequestedPage()
+	{
+		$params = ['id' => 'recent'];
+		$this->assertEquals('recent', getPageId($params, false));
+	}
+
+	public function testAuthenticatedUserDefaultsToRecent()
+	{
+		$this->assertEquals('recent', getPageId([], false));
+	}
+
+	public function testPublicUserCanAccessLogin()
+	{
+		$params = ['id' => 'login'];
+		$this->assertEquals('login', getPageId($params, true));
+	}
+
+	public function testPublicUserCanAccessLogout()
+	{
+		$params = ['id' => 'logout'];
+		$this->assertEquals('logout', getPageId($params, true));
+	}
 }
 ?>

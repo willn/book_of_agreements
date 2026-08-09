@@ -1,69 +1,42 @@
 <?php
-	$PUBLIC_USER = false;
-	if (!is_authenticated()) {
-		$PUBLIC_USER = true;
-	}
+require_once( 'logic/lib_boa.php' );
 
-	require_once( 'logic/lib_boa.php' );
+$template = 'default_t.php';
+$js = '';
+$stylesheets = [];
+$MainNav = [];
+$search_terms = '';
 
-	$template = 'default_t.php';
-	$js = '';
-	$stylesheets = array();
+#-------[ over-write defaults with page-specific variables ]---------
+$id = getWordParam($_GET, 'id', 'recent');
+$cmty = getWordParam($_GET, 'cmty');
+$sub = getWordParam($_GET, 'sub');
+$num = isset($_GET['num']) ? intval($_GET['num']) : null;
 
-	$MainNav = array();
-	$id = '';
-	$cmty = '';
-	$sub = '';
-	$search_terms = '';
+#--- user must login before using the admin tool
+if ( $id == 'admin' ) {
+	require_once( 'logic/admin/authentication.php' );
+}
 
-	#-------[ over-write defaults with page-specific variables ]---------
-	#grab page id value
-	$id = 'recent';
-	if ( isset( $_GET['id'] )) {
-		preg_match( '/^(\w+)$/', $_GET['id'], $Match );
-		if (!empty($Match[1])) {
-			$id = $Match[1];
-		}
-	}
+// get links array info
+require_once( "logic/links/main_lk.php" );
 
-	#--- user must login before using the admin tool
-	if ( $id == 'admin' ) {
-		require_once( 'logic/admin/authentication.php' );
-	}
+$PUBLIC_USER = !is_authenticated();
+$id = getPageId($_GET, $PUBLIC_USER);
 
-	if ( isset( $_GET['cmty'] )) {
-		preg_match( '/^(\w+)$/', $_GET['cmty'], $Match );
-		$cmty = $Match[1];
-	}
+$pvar = 'logic/pagevars/'.$id.'_v.php';
+if (file_exists($pvar)) {
+	require_once($pvar);
+}
+elseif ($PUBLIC_USER) {
+	attempt_login();
+	# if this is a public user, then punt instead of 404
+	# punt_public_user();
+}
+else {
+	error_log(__FILE__ . ' ' . __LINE__ . " unable to find pagevar");
+}
 
-	if ( isset( $_GET['sub'] )) {
-		preg_match( '/^(\w+)$/', $_GET['sub'], $Match );
-		$sub = $Match[1];
-	}
-
-	if ( isset( $_GET['num'] )) {
-		$num = intval( $_GET['num'] );
-	}
-
-	#-- get links array info
-	require_once( "logic/links/main_lk.php" );
-
-	if ($PUBLIC_USER && (($id != 'login') && ($id != 'logout'))) {
-		$id = empty($_GET['id']) ? 'agreement' : $_GET['id'];
-	}
-
-	$pvar = 'logic/pagevars/'.$id.'_v.php';
-	if ( file_exists( $pvar )) {
-		require_once($pvar);
-	}
-	elseif ( $PUBLIC_USER ) {
-		# if this is a public user, then punt instead of 404
-		# punt_public_user();
-	}
-	else {
-		error_log(__FILE__ . ' ' . __LINE__ . " unable to find pagevar");
-	}
-
-	$temploc = "display/templates/$template";
-	require_once($temploc);
+$temploc = "display/templates/$template";
+require_once($temploc);
 ?>
