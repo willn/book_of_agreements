@@ -104,19 +104,19 @@ class SearchTest extends DatabaseTestCase {
 
 	public function provideCreateAgrQuerySql() {
 		$parking = <<<EOSQL
- SELECT doc.*, c.cmty, tg.tags, MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('parking' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE doc.date>="2000-12-31" AND doc.date<="2007-07-01" AND expired=0 AND ( MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('parking' IN NATURAL LANGUAGE MODE) ) ORDER BY score DESC;
+ SELECT doc.*, c.cmty, tg.tags, MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('parking' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE world_public=1 AND doc.date>="2000-12-31" AND doc.date<="2007-07-01" AND expired=0 AND ( MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('parking' IN NATURAL LANGUAGE MODE) ) ORDER BY score DESC;
 EOSQL;
 
 		$vendor = <<<EOSQL
- SELECT doc.*, c.cmty, tg.tags, MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('trusted vendor' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE doc.date>="2018-02-28" AND doc.date<="2018-07-01" AND expired=0 AND ( MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('trusted vendor' IN NATURAL LANGUAGE MODE) ) ORDER BY score DESC;
+ SELECT doc.*, c.cmty, tg.tags, MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('trusted vendor' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE world_public=1 AND doc.date>="2018-02-28" AND doc.date<="2018-07-01" AND expired=0 AND ( MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('trusted vendor' IN NATURAL LANGUAGE MODE) ) ORDER BY score DESC;
 EOSQL;
 
 		$monday_budget = <<<EOSQL
- SELECT doc.*, c.cmty, tg.tags, MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('monday' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE doc.date>="2012-01-31" AND doc.date<="2012-10-01" AND expired=0 AND ( MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('monday' IN NATURAL LANGUAGE MODE) ) AND EXISTS ( SELECT 1 FROM tags_to_agreements tta2 JOIN tags t2 ON t2.id = tta2.tag_id WHERE tta2.agreement_id = doc.id AND t2.tag = 'budget' ) ORDER BY score DESC;
+ SELECT doc.*, c.cmty, tg.tags, MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('monday' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE world_public=1 AND doc.date>="2012-01-31" AND doc.date<="2012-10-01" AND expired=0 AND ( MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('monday' IN NATURAL LANGUAGE MODE) ) AND EXISTS ( SELECT 1 FROM tags_to_agreements tta2 JOIN tags t2 ON t2.id = tta2.tag_id WHERE tta2.agreement_id = doc.id AND t2.tag = 'budget' ) ORDER BY score DESC;
 EOSQL;
 
 		$garden_list = <<<EOSQL
- SELECT doc.*, c.cmty, tg.tags, MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('garden' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE doc.date>="2010-12-31" AND doc.date<="2012-01-01" AND expired=0 AND ( MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('garden' IN NATURAL LANGUAGE MODE) ) ORDER BY score DESC;
+ SELECT doc.*, c.cmty, tg.tags, MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('garden' IN NATURAL LANGUAGE MODE) AS score FROM agreements doc JOIN committees c ON c.cid = doc.cid LEFT JOIN ( SELECT tta.agreement_id, GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags FROM tags_to_agreements tta JOIN tags t ON t.id = tta.tag_id GROUP BY tta.agreement_id ) tg ON tg.agreement_id = doc.id WHERE world_public=1 AND doc.date>="2010-12-31" AND doc.date<="2012-01-01" AND expired=0 AND ( MATCH( doc.title, doc.summary, doc.full, doc.background, doc.comments, doc.processnotes ) AGAINST('garden' IN NATURAL LANGUAGE MODE) ) ORDER BY score DESC;
 EOSQL;
 
 		return [
@@ -173,7 +173,6 @@ EOSQL;
 	 * @dataProvider provideRunSearchAgreements
 	 */
 	public function testRunSearchAgreements($get_vars, $expected) {
-
 		$s = new Search();
 		$_GET = $get_vars;
 		$s->parseGetVars();
@@ -192,10 +191,10 @@ EOSQL;
 
 	public function provideRunSearchAgreements() {
 		$fence_list = <<<EOHTML
- <div class="agreement"> 
-<h2 class="agrm"> 2007-10-15 <a href="?id=agreement&amp;num=180">Hot Tub Trial Policies</a> [Common House] </h2> <div class="item_topic"> <div class="info">The Common House Committee has issued a set of policies for a 6-month trial period that covers expenses, safety, health, reservations, respect and manners, and usage, and will be re-evaluated after 6 months.</div> </div> </div>
+ <div class="agreement"> <h2 class="agrm"> 2003-06-30 <a href="?id=agreement&amp;num=90">GO Fence Policy</a> [Grounds] </h2> <div class="item_topic"> <div class="info">The GO fence policy allows backyard fences up to 6 feet high and front yard decorative fences up to 1.5 feet high. The policy aims to balance the community's desire for privacy and pet containment with the preservation of Great Oak's aesthetics and open space.</div> </div> </div> <div class="agreement"> <h2 class="agrm"> 2003-03-03 <a href="?id=agreement&amp;num=98">Pet Policy (minus the Cat section)</a> [Great Oak Community] </h2> <div class="item_topic"> <div class="info">The policy aims to create a harmonious environment for people, pets, and nature. It addresses various types of pets including dogs and other outdoor pets, as well as concerns around safety, cleanliness, damage, and noise. Pet owners are responsible for their pets' actions and damages. The "Cat Clause" covers cats and is a separate policy.</div> </div> </div> <div class="agreement"> <h2 class="agrm"> 2004-06-02 <a href="?id=agreement&amp;num=115">Planting Trees and Shrubs within Limited Common Elements (LCEs)</a> [Grounds] </h2> <div class="item_topic"> <div class="info">Households are free to plant trees and shrubs within their LCEs, which have an expected maximum growth height of 20 feet high or less without approval from the grounds committee, provided they follow specific guidelines. The proposal aims to address issues related to tree planting, which can cause conflicts among neighbors and damage to in-ground infrastructure.</div> </div> </div>
 EOHTML;
 
+/*
 		$garden_list = <<<EOHTML
  <div class="agreement"> <h2 class="agrm"> 2011-11-21 <a href="?id=agreement&amp;num=209">Proposal to Include Great Oak Garden in Annual Operating Budget</a> [Great Oak Community] </h2> <div class="item_topic"> <div class="info">The garden is considered a shared resource and specific expenses will be included in the Great Oak operating budget for Grounds, including woodchips, replacement hoses and sprinklers, a water meter, and a larger diameter water line to be installed in the center.</div> <div class="tags">Tags: <a href="/boa/?id=search&tags=budget" class="tag_entry">budget</a> </div> </div> </div>
 EOHTML;
@@ -215,14 +214,15 @@ EOHTML;
 		$orientation_tag = <<<EOHTML
  <div class="agreement"> <h2 class="agrm"> 2009-03-16 <a href="?id=agreement&amp;num=187">Great Oak Common House Children Supervision Policy </a> [Common House] </h2> <div class="item_topic"> <div class="info">An agreement for child supervision in the common house to increase safety, cleanliness, clarity, and decrease tension caused by different parenting styles in the shared space, with specific rules for children aged 0-9, 10-12, and 13-18.</div> <div class="tags">Tags: <a href="/boa/?id=search&tags=health-safety" class="tag_entry">health-safety</a> <a href="/boa/?id=search&tags=orientation" class="tag_entry">orientation</a> </div> </div> </div>
 EOHTML;
+*/
 
 		return [
 			[
 				[
 					'q' => 'fence',
-					'startyear' => 2006,
+					'startyear' => 2003,
 					'startmonth' => 1,
-					'endyear' => 2007,
+					'endyear' => 2004,
 					'endmonth' => 12,
 					'cmty' => 0,
 				],

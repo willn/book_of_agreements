@@ -7,11 +7,13 @@
 		echo '<a href="?id=agreement">All Agreements</a><br>'."\n";
 	}
 
-	if (isset($id) && ($id == 'minutes') && (!isset($num))) {
-		echo '<span class="link">All Minutes</span><br>'."\n";
-	}
-	else {
-		echo '<a href="?id=minutes">All Minutes</a><br>'."\n";
+	if (is_authenticated() && ($_SESSION['boa_username'] !== 'guest')) {
+		if (isset($id) && ($id == 'minutes') && (!isset($num))) {
+			echo '<span class="link">All Minutes</span><br>'."\n";
+		}
+		else {
+			echo '<a href="?id=minutes">All Minutes</a><br>'."\n";
+		}
 	}
 ?>
 </p>

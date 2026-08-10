@@ -116,8 +116,6 @@ class Agreement extends BOADoc
 	 * Load an Agreement entry from the database by ID.
 	 */
 	public function loadById( ) {
-		global $PUBLIC_USER;
-
 		if (!is_numeric($this->id)) {
 			error_log("loadById was called with an invalid ID: {$this->id}");
 			exit;
@@ -127,7 +125,7 @@ class Agreement extends BOADoc
 		$entryDate = new MyDate( );
 
 		$pub_constraint = '';
-		if ( $PUBLIC_USER ) {
+		if (!is_authenticated()) {
 			$pub_constraint = ' AND a.world_public=1';
 		}
 
@@ -145,9 +143,10 @@ EOSQL;
 		$this->init_mysql_api();
 		$data = $this->mysql_api->get($sql, NULL, FALSE);
 		if ( empty( $data )) {
-			if ( $PUBLIC_USER ) {
+			if (!is_authenticated()) {
 				if (attempt_login()) {
-					# run the query again, without the constraint
+					#!# run the query again, without the constraint
+					$sql = str_replace($pub_constraint, '', $sql);
 					$data = $this->mysql_api->get($sql);
 				}
 				else {
@@ -484,8 +483,8 @@ EOHTML;
 	 */
 	public function getRelatedMinutes() {
 		// punt if not logged in...
-		if (!array_key_exists('logged_in', $_SESSION) ||
-			!$_SESSION['logged_in']) {
+		if (!array_key_exists('boa_username', $_SESSION) ||
+			!$_SESSION['boa_username']) {
 			return '';
 		}
 

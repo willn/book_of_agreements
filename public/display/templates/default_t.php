@@ -2,33 +2,41 @@
 <body>
 
 <div id="banner">
-<img src="display/images/gocohologo.gif" alt="<?= $title ?? '' ?>"
-width="400" height="72">
+<img src="display/images/gocohologo.gif" alt="Great Oak Cohousing Book of Agreements" width="400" height="72">
 
 <?php
-	# if user is logged in, then display advanced search
-	if (isset($PUBLIC_USER) && (!$PUBLIC_USER)) {
-		$terms = !isset($search_terms) ? '' :
-			str_replace( '"', '&quot;', $search_terms );
-		echo <<<EOHTML
-	<form id="search" method="get" action="?id=search">
-		<input type="hidden" name="id" value="search">
-		<input type="search" id="search_input" maxlength="70" size="30" name="q" value="{$terms}">
-		<input type="submit" value="search">
-		&nbsp; <a href="?id=search">advanced search</a>
-	</form>
-	<div id="logout">
-		<a href="?login=0">Change to Public View</a>
-	</div>
+$login_logout = <<<EOHTML
+<div id="login">
+	<span class="username">public view</span>
+	<a href="?id=login">Member Login</a>
+</div>
 EOHTML;
-}
-else {
+
+if (is_authenticated()) {
+	// show advanced search
+	$terms = !isset($search_terms) ? '' :
+		str_replace( '"', '&quot;', $search_terms );
 	echo <<<EOHTML
-	<div id="login">
-		<a href="?id=login">Member Login</a>
-	</div>
+<form id="search" method="get" action="?id=search">
+	<input type="hidden" name="id" value="search">
+	<input type="search" id="search_input" maxlength="70" size="30" name="q" value="{$terms}">
+	<input type="submit" value="search">
+	&nbsp; <a href="?id=search">advanced search</a>
+</form>
+EOHTML;
+
+	$username = getWordParam($_SESSION, 'boa_username');
+	$welcome = empty($username) ? '' : 'Welcome ';
+	$login_logout = <<<EOHTML
+<div id="logout">
+	<span class="username">{$welcome}{$username}</span>
+	<a href="?id=logout">Logout</a>
+</div>
 EOHTML;
 }
+
+echo $login_logout;
+
 ?>
 
 </div>

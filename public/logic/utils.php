@@ -265,47 +265,46 @@ EOHTML;
 
 /**
  * Is this user currently authenticated?
+ * @return boolean determines if the user logged in or not
  */
 function is_authenticated() {
-	// is the user logged in already?
-	if ( isset( $_SESSION['logged_in'] ) && $_SESSION['logged_in'] == 1 ) {
-		// logout...?
-		if ( isset( $_GET['login'] ) && $_GET['login'] == 0 ) {
-			unset($_SERVER['PHP_AUTH_USER']); 
-			$_SESSION['logged_in'] = 0;
-			return FALSE;
-		}
-
-		return TRUE;
+	if (PHP_SAPI === 'cli') {
+		return FALSE;
 	}
 
-	return FALSE;
+	session_start();
+	return (array_key_exists('boa_username', $_SESSION) &&
+		!empty($_SESSION['boa_username']));
+}
+
+/**
+ * End the user's session
+ */
+function do_logout() {
+	unset($_SERVER['PHP_AUTH_USER']); 
+	$_SESSION['boa_username'] = FALSE;
 }
 
 /**
  * Attempt to login the user. Otherwise display the login form.
  */
 function attempt_login() {
-	$auth_users = get_authorized_users();
-	global $PUBLIC_USER;
+	$authz_users = get_authorized_users();
 
 	if (!isset($_POST['boa_username']) || !isset($_POST['boa_password'])) {
 		display_login_form();
 		error_log(__FUNCTION__ . ' ' . __LINE__ . " username or password not set");
-		exit;
 	}
 
 	// check the password
-	if ($auth_users[$_POST['boa_username']] == hash('sha256', $_POST['boa_password'])) {
-		$_SESSION['logged_in'] = 1;
+	if ($authz_users[$_POST['boa_username']] == hash('sha256', $_POST['boa_password'])) {
+		// password checks out, mark them as logged in
 		$_SESSION['boa_username'] = $_POST['boa_username'];
-		$PUBLIC_USER = FALSE;
 		return TRUE;
 	}
 	else {
 		display_login_form();
 		error_log(__FUNCTION__ . ' ' . __LINE__ . " display login form");
-		exit;
 	}
 }
 
@@ -313,39 +312,24 @@ function attempt_login() {
  * Display the login form.
  */
 function display_login_form() {
-	$form_dest = '/boa/?login=1';
+	$form_dest = '?id=login';
 
 	$vars = get_query_string_vars();
 	$passalong = '';
 	if ($vars['page_id'] && $vars['num']) {
 		$passalong = <<<EOHTML
-<p>{$vars['page_id']}: {$vars['num']}</p>
-<input type="hidden" name="id" value="{$vars['page_id']}">
-<input type="hidden" name="num" value="{$vars['num']}">
+<div class="agreement_id">
+	<div>Continue to {$vars['page_id']}: {$vars['num']} after logging in.</div>
+	<input type="hidden" name="id" value="{$vars['page_id']}">
+	<input type="hidden" name="num" value="{$vars['num']}">
+</div>
 EOHTML;
 
-		$form_dest = "/boa/?id={$vars['page_id']}&num={$vars['num']}";
+		$form_dest = "?id={$vars['page_id']}&num={$vars['num']}";
 	}
 
-	echo <<<EOHTML
-<form method="POST" action="{$form_dest}">
-	<label>
-		<span>Username:</span>
-		<input type="text" name="boa_username" value="">
-	</label>
-
-	<label>
-		<span>Password:</span>
-		<input type="password" name="boa_password" value="">
-	</label>
-
-	<label>
-		<button type="submit" name="login_attempt">Log in</button>
-	</label>
-
-	<div>{$passalong}</div>
-</form>
-EOHTML;
+	include 'display/templates/login_screen.html';
+	exit;
 }
 
 /**
@@ -385,16 +369,14 @@ function getWordParam($params, $name, $default = '')
     return $default;
 }
 
-function getPageId($params, $publicUser)
-{
+/**
+ * Get the Page ID
+ */
+function getPageId($params) {
     $id = getWordParam($params, 'id', 'recent');
-    if ($publicUser && ($id !== 'login') && ($id !== 'logout')) {
+    if (!is_authenticated() && ($id !== 'login') && ($id !== 'logout')) {
         return empty($id) ? 'agreement' : $id;
     }
     return $id;
 }
-
-
-
-
 

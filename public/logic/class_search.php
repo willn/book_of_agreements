@@ -24,6 +24,10 @@ class Search {
 	public function __construct() {
 		$this->start_date = new StartDate();
 		$this->end_date = new EndDate();
+
+		if (!is_authenticated() || ($_SESSION['boa_username'] == 'guest')) {
+			$this->types_allowed = ['agreements'];
+		}
 	}
 
 	public function parseGetVars() {
@@ -115,6 +119,10 @@ class Search {
 	public function buildAgreementWhereClauses() {
 		$clauses = [];
 
+		if (!is_authenticated()) {
+			$clauses[] = 'world_public=1';
+		}
+
 		// Date range
 		$clauses = array_merge($clauses, $this->getDateClauses());
 
@@ -161,7 +169,7 @@ class Search {
 		return $clauses;
 	}
 
-	protected function buildWhereString(array $clauses) {
+	protected function assembleWhereString(array $clauses) {
 		if (empty($clauses)) {
 			return '';
 		}
@@ -190,7 +198,7 @@ class Search {
 			$order = 'ORDER BY score DESC';
 		}
 
-		$where = $this->buildWhereString($this->buildAgreementWhereClauses());
+		$where = $this->assembleWhereString($this->buildAgreementWhereClauses());
 
 		return <<<EOSQL
 	SELECT 
@@ -360,6 +368,23 @@ EOSQL;
 EOHTML;
 	}
 
+	public function renderDocTypeSelector() {
+		if (count($this->types_allowed) < 2) {
+			return '';
+		}
+
+		$types = '';
+		foreach($this->types_allowed as $doc) {
+			$checked = ($doc == $this->doc_type_chosen) ? ' checked' : '';
+			$types .= <<<EOHTML
+				<label>
+					<input type="radio" name="show_docs" value="{$doc}" {$checked}> {$doc}
+				</label>
+EOHTML;
+		}
+		return $types;
+	}
+
 	/**
 	 * Render this to HTML
 	 */
@@ -377,18 +402,7 @@ EOHTML;
 
 		$found = $this->runSearches();
 		$num_matches = isset($found) ? count($found) : 0;
-
-		// the default type
-		$document_types = '';
-		foreach($this->types_allowed as $doc) {
-			$checked = ($doc == $this->doc_type_chosen) ? ' checked' : '';
-			$document_types .= <<<EOHTML
-				<label>
-					<input type="radio" name="show_docs" value="{$doc}" {$checked}> {$doc}
-				</label>
-EOHTML;
-		}
-
+		$document_types = $this->renderDocTypeSelector();
 		$start_string = $this->start_date->toString();
 		$end_string = $this->end_date->toString();
 

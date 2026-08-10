@@ -21,20 +21,10 @@ if ( $id == 'admin' ) {
 // get links array info
 require_once( "logic/links/main_lk.php" );
 
-$PUBLIC_USER = !is_authenticated();
-$id = getPageId($_GET, $PUBLIC_USER);
+$pvar = 'logic/pagevars/' . getPageId($_GET) . '_v.php';
 
-$pvar = 'logic/pagevars/'.$id.'_v.php';
 if (file_exists($pvar)) {
 	require_once($pvar);
-}
-elseif ($PUBLIC_USER) {
-	attempt_login();
-	# if this is a public user, then punt instead of 404
-	# punt_public_user();
-}
-else {
-	error_log(__FILE__ . ' ' . __LINE__ . " unable to find pagevar");
 }
 
 $temploc = "display/templates/$template";

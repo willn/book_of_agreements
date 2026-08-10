@@ -1,6 +1,10 @@
 <?php
 require_once dirname(__DIR__) . '/class_minute.php';
 
+if (!is_authenticated()) {
+	display_login_form();
+}
+
 if (!($_SESSION['boa_username'] === 'greatoak') ||
 	($_SESSION['boa_username'] === 'admin')) { 
 	echo <<<EOHTML

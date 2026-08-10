@@ -2,12 +2,10 @@
 	require_once __DIR__ . '/utils.php';
 
 	$pub = '';
-	$access_img = 'apps/system-users.png';
 	$h1_class = 'agrm';
 	$note = '';
-	if (isset($PUBLIC_USER) && $PUBLIC_USER) {
+	if (!is_authenticated()) {
 		$pub = 'Public ';
-		$access_img = 'apps/internet-web-browser.png';
 		$h1_class = 'public';
 
 		$note = <<<EOHTML
@@ -57,11 +55,7 @@ EOHTML;
 EOHTML;
 	}
 
-	$pub_constrain = '';
-	if (isset($PUBLIC_USER) && $PUBLIC_USER) {
-		$pub_constrain = ' AND a.world_public=1';
-	}
-
+	$pub_constrain = is_authenticated() ? '' : ' AND a.world_public=1';
 	$sql = <<<EOSQL
 		SELECT a.id, a.cid, a.title, a.date, c.cmty, c.parent, a.summary,
 		  GROUP_CONCAT(DISTINCT t.tag ORDER BY t.tag SEPARATOR ', ') AS tags

@@ -17,7 +17,7 @@
 		$only = ( $_GET['only'] == 'minutes' ) ? 'minutes' : $only;
 	}
 
-    if ( $PUBLIC_USER ) {
+    if (!is_authenticated()) {
 		$only = 'agreements';
 	}
 	

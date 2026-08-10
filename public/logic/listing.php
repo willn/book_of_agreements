@@ -16,6 +16,8 @@
 		$title = $Cmty->getName();
 	}
 
+	$id = getPageId($_GET);
+	$cmty = getWordParam($_GET, 'cmty');
 	$link = "?id=$id";
 	if ( $id == 'committee' ) {
 		if ( intval( $cmty )) { $link = "?id=committee&cmty=$cmty"; }

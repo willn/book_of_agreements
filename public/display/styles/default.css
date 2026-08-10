@@ -308,20 +308,23 @@ div.cmty_title {
 }
 
 #login, #logout {
-	font-size: 20px;
-	font-weight: bold;
 	position: absolute;
 	top: 25px;
 	right: 28px;
-	background-color: #FB9A54;
-	padding: 4px 8px;
-	border: 1px solid #cc7d44;
-	border-radius: 10px;
+}
+#login > *, #logout > *{
+	padding: 12px;
 }
 
-#login a, #logout a {
-	text-decoration: none;
+#login a {
+	background-color: #FB9A54;
+	border: 1px solid #cc7d44;
+	border-radius: 10px;
 	color: #000;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 4px 8px;
+	text-decoration: none;
 }
 
 .explanation {
