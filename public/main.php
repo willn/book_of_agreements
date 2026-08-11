@@ -21,7 +21,8 @@ if ( $id == 'admin' ) {
 // get links array info
 require_once( "logic/links/main_lk.php" );
 
-$pvar = 'logic/pagevars/' . getPageId($_GET) . '_v.php';
+$page_id  = getPageId($_GET);
+$pvar = "logic/pagevars/{$page_id}_v.php";
 
 if (file_exists($pvar)) {
 	require_once($pvar);

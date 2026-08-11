@@ -12,7 +12,7 @@
 		$only = ( $_GET['only'] == 'agreements' ) ? 'agreements' : '';
 		$only = ( $_GET['only'] == 'minutes' ) ? 'minutes' : $only;
 	}
-	if (!is_authenticated()) {
+	if (!is_authz_for_minutes()) {
 		$only = 'agreements';
 	}
 
@@ -41,17 +41,23 @@
 	}
 
 	$show_agreements = '<a href="' . $link . '&only=agreements">show agreements</a>';
-	$show_minutes = '<a href="' . $link . '&only=minutes">show minutes</a>';
-	$show_both = '<a href="' . $link . '">show both</a>';
+	$show_minutes = '';
+	$show_both = '';
+	if (is_authz_for_minutes()) {
+		$show_minutes = '<a href="' . $link . '&only=minutes">show minutes</a>';
+		$show_both = '<a href="' . $link . '">show both</a>';
+	}
 
 	if (isset($only)) {
 		switch($only )
 		{
 			case 'agreements': $show_agreements = 'show agreements';
 				break;
-			case 'minutes': $show_minutes = 'show minutes';
+			case 'minutes':
+				$show_minutes = is_authz_for_minutes() ? 'show minutes' : '';
 				break;
-			default: $show_both = 'show both';
+			default:
+				$show_both = is_authz_for_minutes() ? 'show both' : '';
 				break;
 		}
 	}

@@ -1,9 +1,29 @@
 <?php
+	# don't make this plural, since it's used in a SQL query
+	$limit_time = '90 day';
+
+	$title = 'Recently Active Items (' . $limit_time . 's)';
+	$cmty_num = NULL;
+	$only = NULL;
+	$max = 100;
+
+	if ( isset( $_GET['cmty'] )) {
+		$cmty_num = intval( $_GET['cmty'] );
+	}
+
+	if ( isset( $_GET['only'] ))
+	{
+		$only = ( $_GET['only'] == 'agreements' ) ? 'agreements' : '';
+		$only = ( $_GET['only'] == 'minutes' ) ? 'minutes' : $only;
+	}
+
+    if (!is_authenticated()) {
+		$only = 'agreements';
+	}
+
 	$Items = array( );
 	$Item_Dates = array( );
-	$limit = '';
-	if ( isset( $limit_time ))
-	{ $limit = " and date_sub( curdate( ), interval $limit_time ) <= date "; }
+	$limit = " and date_sub( curdate( ), interval $limit_time ) <= date ";
 
 	if ( isset( $sub_cmty_num ) && is_int( $sub_cmty_num ))
 	{
@@ -25,16 +45,20 @@
 	}
 
 	$show_agreements = '<a href="' . $link . '&only=agreements">show agreements</a>';
-	$show_minutes = '<a href="' . $link . '&only=minutes">show minutes</a>';
-	$show_both = '<a href="' . $link . '">show both</a>';
+	$show_minutes = is_authz_for_minutes() ? 
+		'<a href="' . $link . '&only=minutes">show minutes</a>' : '';
+	$show_both = is_authz_for_minutes() ? 
+		'<a href="' . $link . '">show both</a>' : '';
 
 	switch( $only )
 	{
 		case 'agreements': $show_agreements = 'show agreements';
 			break;
-		case 'minutes': $show_minutes = 'show minutes';
+		case 'minutes':
+			$show_minutes = is_authz_for_minutes() ? 'show minutes' : '';
 			break;
-		default: $show_both = 'show both';
+		default:
+			$show_both = is_authz_for_minutes() ? 'show both' : '';
 			break;
 	}
 

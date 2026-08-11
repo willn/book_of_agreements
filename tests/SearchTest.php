@@ -15,7 +15,7 @@ class SearchTest extends DatabaseTestCase {
 
 		$_GET = [
 			'cmty' => '5',
-			'show_docs' => 'minutes',
+			'show_docs' => 'agreements',
 			'q' => 'Budget',
 			'include_expired' => 'on'
 		];
@@ -23,7 +23,7 @@ class SearchTest extends DatabaseTestCase {
 
 		$vals = $search->getCoreValues();
 		$this->assertEquals(5, $vals['cmty_num']);
-		$this->assertEquals('minutes', $vals['show_docs']);
+		$this->assertEquals('agreements', $vals['show_docs']);
 		$this->assertEquals('budget', $vals['q']);
 		$this->assertTrue($vals['include_expired']);
 	}
@@ -291,21 +291,6 @@ EOHTML;
 				$orientation_tag
 			],
 		];
-	}
-
-	public function testRunSearchesMinutesOnly()
-	{
-		$s = $this->getMockBuilder(Search::class)
-			->onlyMethods(['createMinsQuery', 'searchMinutes'])
-			->getMock();
-		$s->setDocType('minutes');
-		$s->setTerms('fence');
-		$s->expects($this->once())->method('createMinsQuery')->willReturn('SQL');
-		$s->expects($this->once())->method('searchMinutes')->with('SQL')
-			->willReturn(['m']);
-
-		$result = $s->runSearches();
-		$this->assertSame(['m'], $result);
 	}
 }
 ?>

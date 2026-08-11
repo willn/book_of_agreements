@@ -25,7 +25,7 @@ class Search {
 		$this->start_date = new StartDate();
 		$this->end_date = new EndDate();
 
-		if (!is_authenticated() || ($_SESSION['boa_username'] == 'guest')) {
+		if (!is_authz_for_minutes()) {
 			$this->types_allowed = ['agreements'];
 		}
 	}

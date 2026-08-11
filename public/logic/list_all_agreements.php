@@ -1,6 +1,22 @@
 <?php
 	require_once __DIR__ . '/utils.php';
 
+    $sort = '';
+
+    if ( isset( $_GET['sort'] )) {
+        switch( $_GET['sort'] ) {
+            case 'date':
+            case 'committee':
+            case 'agreement':
+                $sort = $_GET['sort'];
+                break;
+        }
+    }
+
+    $title = 'All Agreements';
+	$Cmty = new Committee( );
+
+
 	$pub = '';
 	$h1_class = 'agrm';
 	$note = '';
@@ -83,6 +99,7 @@ EOSQL;
 {$note}
 EOHTML;
 
+
 	if ( !sizeof( $All )) {
 		echo '<p class="highlight">No passed agreements found.</p>' . "\n";
 	}
@@ -98,13 +115,10 @@ EOHTML;
 					<th>Summary</th>
 				</tr>
 EOHTML;
-				
+
 			foreach( $All as $num=>$Item ) {
-				$name = '';
-				if (isset($Cmty)) {
-					$Cmty->setId($Item['cid']);
-					$name = $Cmty->getName();
-				}
+				$Cmty->setId($Item['cid']);
+				$name = $Cmty->getName();
 				$title = stripslashes( $Item['title'] );
 				$summary = stripslashes( $Item['summary'] );
 				$tags_html = render_tags(stripslashes($Item['tags']));

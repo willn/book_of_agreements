@@ -7,7 +7,7 @@
 		echo '<a href="?id=agreement">All Agreements</a><br>'."\n";
 	}
 
-	if (is_authenticated() && ($_SESSION['boa_username'] !== 'guest')) {
+	if (is_authz_for_minutes()) {
 		if (isset($id) && ($id == 'minutes') && (!isset($num))) {
 			echo '<span class="link">All Minutes</span><br>'."\n";
 		}

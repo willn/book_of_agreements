@@ -278,6 +278,22 @@ function is_authenticated() {
 }
 
 /**
+ * Is this user authorized to see minutes?
+ * @return boolean if TRUE, they can see minutes
+ */
+function is_authz_for_minutes() {
+	if (!is_authenticated()) {
+		return FALSE;
+	}
+
+	if ($_SESSION['boa_username'] == 'guest') {
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+/**
  * End the user's session
  */
 function do_logout() {
@@ -328,7 +344,7 @@ EOHTML;
 		$form_dest = "?id={$vars['page_id']}&num={$vars['num']}";
 	}
 
-	include 'display/templates/login_screen.html';
+	include LOGIN_HTML_FILE;
 	exit;
 }
 
