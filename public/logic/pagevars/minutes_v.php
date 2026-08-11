@@ -5,8 +5,10 @@ if (!is_authenticated()) {
 	display_login_form();
 }
 
-if (!($_SESSION['boa_username'] === 'greatoak') ||
-	($_SESSION['boa_username'] === 'admin')) { 
+if (!is_authenticated() ||
+	(($_SESSION['boa_username'] !== 'greatoak') &&
+	($_SESSION['boa_username'] !== 'admin'))) { 
+
 	echo <<<EOHTML
 <h2>User Not Authorized</h2>
 <p>Please return to the <a href="http://gocoho.org/boa/">main page</a>.</p>

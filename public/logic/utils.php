@@ -332,7 +332,7 @@ function display_login_form() {
 
 	$vars = get_query_string_vars();
 	$passalong = '';
-	if ($vars['page_id'] && $vars['num']) {
+	if (isset($vars['page_id']) && $vars['page_id'] && $vars['num']) {
 		$passalong = <<<EOHTML
 <div class="agreement_id">
 	<div>Continue to {$vars['page_id']}: {$vars['num']} after logging in.</div>
@@ -344,6 +344,7 @@ EOHTML;
 		$form_dest = "?id={$vars['page_id']}&num={$vars['num']}";
 	}
 
+	// @phpstan-ignore include.fileNotFound
 	include LOGIN_HTML_FILE;
 	exit;
 }
@@ -352,7 +353,7 @@ EOHTML;
  * Look for certain query string parameters and return them.
  */
 function get_query_string_vars() {
-	$tmp_id = $_GET['id'];
+	$tmp_id = getWordParam($_GET, 'id');
 	switch($tmp_id) {
 		case 'agreement':
 		case 'minutes':

@@ -14,9 +14,9 @@ define('SITE_NAME', 'My Site');
 function get_authorized_users() {
 	return [
 		'username' => 'hash',
+		'admin' => 'hash',
 	];
 }
-$Admin_Users = ['username'];
 
 $HDUP = [
 	'database'=>'database name',
@@ -24,6 +24,5 @@ $HDUP = [
 	'user'=>'username',
 	'password'=>'password'
 ];
-$admin_string = 'hash';
 
 ?>

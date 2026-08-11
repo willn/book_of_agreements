@@ -43,8 +43,8 @@ class MyDate
 	/**
 	 * Set the date with a string.
 	 *
-	 * @param[in] date_string string the date to use, should be formatted
-	 *     as '2018-01-30'.
+	 * @param[in] string date_string the date to use, should be formatted
+	 *     as short ISO 8601, for example '2018-01-30'.
 	 */
 	function setDate($date_string) {
 		if (!preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/', $date_string, $Matches)) {
@@ -70,6 +70,10 @@ class MyDate
 
 	/**
 	 * Render the HTML needed for choosing a date in the advanced search.
+	 *
+	 * @param[in] boolean include_day whether to include the day of month
+	 * selector in the returned HTML.
+	 * @return string HTML to display for the date controls.
 	 */
 	function selectDate($include_day=FALSE) {
 		#create month drop-down

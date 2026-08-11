@@ -46,11 +46,9 @@ combination that you defined in the $Basic_Auth_Users array will allow you to
 enter the site.
 
 In order to manage content, you'll need to then login as
-the administrative user at the following URL:
-
-	/?id=admin
+the 'admin' user.
 
 and enter the password you used to generate the sha1 string you entered into
-the $admin_string in the config.php page. From there, you should be provided
+the admin password in the config.php page. From there, you should be provided
 with links to add new minutes or agreements. Once you have documents
 created, viewing them will show an "edit" and "delete" button to the page.

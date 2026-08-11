@@ -303,8 +303,17 @@ EOTXT;
 			'<p class="notice">Agreement Expired</p>' : '';
 	}
 
+	/**
+	 * Render the form for editing.
+	 * @param[in] array errors the list of errors to display
+	 * @return string HTML to display
+	 */
 	public function renderFormDisplay(array $errors=[])
 	{
+		if (!is_authenticated() || $_SESSION['boa_username'] != 'admin') {
+			attempt_login();
+		}
+
 		$fields = $this->getFormattedFields(true);
 		$num = $this->getId();
 		$action = ($num <= 0) ? 'Add' : 'Edit';
@@ -602,25 +611,27 @@ EOHTML;
 EOHTML;
 	}
 
-	# agreement
-	public function adminActions( )
+	/**
+	 * Render the admin links
+	 * @return string html to be displayed
+	 */
+	public function renderAdminActions( )
 	{
-		$link = '';
-		if ( isset( $_SESSION['admin'] ) && ( $_SESSION['admin'] ))
-		{
-			$link = <<<EOHTML
-				<div class="actions">
-					<a href="?id=admin&amp;doctype=agreement&amp;num={$this->id}">
-						edit
-					</a>
-					&nbsp;&nbsp;
-					<a href="?id=admin&amp;doctype=agreement&amp;delete={$this->id}">
-						delete
-					</a>
-				</div>
-EOHTML;
+		if (!is_authenticated() || $_SESSION['boa_username'] != 'admin') {
+			return '';
 		}
-		return $link;
+
+		return <<<EOHTML
+			<div class="actions">
+				<a href="?id=admin&amp;doctype=agreement&amp;num={$this->id}">
+					edit
+				</a>
+				&nbsp;&nbsp;
+				<a href="?id=admin&amp;doctype=agreement&amp;delete={$this->id}">
+					delete
+				</a>
+			</div>
+EOHTML;
 	}
 
 	/**
@@ -630,6 +641,10 @@ EOHTML;
 	 * @return boolean. If true, then the save was successful.
 	 */
 	public function save($update=false) {
+		if (!is_authenticated() || $_SESSION['boa_username'] != 'admin') {
+			return FALSE;
+		}
+
 		$HDUP = get_hdup();
 		$success = 0;
 		if ( $this->id == 0 ) {
@@ -1061,7 +1076,7 @@ EOHTML;
 		$cmty_name = $this->cmty->getName();
 		$content = $this->renderDocumentContent();
 		$related_minutes = $this->getRelatedMinutes();
-		$admin_info = $this->adminActions();
+		$admin_info = $this->renderAdminActions();
 		$current_date = date('r');
 
 		return <<<EOHTML

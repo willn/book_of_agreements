@@ -13,11 +13,6 @@ $cmty = getWordParam($_GET, 'cmty');
 $sub = getWordParam($_GET, 'sub');
 $num = isset($_GET['num']) ? intval($_GET['num']) : null;
 
-#--- user must login before using the admin tool
-if ( $id == 'admin' ) {
-	require_once( 'logic/admin/authentication.php' );
-}
-
 // get links array info
 require_once( "logic/links/main_lk.php" );
 

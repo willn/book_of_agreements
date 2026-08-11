@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/utils.php';
-require_once __DIR__ . '/class_agreement.php';
+require_once __DIR__ . '/../utils.php';
+require_once __DIR__ . '/../class_agreement.php';
 
 $update_string = '';
 $update = false;
@@ -11,9 +11,11 @@ $mysql_api = get_mysql_api();
 
 # receiving a post of editing agreement, new or old
 $Agrms = new Agreement();
-if ( isset( $_POST['admin_post'] )) {
-	$TempDate = new MyDate( intval( $_POST['year'] ), 
-		intval( $_POST['month'] ), intval( $_POST['day'] ));
+if (isset($_POST['admin_post'])) {
+	$temp_date = sprintf('%04d-%02d-%02d',
+		intval($_POST['year']),
+		intval($_POST['month']),
+		intval($_POST['day']));
 
 	if ( isset( $_POST['expired'] )) {
 		$expired = 1;
@@ -33,7 +35,7 @@ if ( isset( $_POST['admin_post'] )) {
 		mysqli_real_escape_string($mysql_link, $_POST['comments']), 
 		mysqli_real_escape_string($mysql_link, $_POST['processnotes']), 
 		intval( $_POST['cid'] ),
-		$TempDate, 
+		$temp_date, 
 		$expired,
 		$pub
 	);

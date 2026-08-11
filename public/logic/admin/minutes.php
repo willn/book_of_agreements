@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . 'utils.php';
-require_once __DIR__ . 'class_minute.php';
-require_once __DIR__ . 'class_mydate.php';
+require_once __DIR__ . '/../utils.php';
+require_once __DIR__ . '/../class_minute.php';
+require_once __DIR__ . '/../class_mydate.php';
 
 $update_string = '';
 $update = false;
@@ -10,9 +10,16 @@ $TempDate = '';
 $mysql_api = get_mysql_api();
 
 # receiving a post of editing minutes, new or old
-if ( isset( $_POST['admin_post'] )) {
-	$TempDate = new MyDate( intval( $_POST['year'] ), 
-		intval( $_POST['month'] ), intval( $_POST['day'] ));
+if (!is_authenticated() || $_SESSION['boa_username'] != 'admin') {
+	error_log(__FILE__ . ' ' . __LINE__ . " trying to access admin without authn");
+	exit;
+}
+
+if (isset($_POST['admin_post'])) {
+	$temp_date = sprintf('%04d-%02d-%02d',
+		intval($_POST['year']),
+		intval($_POST['month']),
+		intval($_POST['day']));
 
 	$mysql_link = $mysql_api->getLink();
 	$Mins = new Minutes( 
@@ -21,7 +28,7 @@ if ( isset( $_POST['admin_post'] )) {
 		mysqli_real_escape_string($mysql_link, $_POST['agenda']),
 		mysqli_real_escape_string($mysql_link, $_POST['content']),
 		intval( $_POST['cid'] ),
-		$TempDate
+		$temp_date
 	);
 	$update = true;
 }

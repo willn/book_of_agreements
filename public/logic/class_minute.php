@@ -181,8 +181,7 @@ EOHTML;
 	 */
 	public function displayAdminActions( )
 	{
-		$link = '';
-		if (!isset( $_SESSION['admin'] ) || (!$_SESSION['admin'] )) {
+		if (!is_authenticated() || ($_SESSION['boa_username'] != 'admin')) {
 			return '';
 		}
 
@@ -201,8 +200,13 @@ EOHTML;
 
 	/**
 	 * Save a minutes entry.
+	 * @return boolean whether the save was successful or not
 	 */
 	public function save( $update=false ) {
+		if (!is_authenticated() || ($_SESSION['boa_username'] != 'admin')) {
+			return FALSE;
+		}
+
 		$HDUP = get_hdup();
 		$success = 0;
 		if ( $this->id == 0 ) {
@@ -253,7 +257,6 @@ EOSQL;
 			echo "Save didn't work\n";
 			return FALSE;
 		}
-		echo "Success - saved!\n";
 
 		if ( !is_int( $this->id )) {
 			$sql = 'select max( m_id ) as max from minutes';
@@ -264,7 +267,7 @@ EOSQL;
 		// display success message
 		echo <<<EOHTML
 		<p>Saved!</p>
-		<p><a href="?id=minutes&num={$this->id}">{$this->notes}</a></p>
+		<p><a href="?id=minutes&num={$this->id}">Minutes {$this->id}</a></p>
 EOHTML;
 
 		echo <<<EOHTML
@@ -278,13 +281,17 @@ EOHTML;
 
 	/**
 	 * Delete a minutes entry.
+	 * @return boolean whether the delete was successful or not
 	 */
 	public function delete( $confirm )
 	{
+		if (!is_authenticated() || ($_SESSION['boa_username'] != 'admin')) {
+			return FALSE;
+		}
+
 		$HDUP = get_hdup();
 
-		if ( !$confirm )
-		{
+		if (!$confirm) {
 			$date_string = $this->Date->toString( );
 			$cmty_name = $this->cmty->getName();
 			echo <<<EOHTML
@@ -297,17 +304,19 @@ EOHTML;
 						confirm delete</a>
 			</div>
 EOHTML;
+			return TRUE;
 		}
-		else
-		{
-			$sql = "DELETE FROM minutes WHERE m_id={$this->id}";
-			$this->init_mysql_api();
-			$success = $this->mysql_api->query($sql);
-			if ( $success ) { echo "<p>Item deleted\n"; }
-			else
-			{ echo '<div class="error">Error: Item was not deleted</div>' . "\n"; }
-			
+
+		$sql = "DELETE FROM minutes WHERE m_id={$this->id}";
+		$this->init_mysql_api();
+		$success = $this->mysql_api->query($sql);
+		if ( $success ) {
+			echo "<p>Item deleted\n";
+			return TRUE;
 		}
+
+		echo '<div class="error">Error: Item was not deleted</div>' . "\n";
+		return FALSE;
 	}
 }
 

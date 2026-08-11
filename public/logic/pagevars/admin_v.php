@@ -1,4 +1,9 @@
 <?php
+	if (!is_authenticated() || $_SESSION['boa_username'] != 'admin') {
+		do_logout();
+		attempt_login();
+	}
+
 	$title = 'Admin';
 
 	$Types = array( 'minutes', 'agreement' );
