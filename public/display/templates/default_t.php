@@ -43,7 +43,7 @@ echo $login_logout;
 
 
 <?php
-	if (getWordParam($_GET, 'boa_username') == 'admin') {
+	if (is_authenticated() && ($_SESSION['boa_username'] == 'admin')) {
 		echo <<<EOHTML
 		<div class="admin_actions">
 			<a href="?id=logout">logout</a>
