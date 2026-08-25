@@ -1,24 +1,25 @@
-<p class="menu">
+<div class="menu">
 <?php
 	if (isset($id) && ($id == 'agreement') && (!isset($num))) {
-		echo '<span class="link">All Agreements</span><br>'."\n";
+		echo '<div class="link">All Agreements</div>'."\n";
 	}
 	else {
-		echo '<a href="?id=agreement">All Agreements</a><br>'."\n";
+		echo '<div><a href="?id=agreement">All Agreements</a></div>'."\n";
 	}
 
 	if (is_authz_for_minutes()) {
 		if (isset($id) && ($id == 'minutes') && (!isset($num))) {
-			echo '<span class="link">All Minutes</span><br>'."\n";
+			echo '<div class="link">All Minutes</div>'."\n";
 		}
 		else {
-			echo '<a href="?id=minutes">All Minutes</a><br>'."\n";
+			echo '<div><a href="?id=minutes">All Minutes</a></div>'."\n";
 		}
 	}
 ?>
-</p>
+</div>
 
-<p class="menu">
+<div class="menu">
+	<h2>Committees</h2>
 <?php
 	if (!isset($Cmtys)) {
 		error_log(__FILE__ . " Cmtys is not set");	
@@ -30,13 +31,13 @@
 		#current
 		if (isset($cmty) && ($cmty == $link) && isset($sub) && empty($sub) &&
 			isset($id) && ($id == 'committee')) {
-			echo '<span class="link">'.$name.
-				'&nbsp;<span class="linkcount">' . #$CmtyCount[$link] .
-				"</span></span><br>\n";
+			echo '<div class="link">'.$name.
+				'&nbsp;<div class="linkcount">' . #$CmtyCount[$link] .
+				"</div></div>\n";
 		}
 		else {
 			echo <<<EOHTML
-			<a href="?id=search&cmty={$link}&show_docs=agreements">{$name}</a><br>
+			<div><a href="?id=search&cmty={$link}&show_docs=agreements">{$name}</a></div>
 EOHTML;
 		}
 
@@ -49,20 +50,36 @@ EOHTML;
 				#current
 				if (isset($sub) && ($sub == $sublink)) {
 					$link_content = <<<EOHTML
-						<span class="link">&nbsp; &nbsp; &middot; {$subname}&nbsp;</span><br>
+						<div class="link">&nbsp; &nbsp; &middot; {$subname}&nbsp;</div>
 EOHTML;
 				}
 				else
 				{
 					$link_content = <<<EOHTML
-						<a href="?id=search&cmty={$sublink}&show_docs=agreements">{$subname}</a><br>
+						<div><a href="?id=search&cmty={$sublink}&show_docs=agreements">{$subname}</a></div>
 EOHTML;
 				}
 				echo <<<EOHTML
-				<span class="sublink">{$link_content}</span>
+				<div class="sublink">{$link_content}</div>
 EOHTML;
 			}
 		}
 	}
 ?>
-</p>
+</div>
+
+
+<div class="menu">
+	<h2>Tags</h2>
+<?php
+	$tags = get_all_tags();
+
+	foreach ($tags as $id=>$name)
+	{
+		echo <<<EOHTML
+		<div><a href="?id=search&tags={$name}">{$name}</a></div>
+EOHTML;
+	}
+?>
+</div>
+

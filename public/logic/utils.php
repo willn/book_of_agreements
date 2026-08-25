@@ -242,6 +242,10 @@ function get_all_tags() {
 }
 
 
+/**
+ * Render the list of tags for a given document.
+ * This tends to be displayed after the summary.
+ */
 function render_tags($tags_list) {
 	if (empty($tags_list)) {
 		return '';

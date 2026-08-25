@@ -96,63 +96,66 @@ img.titlephoto {
 	margin: 0px;
 }
 
-#nav {
+nav {
 	left: 0;
 	position: absolute;
 	margin-left: 5px;
 	font-size: 11pt;
 	width: 160px;
 	border-radius: 8px;
+}
+
+nav .menu {
+	border-radius: 8px;
+	background: #fff;
+	margin: 15px 0;
+}
+nav .menu div {
 	line-height: 9pt;
 }
-
-#nav p {
-	border-radius: 8px;
-}   
-
-#nav p.menu {
-	background: #fff;
+nav .menu h2 {
+	margin: 0;
+	padding: 6px;
+	font-size: 18px;
 }
 
-#nav br {
+nav br {
 	display: none;
 }
 
-#nav a:link, #nav a:visited, span.link {
+nav a:link, nav a:visited, .link {
 	display: block;
 	text-decoration: none;
-	padding: .25em .5em;
-	padding-left: 2.5em;
-	text-indent: -2em;
+	padding: 4px 6px;
 	border: 1px solid #fff;
 	border-radius: 8px;
 }
 
-#nav span.linkcount {
+nav .linkcount {
 	font-size: 8pt;
 }
 
-span.link {
+.link {
 	color: #000;
 	background: #eceed1;
 	border: 1px solid #ccaa99;
 }
 
-span.sublink {
+.sublink {
 	font-size: 11px;
 }
 
-span.found {
+.found {
 	font-weight: bold;
 	background: #cccc66;
 	padding: 3px 0px;
 }
 
-span.date {
+.date {
 	font-weight: bold;
 }
 
-#nav a:hover, #nav a:active {
+nav a:hover, nav a:active {
 	color: #000;
 	background: #fb9a54;
 }
@@ -205,7 +208,7 @@ span.date {
 
 #content h2 {
 	font-size: 14px;
-	margin: 0px;
+	margin: 4px 0;
 	padding: 6px;
 	font-weight: normal;
 }

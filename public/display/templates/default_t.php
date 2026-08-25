@@ -54,9 +54,9 @@ EOHTML;
 }
 ?>
 
-<div id="nav">
+<nav>
 <?php include dirname(__DIR__) . '/includes/nav.php'; ?>
-</div>
+</nav>
 
 <div id="content">
 <?php
