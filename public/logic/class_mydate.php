@@ -141,8 +141,8 @@ class StartDate extends MyDate {
 	 * @param[in] day int the 2-digit day of the month in question.
 	 * @param[in] label string a prefix for a selector, e.g. "start" or "end".
 	 */
-	function __construct($year='', $month='', $day='', $label=NULL) {
-		parent::__construct($year, $month, $day, 'start');
+	function __construct($year='', $month='', $day='', $label='start') {
+		parent::__construct($year, $month, $day, $label);
 
 		$year = intval($year);
 		$this->year = ($year) ? $year : STARTING_YEAR;
@@ -178,8 +178,8 @@ class EndDate extends MyDate {
 	 * @param[in] day int the 2-digit day of the month in question.
 	 * @param[in] label string a prefix for a selector, e.g. "start" or "end".
 	 */
-	function __construct($year='', $month='', $day='', $label=NULL) {
-		parent::__construct($year, $month, $day, 'end');
+	function __construct($year='', $month='', $day='', $label='end') {
+		parent::__construct($year, $month, $day, $label);
 		$this->year = intval($year) ? intval($year) : $this->cur_year;
 		$this->month = intval($month) ? intval($month) : $this->cur_month;
 
