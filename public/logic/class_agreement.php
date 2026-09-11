@@ -300,7 +300,7 @@ EOTXT;
 	private function renderExpiredNotice()
 	{
 		return $this->expired ? 
-			'<p class="notice">Agreement Expired</p>' : '';
+			'<p class="expired">Agreement Expired</p>' : '';
 	}
 
 	/**
@@ -346,6 +346,12 @@ EOTXT;
 		<input type="hidden" name="num" value="{$num}">
 		{$update_string}
 
+		<label{$css_title}>
+			<span>Title: *</span>
+			<input type="text" name="title" value="{$fields['title']}" size="70">
+			<p>Do not include the following words in the title: {$avoid_words}</p>
+		</label>
+
 		{$controls}
 
 		<label>
@@ -356,12 +362,6 @@ EOTXT;
 		<label>
 			Mark this agreement as expired:
 			<input type="checkbox" name="expired"{$exp}>
-		</label>
-
-		<label{$css_title}>
-			<span>Title: *</span>
-			<input type="text" name="title" value="{$fields['title']}" size="70">
-			<p>Do not include the following words in the title: {$avoid_words}</p>
 		</label>
 
 		<label>
@@ -393,7 +393,7 @@ EOTXT;
 				rows="3">{$fields['processnotes']}</textarea>
 		</label>
 
-		<p><input type="submit" name="save" value="save changes &rarr;"></p>
+		<div><button type="submit" name="save">Save changes</button></div>
 		</form>
 EOHTML;
 	}
@@ -470,17 +470,13 @@ EOHTML;
 		$title = format_html($this->title);
 
 		return <<<EOHTML
-	<div class="agreement">
-		<h2 class="agrm">
-			{$date}
-			<a href="?id=agreement&amp;num={$this->id}">{$title}</a>
-			[{$cmty_name}]
-		</h2>
-
+	<div class="agreement_entry">
+		<div class="entry_title"><a href="?id=agreement&amp;num={$this->id}">{$title}</a></div>
 		{$condition}
 
 		<div class="item_topic">
-			<div class="info">{$short}</div>
+			<div class="meta">{$date}, {$cmty_name}</div>
+			<div>{$short}</div>
 			{$tag_html}
 		</div>
 	</div>
@@ -584,28 +580,29 @@ EOHTML;
 			<div id="versions_block">
 				<div id="versions_reveal" class="toggle-content is-visible">
 					<div>
-						<button class="show toggle">+ show {$num_diffs} previous versions</button>
+						<button class="show toggle secondary">▸ show {$num_diffs} previous versions</button>
 					</div>
 				</div>
-				<div id="versions" class="toggle-content">
+				<div id="previous_versions" class="toggle-content">
 					<div>
-						<button class="hide toggle">- hide {$num_diffs} previous versions</button>
+						<button class="hide toggle secondary">▾ hide {$num_diffs} previous versions</button>
 					</div>
+					<div class="info">
+						<p>This list shows the obsolete versions of this
+						agreement, which we keep for historical purposes.
+						<br>The date on the right is the date the old version was
+						superceded by a new agreement.</p>
 
-					<p>This list shows the obsolete versions of this
-					agreement, which we keep for historical purposes.
-					<br>The date on the right is the date the old version was
-					superceded by a new agreement.</p>
-
-					<table cellpadding="3">
-						<tr>
-							<th>version</th>
-							<th></th>
-							<th>diff comment</th>
-							<th>obsoleted date</th>
-						</tr>
-						{$out}
-					</table>
+						<table>
+							<tr>
+								<th>version</th>
+								<th></th>
+								<th>diff comment</th>
+								<th>obsoleted date</th>
+							</tr>
+							{$out}
+						</table>
+					</div>
 				</div>
 			</div>
 EOHTML;
@@ -622,14 +619,11 @@ EOHTML;
 		}
 
 		return <<<EOHTML
-			<div class="actions">
-				<a href="?id=admin&amp;doctype=agreement&amp;num={$this->id}">
-					edit
-				</a>
-				&nbsp;&nbsp;
-				<a href="?id=admin&amp;doctype=agreement&amp;delete={$this->id}">
-					delete
-				</a>
+			<div class="admin_actions">
+				<a href="?id=admin&amp;doctype=agreement&amp;num={$this->id}"
+					class="button_link">✐ edit</a>
+				<a href="?id=admin&amp;doctype=agreement&amp;delete={$this->id}"
+					class="button_link">✖ delete</a>
 			</div>
 EOHTML;
 	}
@@ -835,7 +829,7 @@ EOSQL;
 			echo <<<EOHTML
 				<div class="agreement">
 					<h2>Are you sure you want to delete this entry?</h2>
-					<h1 class="agrm">{$title} agreement: {$date}</h1>
+					<h1 class="agreement_doc">{$title} agreement: {$date}</h1>
 				</div>
 
 				<form action="?" method="get">
@@ -900,11 +894,7 @@ EOHTML;
 				return $msg;
 			}
 
-			return <<<EOHTML
-		<div class="no_difference">
-			{$msg}
-		</div>
-EOHTML;
+			return "<div>{$msg}</div>\n";
 		}
 
 		$lines = explode("\n", $diff);
@@ -1083,13 +1073,13 @@ EOHTML;
 	<div class="agreement">
 		{$this->renderPrintLink()}
 
-		<h1 class="agrm">{$fields['title']}</h1>
-		{$condition}
+		<h1 class="agreement_doc">{$fields['title']}</h1>
 		{$admin_info}
 
 		<div class="info">
 			{$related_minutes}
-			<h3>{$cmty_name}&nbsp;{$date}</h3>
+			<h2>{$cmty_name}&nbsp;{$date}</h2>
+			{$condition}
 			{$content}
 		</div>
 	</div>
@@ -1102,7 +1092,7 @@ EOHTML;
 	{
 		return <<<EOHTML
 	<div id="print_version_link">
-		<a href="#" id="print_document">print</a>
+		<button id="print_document" class="secondary">🖨 print</button>
 	</div>
 EOHTML;
 	}

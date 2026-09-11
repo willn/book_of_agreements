@@ -1,7 +1,4 @@
 <?php
-	$body = 'logic/recent_listing.php';
-
-	if (!is_authenticated()) {
-		$body = 'logic/list_all_agreements.php';
-	}
+	$body = is_authenticated() ? 'logic/list_all_agreements.php' :
+		'logic/recent_listing.php';
 ?>

@@ -9,19 +9,7 @@ done
 
 # only run the lint tests
 run_lint_tests () {
-	printf "\n--- running lint check ...\n"
-	errs=0
-	files_checked=0
-	for i in `find ../ -name "*.php" -or -name "*.inc"`; do
-		lint=`php -l $i | grep 'Errors'`;
-		[[ ! -z $lint ]] && echo "FAIL $i --> php lint issue" && let errs=errs+1
-		let files_checked=files_checked+1
-	done
-	if [ "$errs" -gt 0 ]
-	then
-		exit
-	fi
-	echo "PASS all files pass lint $files_checked"
+	./php-lint.sh ".."
 }
 
 # only run the unit tests

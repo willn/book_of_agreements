@@ -1,6 +1,10 @@
-#nav, #search, #login, #logout, #versions_reveal, 
+nav, #search, #login, #logout, #versions_reveal, 
 	#print_version_link, .return_link, .related_minutes {
 	display: none;
+}
+
+#banner {
+	margin-left: 0;
 }
 
 /* admin stuff too */

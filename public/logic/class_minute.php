@@ -144,11 +144,10 @@ EOHTML;
 				$date_string = $this->Date->toString( );
 				$cmty_name = $this->cmty->getName();
 				$output .= <<<EOHTML
-					<div class="minutes">
-						<h2 class="mins">
-							<a href="?id=minutes&num={$this->id}">{$date_string} 
-								{$cmty_name}</a> minutes
-						</h2>
+					<div class="minutes_entry">
+						<div class="entry_title">
+							<a href="?id=minutes&num={$this->id}">Minutes {$cmty_name} {$date_string}</a>
+						</div>
 						<div class="item_topic">
 							<div class="info">{$short}</div>
 						</div>
@@ -157,8 +156,8 @@ EOHTML;
 				break;
 
 			case 'document':
-				$output .= '<div class="minutes">' . "\n" .
-					'<h1 class="mins">' . $this->cmty->getName() .
+				$output .= '<div class="minutes_entry">' . "\n" .
+					'<h1 class="minutes_doc">' . $this->cmty->getName() .
 					' minutes: ' . $this->Date->toString( ) . "</h1>\n" .
 					'<div class="info">' . $admin_info;
 
@@ -186,14 +185,9 @@ EOHTML;
 		}
 
 		return <<<EOHTML
-			<div class="actions">
-				<a href="?id=admin&amp;doctype=minutes&amp;num={$this->id}">
-					edit
-				</a>
-				&nbsp;&nbsp;
-				<a href="?id=admin&amp;doctype=minutes&amp;delete={$this->id}">
-					delete
-					</a>
+			<div class="admin_actions">
+				<a href="?id=admin&amp;doctype=minutes&amp;num={$this->id}">✐ edit</a>
+				<a href="?id=admin&amp;doctype=minutes&amp;delete={$this->id}">✖ delete</a>
 			</div>
 EOHTML;
 	}
@@ -295,11 +289,11 @@ EOHTML;
 			$date_string = $this->Date->toString( );
 			$cmty_name = $this->cmty->getName();
 			echo <<<EOHTML
-			<div class="minutes">
+			<div class="minutes_entry">
 				<h2>Are you sure you want to delete these minutes?</h2>
-				<h1 class="mins">{$cmty_name}: {$date_string}</h1>
+				<h1 class="minutes_doc">{$cmty_name}: {$date_string}</h1>
 			</div>
-			<div class="actions">
+			<div class="admin_actions">
 				<a href="?id=admin&amp;doctype=minutes&amp;delete={$this->id}&confirm_del=1">
 						confirm delete</a>
 			</div>

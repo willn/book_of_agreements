@@ -1,5 +1,7 @@
 #!/bin/bash
 
+./tests/php-lint.sh "."
+
 # push all "public" files in the product to production
 rsync -e 'ssh' -avz --exclude '*.swp' public/ gocoho@gocoho.org:/home/gocoho/public_html/boa/
 

@@ -14,7 +14,7 @@ var toggleHideShow = function (event) {
 	reveal.classList.toggle('is-visible');
 
 	// the "hide" link
-	var diffs = document.querySelector('#versions');
+	var diffs = document.querySelector('#previous_versions');
 	diffs.classList.toggle('is-visible');
 };
 

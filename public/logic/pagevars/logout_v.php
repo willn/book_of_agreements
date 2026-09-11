@@ -1,4 +1,4 @@
 <?php
-	$title = "Logout";
-	$body = "logic/logout.php";
+$body = "logic/logout.php";
+session_unset();
 ?>

@@ -341,7 +341,7 @@ EOSQL;
 	}
 
 	public function getCommitteeOptions() {
-		$com_options = '<option value="0">All</option>';
+		$com_options = is_authenticated() ? '<option value="0">All</option>' : '';
 		$AllCmtys = getAllCommittees();
 		foreach($AllCmtys as $cid=>$name) {
 			$selected = ($cid == $this->cmty_num) ? ' selected' : '';
@@ -362,12 +362,14 @@ EOSQL;
 		}
 
 		return <<<EOHTML
-			<div>
-				Tag:&nbsp;<select name="tags">{$tag_options}</select>
-			</div>
+			Tag:&nbsp;<select name="tags">{$tag_options}</select>
 EOHTML;
 	}
 
+	/**
+	 * Render the document type selector: agreements, minutes or all.
+	 * @return string HTML of the selector.
+	 */
 	public function renderDocTypeSelector() {
 		if (count($this->types_allowed) < 2) {
 			return '';
@@ -378,60 +380,81 @@ EOHTML;
 			$checked = ($doc == $this->doc_type_chosen) ? ' checked' : '';
 			$types .= <<<EOHTML
 				<label>
-					<input type="radio" name="show_docs" value="{$doc}" {$checked}> {$doc}
+					<input type="radio" name="show_docs" value="{$doc}" {$checked}><span>{$doc}</span>
 				</label>
 EOHTML;
 		}
-		return $types;
+		return <<<EOHTML
+<span class="toggles">{$types}</span>
+EOHTML;
 	}
 
 	/**
 	 * Render this to HTML
 	 */
 	public function toString() {
-		$exp_checked = ($this->include_expired) ? ' checked="checked"' : '';
-
-		$search_terms_display = !empty($this->terms) ? 
-			'query: [<b>' . $this->terms . '</b>]' : '';
+		echo "<h1>Search and Filter</h1>\n";
 
 		$com_options = $this->getCommitteeOptions();
-		$tag_selector = $this->renderTagSelector(get_all_tags());
+		$committee_selector = <<<EOHTML
+	<span>Committee:&nbsp;<select name="cmty">{$com_options}</select></span>
+EOHTML;
 
-		$start_select = $this->start_date->selectDate();
-		$end_select = $this->end_date->selectDate();
+		$button = <<<EOHTML
+		<span><button type="submit" value="search">Search</button></span>
+EOHTML;
+
+		$form = <<<EOHTML
+			<form name="advanced_search" method="get" action="?id=search"
+				class="search_query">
+				<input type="hidden" name="id" value="search">
+EOHTML;
 
 		$found = $this->runSearches();
 		$num_matches = isset($found) ? count($found) : 0;
-		$document_types = $this->renderDocTypeSelector();
-		$start_string = $this->start_date->toString();
-		$end_string = $this->end_date->toString();
+		$results = "<span>number of results: {$num_matches}</span>\n";
 
-		echo <<<EOHTML
-			<h1>Search</h1>
-			<div id="search_query">{$search_terms_display}
-				number of results: {$num_matches}
-
-				<div id="advanced_options">
-					<h3>Advanced Search Options</h3>
-					<form name="advanced_search" method="get" action="?id=search">
-						<input type="hidden" name="id" value="search"/>
-						<div><input type="search" name="q" value="{$this->terms}" size="50"/></div>
-						<div>Committee:&nbsp;<select name="cmty">{$com_options}</select></div>
-						{$tag_selector}
-						{$start_select}
-						{$end_select}
-						<p>{$document_types}</p>
-						<p>
-							Include expired documents: 
-							<input type="checkbox" name="include_expired"{$exp_checked}>
-						</p>
-
-						<div><input type="submit" value="search"></div>
-					</form>
-				</div>
-			</div>
+		if (!is_authenticated()) {
+			echo <<<EOHTML
+			{$form}
+				{$committee_selector}
+				{$results}
+				{$button}
+			</form>
 EOHTML;
+		}
+		else {
+			$search_terms_display = !empty($this->terms) ? 
+				'<span>query: [<b>' . $this->terms . '</b>]</span>' : '';
+			$start_select = $this->start_date->selectDate();
+			$end_select = $this->end_date->selectDate();
+			$document_types = $this->renderDocTypeSelector();
+			$tag_selector = $this->renderTagSelector(get_all_tags());
+			$exp_checked = ($this->include_expired) ? ' checked="checked"' : '';
 
+			echo <<<EOHTML
+				{$form}
+					<div>
+						<span><input type="search" name="q" value="{$this->terms}" size="50"/></span>
+						{$search_terms_display}
+						{$results}
+					</div>
+					<div>
+						{$committee_selector}
+						<span>{$start_select}</span>
+						<span>{$end_select}</span>
+					</div>
+					<div>
+						{$document_types}
+						<span>{$tag_selector}</span>
+						<span>Include expired documents: 
+							<input type="checkbox" name="include_expired"{$exp_checked}>
+						</span>
+						{$button}
+					</div>
+				</form>
+EOHTML;
+		}
 
 		if ( !$num_matches ) {
 			echo <<<EOHTML

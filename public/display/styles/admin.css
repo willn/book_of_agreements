@@ -1,6 +1,6 @@
 label {
 	display: block;
-	margin-top: 10px;
+	margin: 10px 0;
 }
 
 label span {
@@ -11,7 +11,7 @@ label span {
 
 label.err {
 	background: #fa9;
-	color: #900;
+	color: #f03e3e;
 	padding: 7px 5px;
 	margin: 10px 0;
 	-webkit-border-radius: 8px;

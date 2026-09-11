@@ -11,13 +11,10 @@ if (!isset( $_GET['num']) || (intval($_GET['num']) == 0)) {
 		}
 	}
 	require_once __DIR__ . '/all_agreements_v.php';
-	$title = 'All Agreements';
 }
 else {
 	# display a single agreement
 	$Date = new MyDate(); 
-	$Agrms = new Agreement();
-	$title = "Agreement: {$Agrms->title} [Agreement]";
 	$body = 'logic/agreement.php';
 }
 ?>

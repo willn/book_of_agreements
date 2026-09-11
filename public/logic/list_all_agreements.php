@@ -18,7 +18,7 @@
 
 
 	$pub = '';
-	$h1_class = 'agrm';
+	$h1_class = 'agreement_doc';
 	$note = '';
 	if (!is_authenticated()) {
 		$pub = 'Public ';
@@ -106,8 +106,7 @@ EOHTML;
 	else {
 		if ( sizeof( $All )) {
 			echo <<<EOHTML
-				<table class="listing" cellpadding="7" cellspacing="0" border="0"
-				summary="table containing list of agreements">
+				<table class="listing">
 				<tr>
 					<th><a href="?id=agreement&amp;sort=committee{$show_link}">Committee</a></th>
 					<th><a href="?id=agreement&amp;sort=date{$show_link}">Date</a></th>
@@ -125,10 +124,10 @@ EOHTML;
 
 				echo <<<EOHTML
 					<tr>
-						<td valign="top">{$name}</td>
-						<td valign="top" class="date">{$Item['date']}</td>
-						<td valign="top"><a href="?id=agreement&amp;num={$Item['id']}">{$title}</a></td>
-						<td valign="top">{$summary} {$tags_html}</td>
+						<td>{$name}</td>
+						<td class="date">{$Item['date']}</td>
+						<td><a href="?id=agreement&amp;num={$Item['id']}">{$title}</a></td>
+						<td>{$summary} {$tags_html}</td>
 					</tr>
 EOHTML;
 				

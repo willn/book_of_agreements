@@ -108,11 +108,10 @@ EOHTML;
 			ucfirst($this->label) . ' ' : '';
 
 		return <<<EOHTML
-		<p>{$disp_label}Date:
+		{$disp_label}Date:
 		<select name="{$this->label}year" size="1">{$years}</select>
 		<select name="{$this->label}month" size="1">{$months}</select>
 		{$day_selector}
-		</p>
 EOHTML;
 	}
 

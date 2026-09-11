@@ -258,7 +258,7 @@ function render_tags($tags_list) {
 	$inner = '';
 	foreach($tags_list as $entry) {
 		$inner .= <<<EOHTML
-<a href="/boa/?id=search&tags={$entry}" class="tag_entry">{$entry}</a> 
+<a href="/boa/?id=search&tags={$entry}">{$entry}</a> 
 EOHTML;
 	}
 	return <<<EOHTML

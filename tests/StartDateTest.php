@@ -52,7 +52,7 @@ class StartDateTest extends TestCase {
 		$result = $date->selectDate();
 
 		$sample = <<<EOHTML
-		<p>Start Date:
+		Start Date:
 		<select name="startyear" size="1"><option value="2001">2001</option>
 <option value="2002">2002</option>
 <option value="2003">2003</option>
@@ -94,7 +94,6 @@ class StartDateTest extends TestCase {
 <option value="12">December</option>
 </select>
 		
-		</p>
 EOHTML;
 
 		$this->assertEquals($result, $sample);

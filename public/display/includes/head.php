@@ -3,9 +3,9 @@
 <head>
 	<meta http-equiv="Content-Security-Policy" content="default-src 'self'">
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-	<title><?= $title ?? '' ?></title>
+	<title>Great Oak Book of Agreements</title>
 	<link rel="stylesheet" href="display/styles/default.css" type="text/css">
-	<link rel="stylesheet" href="display/styles/print.css" type="text/css" media="print">
+	<link rel="stylesheet" href="display/styles/print.css" media="print">
 
 <?php
 	if (isset($stylesheets)) {
@@ -18,5 +18,5 @@ EOHTML;
 ?>
 
 	<script src="js/utils.js"></script>
-	<meta name="google-site-verification" content="g6Fg9AWOfsIvEGzT682MCUKNkYNRDVSH1bnmor4VEzU"/>
+	<meta name="google-site-verification" content="g6Fg9AWOfsIvEGzT682MCUKNkYNRDVSH1bnmor4VEzU">
 </head>

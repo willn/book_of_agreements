@@ -7,7 +7,6 @@
 EOHTML;
 	}
 
-	if (isset($Agrms)) {
-		echo $Agrms->renderDocumentDisplay();
-	}
+	$Agrms = new Agreement();
+	echo $Agrms->renderDocumentDisplay();
 ?>
