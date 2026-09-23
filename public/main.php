@@ -8,7 +8,9 @@ $MainNav = [];
 $search_terms = '';
 
 #-------[ over-write defaults with page-specific variables ]---------
-$id = getWordParam($_GET, 'id', 'recent');
+$default_page = is_authenticated() ? 'recent' : 'agreement';
+$id = getWordParam($_GET, 'id', $default_page);
+error_log(__FILE__ . ' ' . __FUNCTION__ . ' ' . __LINE__ . " ID:$id");
 $cmty = getWordParam($_GET, 'cmty');
 $sub = getWordParam($_GET, 'sub');
 $num = isset($_GET['num']) ? intval($_GET['num']) : null;

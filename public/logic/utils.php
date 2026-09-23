@@ -394,7 +394,7 @@ function getWordParam($params, $name, $default = '')
  * Get the Page ID
  */
 function getPageId($params) {
-    $id = getWordParam($params, 'id', 'recent');
+    $id = getWordParam($params, 'id', $default_page);
     if (!is_authenticated() && ($id !== 'login') && ($id !== 'logout')) {
         return empty($id) ? 'agreement' : $id;
     }
