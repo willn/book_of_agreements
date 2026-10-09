@@ -20,86 +20,160 @@ function get_mysql_api() {
  * @return string the sanitized input
  */
 function clean_html($str) { 
-    $str = str_replace(chr(194), '-', $str);
-    $str = str_replace(chr(226), '...', $str);
-
     # Quotes cleanup 
-    $str = str_replace( chr(ord("`")), "'", $str );        # ` 
-    $str = str_replace( chr(ord("´")), "'", $str );        # ´ 
-    $str = str_replace( chr(ord("„")), ",", $str );        # „ 
-    $str = str_replace( chr(ord("`")), "'", $str );        # ` 
-    $str = str_replace( chr(ord("´")), "'", $str );        # ´ 
-    $str = str_replace( chr(ord("“")), "\"", $str );        # “ 
-    $str = str_replace( chr(ord("”")), "\"", $str );        # ” 
-    $str = str_replace( chr(ord("´")), "'", $str );        # ´ 
 
-    $unwanted_array = array(
-		'Š'=>'S',
-		'š'=>'s',
-		'Ž'=>'Z',
-		'ž'=>'z',
-		'À'=>'A',
-		'Á'=>'A',
-		'Â'=>'A',
-		'Ã'=>'A',
-		'Ä'=>'A',
-		'Å'=>'A',
-		'Æ'=>'A',
-		'Ç'=>'C',
-		'È'=>'E',
-		'É'=>'E',
-		'Ê'=>'E',
-		'Ë'=>'E',
-		'Ì'=>'I',
-		'Í'=>'I',
-		'Î'=>'I',
-		'Ï'=>'I',
-		'Ñ'=>'N',
-		'Ò'=>'O',
-		'Ó'=>'O',
-		'Ô'=>'O',
-		'Õ'=>'O',
-		'Ö'=>'O',
-		'Ø'=>'O',
-		'Ù'=>'U',
-		'Ú'=>'U',
-		'Û'=>'U',
-		'Ü'=>'U',
-		'Ý'=>'Y',
-		'Þ'=>'B',
-		'ß'=>'Ss',
-		'à'=>'a',
-		'á'=>'a',
-		'â'=>'a',
-		'ã'=>'a',
-		'ä'=>'a',
-		'å'=>'a',
-		'æ'=>'a',
-		'ç'=>'c',
-		'è'=>'e',
-		'é'=>'e',
-		'ê'=>'e',
-		'ë'=>'e',
-		'ì'=>'i',
-		'í'=>'i',
-		'î'=>'i',
-		'ï'=>'i',
-		'ð'=>'o',
-		'ñ'=>'n',
-		'ò'=>'o',
-		'ó'=>'o',
-		'ô'=>'o',
-		'õ'=>'o',
-		'ö'=>'o',
-		'ø'=>'o',
-		'ù'=>'u',
-		'ú'=>'u',
-		'û'=>'u',
-		'ý'=>'y',
-		'þ'=>'b',
-		'ÿ'=>'y',
-	); 
-    $str = strtr($str, $unwanted_array); 
+    $translation_array = [
+		"„" => ",",
+		"´" => "'",
+		"“" => "\"",
+		"`" => "'",
+
+		'Š' => 'S',
+		'š' => 's',
+		'Ž' => 'Z',
+		'ž' => 'z',
+		'À' => 'A',
+		'Á' => 'A',
+		'Â' => 'A',
+		'Ã' => 'A',
+		'Ä' => 'A',
+		'Å' => 'A',
+		'Æ' => 'A',
+		'Ç' => 'C',
+		'È' => 'E',
+		'É' => 'E',
+		'Ê' => 'E',
+		'Ë' => 'E',
+		'Ì' => 'I',
+		'Í' => 'I',
+		'Î' => 'I',
+		'Ï' => 'I',
+		'Ñ' => 'N',
+		'Ò' => 'O',
+		'Ó' => 'O',
+		'Ô' => 'O',
+		'Õ' => 'O',
+		'Ö' => 'O',
+		'Ø' => 'O',
+		'Ù' => 'U',
+		'Ú' => 'U',
+		'Û' => 'U',
+		'Ü' => 'U',
+		'Ý' => 'Y',
+		'Þ' => 'B',
+		'ß' => 'Ss',
+		'à' => 'a',
+		'á' => 'a',
+		'â' => 'a',
+		'ã' => 'a',
+		'ä' => 'a',
+		'å' => 'a',
+		'æ' => 'a',
+		'ç' => 'c',
+		'è' => 'e',
+		'é' => 'e',
+		'ê' => 'e',
+		'ë' => 'e',
+		'ì' => 'i',
+		'í' => 'i',
+		'î' => 'i',
+		'ï' => 'i',
+		'ð' => 'o',
+		'ñ' => 'n',
+		'ò' => 'o',
+		'ó' => 'o',
+		'ô' => 'o',
+		'õ' => 'o',
+		'ö' => 'o',
+		'ø' => 'o',
+		'ù' => 'u',
+		'ú' => 'u',
+		'û' => 'u',
+		'ý' => 'y',
+		'þ' => 'b',
+		'ÿ' => 'y',
+
+		# Quotes
+		"\u{2018}" => "'",
+		"\u{2019}" => "'",
+
+		# ' '
+		"\u{201A}" => ",",
+		"\u{201B}" => "'",
+		"\u{201C}" => '"',
+		"\u{201D}" => '"',
+
+		# " "
+		"\u{201E}" => '"',
+		"\u{201F}" => '"',
+		"\u{2039}" => "<",
+		"\u{203A}" => ">",
+		"\u{00AB}" => "<<",
+		"\u{00BB}" => ">>",
+
+		# Dashes / hyphens
+		"\u{2010}" => "-",
+		"\u{2011}" => "-",
+		"\u{2012}" => "-",
+		"\u{2013}" => "-",
+
+		# en dash
+		"\u{2014}" => "--",
+
+		 # em dash
+		"\u{2015}" => "--",
+
+		# Ellipsis
+		"\u{2026}" => "...",
+
+		# Bullets
+		"\u{2022}" => "*",
+		"\u{2023}" => "*",
+		"\u{25E6}" => "*",
+		"\u{2043}" => "-",
+
+		# Spaces
+		"\u{00A0}" => " ",
+		"\u{2000}" => " ",
+		"\u{2001}" => " ",
+		"\u{2002}" => " ",
+		"\u{2003}" => " ",
+		"\u{2004}" => " ",
+		"\u{2005}" => " ",
+		"\u{2006}" => " ",
+		"\u{2007}" => " ",
+		"\u{2008}" => " ",
+		"\u{2009}" => " ",
+		"\u{200A}" => " ",
+		"\u{202F}" => " ",
+		"\u{205F}" => " ",
+		"\u{3000}" => " ",
+
+		# Zero-width / invisible junk Google Docs sometimes leaves behind
+		"\u{200B}" => "",
+		"\u{200C}" => "",
+		"\u{200D}" => "",
+		"\u{FEFF}" => "",
+
+		# Misc symbols commonly seen from word processors
+		"\u{2122}" => "(TM)",
+		"\u{00AE}" => "(R)",
+		"\u{00A9}" => "(C)",
+		"\u{00B0}" => " degrees",
+		"\u{00D7}" => "x",
+		"\u{00F7}" => "/",
+		"\u{2212}" => "-",
+
+		# minus sign
+		"\u{2192}" => "->",
+		"\u{2190}" => "<-",
+
+		# fractions
+		"\u{00BC}" => " 1/4",
+		"\u{00BD}" => " 1/2",
+		"\u{00BE}" => " 3/4",
+	]; 
+    $str = strtr($str, $translation_array); 
 
     # Bullets, dashes, and trademarks 
     $str = str_replace( chr(149), "&#8226;", $str );   # bullet • 
@@ -108,6 +182,8 @@ function clean_html($str) {
     $str = str_replace( chr(153), "&#8482;", $str );   # trademark 
     $str = str_replace( chr(169), "&copy;", $str );    # copyright mark 
     $str = str_replace( chr(174), "&reg;", $str );     # registration mark 
+    $str = str_replace(chr(194), '-', $str);
+    $str = str_replace(chr(226), '...', $str);
 
     return $str; 
 }
@@ -394,7 +470,7 @@ function getWordParam($params, $name, $default = '')
  * Get the Page ID
  */
 function getPageId($params) {
-    $id = getWordParam($params, 'id', $default_page);
+    $id = getWordParam($params, 'id');
     if (!is_authenticated() && ($id !== 'login') && ($id !== 'logout')) {
         return empty($id) ? 'agreement' : $id;
     }

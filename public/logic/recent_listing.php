@@ -173,7 +173,7 @@ EOHTML;
 				$agr_title = nl2br( stripslashes( $Agreement['title'] ));
 				$Items[] = <<<EOHTML
 					<div class="agreement_entry">
-						<h2 class="agreement_doc">{$Agreement['date']} 
+						<h2 class="entry_title">{$Agreement['date']} 
 							<a href="?id=agreement&num={$Agreement['id']}">{$agr_title}</a>{$cmty_name}
 						</h2>
 						<div class="item_topic">

@@ -10,17 +10,86 @@ class UtilsTest extends DatabaseTestCase {
 	 */
 	public function test_clean_html($input, $expected) {
 		$result = clean_html($input);
-		$this->assertEquals($result, $expected);
+		$this->assertEquals($expected, $result);
 	}
 
 	public function get_clean_html() {
-		$long_dash = '�'; // 194
-
 		return [
 			['x', 'x'],
 			['`', "'"],
-			[$long_dash, '-'],
 			[ 'the community to\nconsider.\n\n\n2', 'the community to\nconsider.\n\n\n2' ],
+
+			// Quotes
+			['‘', "'"], // U+2018
+			['’', "'"], // U+2019
+			['‚', ","], // U+201A
+			['‛', "'"], // U+201B
+			['“', '"'], // U+201C
+			['”', '"'], // U+201D
+			['„', '"'], // U+201E
+			['‟', '"'], // U+201F
+			['‹', '<'], // U+2039
+			['›', '>'], // U+203A
+			['«', '<<'], // U+00AB
+			['»', '>>'], // U+00BB
+
+			// Dashes / hyphens
+			['‐', '-'], // U+2010
+			['-', '-'], // U+2011
+			['‒', '-'], // U+2012
+			['–', '-'], // U+2013
+			['—', '--'], // U+2014
+			['―', '--'], // U+2015
+
+			// Ellipsis
+			['…', '...'], // U+2026
+
+			// Bullets
+			['•', '*'], // U+2022
+			['‣', '*'], // U+2023
+			['◦', '*'], // U+25E6
+			['⁃', '-'], // U+2043
+
+			// Spaces
+			[' ', ' '], // U+00A0
+			[' ', ' '], // U+2000
+			[' ', ' '], // U+2001
+			[' ', ' '], // U+2002
+			[' ', ' '], // U+2003
+			[' ', ' '], // U+2004
+			[' ', ' '], // U+2005
+			[' ', ' '], // U+2006
+			[' ', ' '], // U+2007
+			[' ', ' '], // U+2008
+			[' ', ' '], // U+2009
+			[' ', ' '], // U+200A
+			[' ', ' '], // U+202F
+			[' ', ' '], // U+205F
+			['　', ' '], // U+3000
+
+			// Zero-width / invisible junk
+			['​', ''], // U+200B
+			['‌', ''], // U+200C
+			['‍', ''], // U+200D
+			['﻿', ''], // U+FEFF
+
+			// Misc symbols commonly seen from word processors
+			['™', '(TM)'], // U+2122
+			['®', '(R)'], // U+00AE
+			['©', '(C)'], // U+00A9
+			['°', ' degrees'], // U+00B0
+			['×', 'x'], // U+00D7
+			['÷', '/'], // U+00F7
+			['−', '-'], // U+2212
+
+			// Arrows
+			['→', '->'], // U+2192
+			['←', '<-'], // U+2190
+
+			// Fractions
+			['¼', ' 1/4'], // U+00BC
+			['½', ' 1/2'], // U+00BD
+			['¾', ' 3/4'], // U+00BE
 		];
 	}
 
@@ -103,9 +172,9 @@ class UtilsTest extends DatabaseTestCase {
 		$this->assertEquals('recent', getPageId($params, false));
 	}
 
-	public function testAuthenticatedUserDefaultsToRecent()
+	public function testAuthenticatedUserDefaultsToAgreement()
 	{
-		$this->assertEquals('recent', getPageId([], false));
+		$this->assertEquals('agreement', getPageId([], false));
 	}
 
 	public function testPublicUserCanAccessLogin()
